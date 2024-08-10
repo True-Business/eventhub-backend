@@ -1,0 +1,25 @@
+version:  '3.9'
+
+services:
+  backend:
+    build:
+      context: .
+    environment:
+      DB_URL: jdbc:postgresql://liveposter-database:5432/liveposter
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+
+  db:
+    container_name: liveposter-database
+    image: postgres:15.4
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: liveposter
+    ports:
+      - "5432:5432"
+    volumes:
+      - liveposter-postgres:/var/lib/postgresql/data
+
+volumes:
+  liveposter-postgres:
