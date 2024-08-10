@@ -1,4 +1,4 @@
-package ru.truebusiness
+package ru.truebusiness.ru.truebusiness
 
 fun main() {
     val name = "Kotlin"
