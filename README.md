@@ -1,0 +1,2 @@
+# liveposter-backend
+Бэкенд сервиса 
