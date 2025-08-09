@@ -1,2 +1,2 @@
-# liveposter-backend
+# eventhub-backend
 Бэкенд сервиса 
