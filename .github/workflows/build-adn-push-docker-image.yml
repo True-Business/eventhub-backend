@@ -19,9 +19,9 @@ jobs:
           id: meta
           uses: docker/metadata-action@v5
           with:
-            images:
+            images: |
                 ghcr.io/True-Business/eventhub-backend
-            tags:
+            tags: |
                 type=ref,event=tag
                 type=sha,prefix={{branch}}-
 
