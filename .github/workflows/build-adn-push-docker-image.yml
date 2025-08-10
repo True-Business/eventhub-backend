@@ -50,7 +50,7 @@ jobs:
             labels: ${{ steps.meta.outputs.labels }}
 
         - name: Save image name to file
-          run: echo ${{ fromJson(steps.dockerbuild.outputs.metadata) }}.image.name > image-name.txt
+          run: echo ${{ fromJson(steps.dockerbuild.outputs.metadata.image.name) }} > image-name.txt
 
         - name: Upload tags artifact
           uses: actions/upload-artifact@v4
