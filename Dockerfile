@@ -1,5 +1,12 @@
-FROM eclipse-temurin:21.0.2_13-jre-alpine
+FROM maven:3.9-eclipse-temurin-21-alpine AS build
 
-COPY target/*.jar ./application.jar
+WORKDIR /build
 
-ENTRYPOINT ["java","-jar","application.jar"]
+COPY . .
+RUN mvn clean package -DskipTests
+
+FROM eclipse-temurin:21-alpine
+WORKDIR /app
+COPY --from=build /build/target/*.jar app.jar
+
+ENTRYPOINT ["java", "-jar", "app.jar"]

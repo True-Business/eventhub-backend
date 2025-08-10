@@ -5,21 +5,21 @@ services:
     build:
       context: .
     environment:
-      DB_URL: jdbc:postgresql://liveposter-database:5432/liveposter
+      DB_URL: jdbc:postgresql://eventhub-database:5432/eventhub
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
 
   db:
-    container_name: liveposter-database
+    container_name: eventhub-database
     image: postgres:15.4
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
-      POSTGRES_DB: liveposter
+      POSTGRES_DB: eventhub
     ports:
       - "5432:5432"
     volumes:
-      - liveposter-postgres:/var/lib/postgresql/data
+      - eventhub-postgres:/var/lib/postgresql/data
 
 volumes:
-  liveposter-postgres:
+  eventhub-postgres:
