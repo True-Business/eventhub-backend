@@ -42,20 +42,21 @@ jobs:
           uses: docker/setup-buildx-action@v3
 
         - name: Build and push
+          id: dockerbuild
           uses: docker/build-push-action@v6
           with:
             push: true
             tags: ${{ steps.meta.outputs.tags }}
             labels: ${{ steps.meta.outputs.labels }}
 
-        - name: Save tags to file
-          run: echo ${{ steps.meta.outputs.tags }} > tags.txt
+        - name: Save image name to file
+          run: echo ${{ fromJson(steps.dockerbuild.metadata) }}.image.name > imgage-name.txt
 
         - name: Upload tags artifact
           uses: actions/upload-artifact@v4
           with:
-            name: image-tags
-            path: tags.txt
+            name: image-name
+            path: image-name.txt
                 
 
             
