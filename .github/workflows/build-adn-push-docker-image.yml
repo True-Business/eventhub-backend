@@ -50,7 +50,7 @@ jobs:
             labels: ${{ steps.meta.outputs.labels }}
 
         - name: Save image version to file
-          run: echo ${{ steps.dockerbuild.outputs.version }} > image-version.txt
+          run: echo ${{ steps.meta.outputs.version }} > image-version.txt
 
         - name: Upload image version artifact
           uses: actions/upload-artifact@v4
