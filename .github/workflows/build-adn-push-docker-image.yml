@@ -49,14 +49,14 @@ jobs:
             tags: ${{ steps.meta.outputs.tags }}
             labels: ${{ steps.meta.outputs.labels }}
 
-        - name: Save image name to file
-          run: echo ${{ fromJson(steps.dockerbuild.outputs.metadata)['image.name'] }} > image-name.txt
+        - name: Save image version to file
+          run: echo ${{ steps.dockerbuild.outputs.version }} > image-version.txt
 
-        - name: Upload tags artifact
+        - name: Upload image version artifact
           uses: actions/upload-artifact@v4
           with:
-            name: image-name
-            path: image-name.txt
+            name: image-version
+            path: image-version.txt
                 
 
             
