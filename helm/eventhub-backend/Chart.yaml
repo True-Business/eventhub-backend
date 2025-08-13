@@ -1,0 +1,7 @@
+apiVersion: v2
+name: eventhub-backend
+description: A Helm chart EventHub backend
+type: application
+version: 0.0.1
+appVersion: "0.0.1"
+home: https://github.com/True-Business/eventhub-backend

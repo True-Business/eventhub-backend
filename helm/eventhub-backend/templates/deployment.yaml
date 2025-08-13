@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "eventhub-backend.fullname" . }}
+  labels:
+    {{- include "eventhub-backend.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.eventhubBackendDeploy.replicas }}
+  selector:
+    matchLabels:
+      {{- include "eventhub-backend.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations: {}
+      labels:
+        {{- include "eventhub-backend.labels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "eventhub-backend.serviceAccountName" . }}
+      containers:
+        - name: {{ .Chart.Name }}
+          {{- with .Values.eventhubBackendDeploy.container.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.eventhubBackendDeploy.container.image.repository }}:{{ .Values.eventhubBackendDeploy.container.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          {{- with .Values.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.eventhubBackendDeploy.container.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: config
+              mountPath: /src/main/resources/application.yaml
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "eventhub-backend.fullname"}}-configmap
