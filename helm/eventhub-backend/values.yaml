@@ -4,7 +4,7 @@ eventhubBackendDeploy:
   container:
     image:
       repository: ghcr.io/true-business/eventhub-backend
-      tag: $CI_IMAGE_TAG
+      tag: latest
     resources:
       limits:
         cpu: 250m
@@ -22,7 +22,7 @@ eventhubBackendDeploy:
 
   service:
     type: ClusterIP
-    port: 80
+    port: 8080
   
   ingress:
     className: "eventhub-backend"
@@ -33,11 +33,11 @@ eventhubBackendDeploy:
     tls: []
 
 # This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
-livenessProbe:
-  httpGet:
-    path: /healthz
-    port: http
-readinessProbe:
-  httpGet:
-    path: /readyz
-    port: http
+# livenessProbe:
+#   httpGet:
+#     path: /healthz
+#     port: http
+# readinessProbe:
+#   httpGet:
+#     path: /readyz
+#     port: http

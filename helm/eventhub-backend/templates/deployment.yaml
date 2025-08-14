@@ -41,9 +41,9 @@ spec:
           {{- end }}
           volumeMounts:
             - name: config
-              mountPath: /src/main/resources/application.yaml
+              mountPath: /src/main/resources
               readOnly: true
       volumes:
         - name: config
           configMap:
-            name: {{ include "eventhub-backend.fullname" . }}-configmap
+            name: eventhub-backend-configmap
