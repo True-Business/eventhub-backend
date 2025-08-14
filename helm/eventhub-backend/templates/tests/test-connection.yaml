@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: "{{ include "eventhub-backend.fullname" . }}-test-connection"
+  name: eventhub-backend-test-connection
   labels:
     {{- include "eventhub-backend.labels" . | nindent 4 }}
   annotations:
@@ -11,5 +11,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "eventhub-backend.fullname" . }}:{{ .Values.service.port }}']
+      args: ['{{ include "eventhub-backend.fullname" . }}:{{ .Values.eventhubBackendDeploy.service.port }}']
   restartPolicy: Never

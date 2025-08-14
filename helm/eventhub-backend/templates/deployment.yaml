@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "eventhub-backend.fullname" . }}
+  name: eventhub-backend-deployment
   labels:
     {{- include "eventhub-backend.labels" . | nindent 4 }}
 spec:
@@ -15,7 +15,6 @@ spec:
       labels:
         {{- include "eventhub-backend.labels" . | nindent 8 }}
     spec:
-      serviceAccountName: {{ include "eventhub-backend.serviceAccountName" . }}
       containers:
         - name: {{ .Chart.Name }}
           {{- with .Values.eventhubBackendDeploy.container.securityContext }}
@@ -26,7 +25,7 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
-              containerPort: {{ .Values.service.port }}
+              containerPort: {{ .Values.eventhubBackendDeploy.service.port }}
               protocol: TCP
           {{- with .Values.livenessProbe }}
           livenessProbe:
@@ -47,4 +46,4 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: {{ include "eventhub-backend.fullname"}}-configmap
+            name: {{ include "eventhub-backend.fullname" . }}-configmap
