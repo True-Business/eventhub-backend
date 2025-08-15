@@ -4,7 +4,7 @@ eventhubBackendDeploy:
   container:
     image:
       repository: ghcr.io/true-business/eventhub-backend
-      tag: latest
+      tag: main-f0951d6
     resources:
       limits:
         cpu: 250m
@@ -16,7 +16,7 @@ eventhubBackendDeploy:
       capabilities:
         drop:
         - ALL
-      readOnlyRootFilesystem: true
+      readOnlyRootFilesystem: false
       runAsNonRoot: false
       runAsUser: 1000
 
@@ -35,9 +35,9 @@ eventhubBackendDeploy:
 # This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
 # livenessProbe:
 #   httpGet:
-#     path: /healthz
+#     path: "/actuator/health/liveness"
 #     port: http
-# readinessProbe:
-#   httpGet:
-#     path: /readyz
-#     port: http
+readinessProbe:
+  httpGet:
+    path: "/actuator/health/readiness"
+    port: http

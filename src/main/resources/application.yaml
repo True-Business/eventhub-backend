@@ -6,6 +6,9 @@ spring:
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:postgres}
 
+server:
+  port: 8080
+
 management:
   endpoint:
     health:
