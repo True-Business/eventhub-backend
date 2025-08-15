@@ -5,3 +5,19 @@ spring:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/liveposter}
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:postgres}
+
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      access: unrestricted
+  health:
+    livenessState:
+      enabled: true
+    readinessState:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
