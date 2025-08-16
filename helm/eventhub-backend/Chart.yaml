@@ -5,3 +5,7 @@ type: application
 version: 0.0.1
 appVersion: "0.0.1"
 home: https://github.com/True-Business/eventhub-backend
+dependencies:
+  - name: postgresql
+    version: "16.7.26"
+    repository: oci://registry-1.docker.io/bitnamicharts/postgresql
