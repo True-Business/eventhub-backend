@@ -3,7 +3,7 @@
 
 ## Запуск с помощью docker compose
 
-```
+```sh
 docker compose up --build -d
 ```
 
@@ -11,13 +11,13 @@ docker compose up --build -d
 
 Скачать необходимые чарты
 
-```
+```sh
 helm dependency build ./helm/eventhub-backend/
 ```
 
 Задеплоить в кластер
 
-```
+```sh
 helm upgrade \
     --install \
     --namespace eventhub-backend \
