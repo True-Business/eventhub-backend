@@ -1,7 +1,4 @@
 # values for bitnami postgresql chart https://artifacthub.io/packages/helm/bitnami/postgresql
-global:
-  postgresql:
-    fullnameOverride: "eventhub-backend"
 
 postgresql:
   architecture: "standalone"
