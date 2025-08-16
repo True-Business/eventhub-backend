@@ -1,0 +1,20 @@
+name: "Lint helm files"
+
+on:
+  push:
+
+jobs:
+  helm-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 
+        uses: actions/checkout@v4
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v4.3.0
+
+      - name: Download dependency charts
+        run: helm dependecy build ./helm/eventhub-backend
+
+      - name: Run helm lint
+        run: helm lint ./helm/eventhub-backend
