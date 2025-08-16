@@ -14,7 +14,7 @@ jobs:
         uses: azure/setup-helm@v4.3.0
 
       - name: Download dependency charts
-        run: helm dependecy build ./helm/eventhub-backend
+        run: helm dependency build ./helm/eventhub-backend
 
       - name: Run helm lint
         run: helm lint ./helm/eventhub-backend
