@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: eventhub-backend-service
+  labels:
+    {{- include "eventhub-backend.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.eventhubBackendDeploy.service.type }}
+  ports:
+    - port: {{ .Values.eventhubBackendDeploy.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "eventhub-backend.selectorLabels" . | nindent 4 }}
