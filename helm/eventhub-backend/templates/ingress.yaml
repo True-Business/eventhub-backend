@@ -31,10 +31,3 @@ spec:
                 port:
                   number: {{ $.Values.eventhubBackendDeploy.service.port }}
           {{- end }}
-          - path: "/actuator"
-            pathType: Prefix
-            backend:
-              service:
-                name: eventhub-backend-service
-                port:
-                  number: {{ $.Values.eventhubBackendDeploy.service.port }}

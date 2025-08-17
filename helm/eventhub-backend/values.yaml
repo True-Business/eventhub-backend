@@ -22,14 +22,14 @@ eventhubBackendDeploy:
       runAsUser: 1000
 
   service:
-    type: ClusterIP
+    type: LoadBalancer
     port: 8080
   
   ingress:
-    className: "eventhub-backend"
+    className: nginx
     host: eventhub.backend
     paths:
-      - path: "/api"
+      - path: "/"
         pathType: Prefix
     tls: []
 
