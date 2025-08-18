@@ -1,13 +1,8 @@
 spring:
   application:
     name: eventhub-backend
-  datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/eventhub}
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:postgres}
-
 server:
-  port: 8080
+  port: {{ .Values.eventhubBackendDeploy.service.port }}
 
 management:
   endpoint:

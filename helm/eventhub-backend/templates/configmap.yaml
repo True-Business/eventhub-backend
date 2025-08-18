@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eventhub-backend-configmap
+data:
+  application.yaml: |
+{{ tpl (.Files.Get "resources/config.yaml.tpl") . | indent 4}}
+

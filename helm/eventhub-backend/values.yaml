@@ -1,0 +1,44 @@
+eventhubBackendDeploy:
+  replicas: 1
+
+  container:
+    image:
+      repository: ghcr.io/true-business/eventhub-backend
+      # this value should be set on deploy
+      tag: main-f0951d6
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 250m
+        memory: 256Mi
+    securityContext:
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: false
+      runAsNonRoot: false
+      runAsUser: 1000
+
+  service:
+    type: LoadBalancer
+    port: 8080
+  
+  ingress:
+    className: nginx
+    host: eventhub.backend
+    paths:
+      - path: "/"
+        pathType: Prefix
+    tls: []
+
+# This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+# livenessProbe:
+#   httpGet:
+#     path: "/actuator/health/liveness"
+#     port: http
+readinessProbe:
+  httpGet:
+    path: "/actuator/health/readiness"
+    port: http
