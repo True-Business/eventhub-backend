@@ -1,0 +1,35 @@
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="e.vartazaryan" id="create-events-table" >
+        <createTable tableName="events">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="start_date" type="DATETIME"/>
+            <column name="start_time" type="TIMESTAMP"/>
+            <column name="end_time" type="TIMESTAMP"/>
+            <column name="updated_at" type="DATETIME"/>
+            <column name="organizer_id" type="INT"/>
+            <column name="organization_id" type="INT"/>
+            <column name="event_category" type="INT"/>
+            <column name="address" type="VARCHAR(255)"/>
+            <column name="route" type="VARCHAR(255)"/>
+            <column name="description" type="VARCHAR(1000)"/>
+            <column name="is_free" type="BOOLEAN"/>
+            <column name="price" type="DECIMAL(10,2)"/>
+            <column name="is_open" type="BOOLEAN"/>
+            <column name="event_status" type="VARCHAR(100)"/>
+            <column name="city" type="VARCHAR(100)"/>
+            <column name="is_with_register" type="BOOLEAN"/>
+            <column name="people_limit" type="INT"/>
+            <column name="register_end_date" type="DATE"/>
+            <column name="register_end_time" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>
