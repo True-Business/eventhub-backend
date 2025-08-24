@@ -12,7 +12,7 @@ data class CreateEventRequestDto(
     val organizerId: UUID?,
     val organizationId: UUID?,
     val eventCategory: Int?,
-    val adress: String?,
+    val address: String?,
     val route: String?,
     val description: String?,
     val isFree: Boolean?,

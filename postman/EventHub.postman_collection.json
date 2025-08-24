@@ -1,0 +1,41 @@
+{
+	"info": {
+		"_postman_id": "d6ea3b7d-83e9-4520-a243-936e83698403",
+		"name": "EventHub",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27097099"
+	},
+	"item": [
+		{
+			"name": "CreateEvent",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Kotlin Conf\",\n  \"startDate\": \"2025-09-01T10:00:00\",\n  \"startTime\": \"2025-09-01T10:00:00\",\n  \"endTime\": \"2025-09-01T18:00:00\",\n  \"organizerId\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"organizationId\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"eventCategory\": 1,\n  \"address\": \"Москва, ул. Арбат, 1\",\n  \"route\": \"Метро Арбатская → пешком 5 минут\",\n  \"description\": \"Большая конференция по Kotlin\",\n  \"isFree\": false,\n  \"price\": 2500.00,\n  \"isOpen\": true,\n  \"eventStatus\": \"ACTIVE\",\n  \"city\": \"Москва\",\n  \"isWithRegister\": true,\n  \"peopleLimit\": 300,\n  \"registerEndDate\": \"2025-08-30\",\n  \"registerEndTime\": \"2025-08-30T23:59:59\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/events/create-event",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"events",
+						"create-event"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

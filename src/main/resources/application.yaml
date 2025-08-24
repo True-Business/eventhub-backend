@@ -6,7 +6,7 @@ spring:
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:postgres}
   liquibase:
-    change-log: classpath:/db/changelog/db.changelog-master.yaml
+    change-log: classpath:db.changelog/db.changelog-master.xml
 
 server:
   port: 8080

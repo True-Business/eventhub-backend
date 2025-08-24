@@ -14,8 +14,8 @@
             <column name="start_time" type="TIMESTAMP"/>
             <column name="end_time" type="TIMESTAMP"/>
             <column name="updated_at" type="DATETIME"/>
-            <column name="organizer_id" type="INT"/>
-            <column name="organization_id" type="INT"/>
+            <column name="organizer_id" type="UUID"/>
+            <column name="organization_id" type="UUID"/>
             <column name="event_category" type="INT"/>
             <column name="address" type="VARCHAR(255)"/>
             <column name="route" type="VARCHAR(255)"/>
