@@ -12,6 +12,5 @@ interface UserMapper {
 
     @Mapping(target = "username", source = "username")
     @Mapping(target = "shortId", source = "shortId")
-    @Mapping(target = "registrationDate", source = "registrationDate")
     fun userModelToUserEntity(user: UserRegistrationModel): User
 }

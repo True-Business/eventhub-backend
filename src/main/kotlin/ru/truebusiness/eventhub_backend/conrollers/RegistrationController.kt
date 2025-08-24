@@ -1,22 +1,26 @@
 package ru.truebusiness.eventhub_backend.conrollers
 
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import ru.truebusiness.eventhub_backend.conrollers.dto.RegistrationDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.RegistrationResponse
 import ru.truebusiness.eventhub_backend.mapper.UserMapper
-import ru.truebusiness.eventhub_backend.service.RegistrationSerivce
+import ru.truebusiness.eventhub_backend.service.RegistrationService
 
 @RestController
 @RequestMapping("/api/v1/auth")
 class RegistrationController(
     val userMapper: UserMapper,
-    val registrationSerivce: RegistrationSerivce
+    val registrationService: RegistrationService
 ) {
 
     @PostMapping
-    fun register(@RequestBody registrationDto: RegistrationDto) {
-        registrationSerivce.registerUser(userMapper.registrationDtoToUserRegistrationModel(registrationDto))
+    fun register(@RequestBody registrationDto: RegistrationDto): ResponseEntity<RegistrationResponse> {
+        val response = registrationService
+            .registerUser(userMapper.registrationDtoToUserRegistrationModel(registrationDto))
+        return ResponseEntity.ok(response)
     }
 }

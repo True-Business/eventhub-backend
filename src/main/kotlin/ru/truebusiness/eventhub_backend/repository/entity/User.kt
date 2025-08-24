@@ -19,7 +19,7 @@ class User {
 
     var shortId: String = ""
 
-    var registrationDate: LocalDateTime? = null
+    var registrationDate: LocalDateTime? = LocalDateTime.now()
 
     @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL])
     var credentials: UserCredentials? = null

@@ -16,6 +16,7 @@ class Event() {
 
     var name: String = ""
 
+    // TODO: startTime лишнее
     var startDate: LocalDateTime? = null
     var startTime: LocalDateTime? = null
     var endTime: LocalDateTime? = null
@@ -39,6 +40,7 @@ class Event() {
     var isWithRegister: Boolean? = null
     var peopleLimit: Int? = null
 
+    // TODO: registerEndDate лишнее, можно всё в registerEndTime запихать и назвать как registerEndDate
     var registerEndDate: LocalDate? = null
     var registerEndTime: LocalDateTime? = null
 }
