@@ -1,4 +1,4 @@
-package ru.truebusiness.eventhub_backend
+package ru.truebusiness.eventhub_backend.mapper
 
 import org.mapstruct.Mapper
 import ru.truebusiness.eventhub_backend.conrollers.dto.CreateEventRequestDto

@@ -1,7 +1,7 @@
 package ru.truebusiness.eventhub_backend.service
 
 import org.springframework.stereotype.Service
-import ru.truebusiness.eventhub_backend.EventMapper
+import ru.truebusiness.eventhub_backend.mapper.EventMapper
 import ru.truebusiness.eventhub_backend.repository.EventRepository
 import ru.truebusiness.eventhub_backend.repository.entity.Event
 import ru.truebusiness.eventhub_backend.service.model.EventModel

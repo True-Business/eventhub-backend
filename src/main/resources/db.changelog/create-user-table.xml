@@ -1,0 +1,40 @@
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="e.vartazaryan" id="create-user-table" >
+        <createTable tableName="users">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="username" type="VARCHAR(50)" >
+                <constraints nullable="false"/>
+            </column>
+            <column name="short_id" type="VARCHAR(50)"/>
+            <column name="registration_date" type="timestamp"/>
+        </createTable>
+        <createTable tableName="user_credentials">
+            <column name="id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="user_credentials"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_user_credentials_user"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+</databaseChangeLog>
