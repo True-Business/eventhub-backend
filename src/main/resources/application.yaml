@@ -8,16 +8,16 @@ spring:
   liquibase:
     change-log: classpath:db.changelog/db.changelog-master.xml
   mail:
-    host: smtp.yandex.ru
-    port: 587
-    username: events.hub@yandex.ru
-    password:
+    host: localhost
+    port: 1025
+    username: ""
+    password: ""
     properties:
       mail:
         smtp:
-          auth: true
+          auth: false
           starttls:
-            enable: true
+            enable: false
 server:
   port: 8080
 

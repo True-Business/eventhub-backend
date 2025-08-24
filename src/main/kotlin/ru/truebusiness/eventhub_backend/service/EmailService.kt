@@ -12,10 +12,10 @@ class EmailService(
     private val log by logger()
 
     fun sendConfirmationCode(code: String, to: String?) {
-        log.info("Sending confirmation code: {}", code)
+        log.info("Sending confirmation code: {} on email: {}", code, to)
         to?.let { email ->
             val message = SimpleMailMessage()
-            message.to(email)
+            message.setTo(email)
             message.subject = "Confirm your registration to EventHub"
             message.text = """
                 Hello! 
