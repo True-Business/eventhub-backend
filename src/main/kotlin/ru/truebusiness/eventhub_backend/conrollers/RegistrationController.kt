@@ -1,7 +1,9 @@
 package ru.truebusiness.eventhub_backend.conrollers
 
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -16,11 +18,21 @@ class RegistrationController(
     val userMapper: UserMapper,
     val registrationService: RegistrationService
 ) {
-
     @PostMapping
-    fun register(@RequestBody registrationDto: RegistrationDto): ResponseEntity<RegistrationResponse> {
+    fun preRegister(@RequestBody registrationDto: RegistrationDto): ResponseEntity<RegistrationResponse> {
         val response = registrationService
-            .registerUser(userMapper.registrationDtoToUserRegistrationModel(registrationDto))
+            .preRegisterUser(userMapper.registrationDtoToUserRegistrationModel(registrationDto))
         return ResponseEntity.ok(response)
+    }
+
+    @PutMapping("/send-code/{userId}")
+    fun sendConfirmationCode(@PathVariable userId: String) {
+        val res: Pair<String, String?> = registrationService.sendConfirmationCode(userId)
+        registrationService.sendCodeViaEmail(res.first, res.second)
+    }
+
+    @PutMapping("check-code/{code}")
+    fun verifyConfirmationCode(@PathVariable code: String) {
+        registrationService.verifyRegistrationCode(code)
     }
 }

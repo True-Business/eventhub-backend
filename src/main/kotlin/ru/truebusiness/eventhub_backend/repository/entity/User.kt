@@ -21,6 +21,8 @@ class User {
 
     var registrationDate: LocalDateTime? = LocalDateTime.now()
 
+    var isConfirmed: Boolean = false
+
     @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL])
     var credentials: UserCredentials? = null
 }
