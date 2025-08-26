@@ -20,8 +20,7 @@ class EmailService(
             message.text = """
                 Hello! 
                 
-                Please confirm your registration by clicking the link below:
-                http://localhost:8080/auth/check-code/$code
+                Your confirmation code is: $code
                 """.trimIndent()
             mailSender.send(message)
             log.info("Successfully sent to email $email")

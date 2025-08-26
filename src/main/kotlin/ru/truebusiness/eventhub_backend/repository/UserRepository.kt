@@ -10,6 +10,7 @@ import java.util.*
 @Repository
 interface UserRepository: JpaRepository<User, UUID> {
     fun findUserById(id: UUID): User?
+    fun findUserByShortId(shortId: String): User?
 }
 
 @Repository
