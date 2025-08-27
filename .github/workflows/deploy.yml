@@ -45,18 +45,18 @@ jobs:
             - name: "Prepare kubeconfig"
               run: echo "${{ secrets.kubeconfig }}" > kubeconf
 
-            # - name: "Run helm upgrade"
-            #   run: |
-            #     helm upgrade \
-            #         --kubeconfig kubeconf \
-            #         --install \
-            #         --namespace ${{ inputs.target-namespace }} \
-            #         --create-namespace eventhub-backend \
-            #         ./helm/eventhub-backend/ \
-            #         --reuse-values \
-            #         -f ./helm/eventhub-backend/values.yaml \
-            #         -f ./helm/eventhub-backend/postgres.values.yaml \
-            #         --set eventhubBackendDeploy.container.image.tag=${{ env.IMAGE_TAG }}
-            #         --set postgresql.auth.postgresPassword=${{ secrets.postgresPassword }}
-            #         --set postgresql.auth.password=${{ secrets.userPassword }}
+            - name: "Run helm upgrade"
+              run: |
+                helm upgrade \
+                    --kubeconfig kubeconf \
+                    --install \
+                    --namespace ${{ inputs.target-namespace }} \
+                    --create-namespace eventhub-backend \
+                    ./helm/eventhub-backend/ \
+                    --reuse-values \
+                    -f ./helm/eventhub-backend/values.yaml \
+                    -f ./helm/eventhub-backend/postgres.values.yaml \
+                    --set eventhubBackendDeploy.container.image.tag=${{ env.IMAGE_TAG }}
+                    --set postgresql.auth.postgresPassword=${{ secrets.postgresPassword }}
+                    --set postgresql.auth.password=${{ secrets.userPassword }}
                     
