@@ -43,7 +43,7 @@ jobs:
                 echo "IMAGE_TAG=$FILE_CONTENT" >> $GITHUB_ENV
 
             - name: "Prepare kubeconfig"
-              run: echo ${{ secrets.kubeconfig }} > kubeconf
+              run: echo "${{ secrets.kubeconfig }}" > kubeconf
 
             # - name: "Run helm upgrade"
             #   run: |
