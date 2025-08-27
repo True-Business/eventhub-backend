@@ -9,6 +9,9 @@ on:
 
 jobs:
     build-docker-image-for-prod:
+        permissions:
+            contents: read
+            packages: write
         uses: ./.github/workflows/build-and-push-docker-image.yml 
 
     deploy-to-prod:

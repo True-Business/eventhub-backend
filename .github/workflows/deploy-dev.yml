@@ -6,7 +6,10 @@ on: push
 
 jobs:
     build-docker-image-for-dev:
-        if: ${{ github.event.issue.pull_request != null && startsWith(github.event.comment.body, '/deploy') }}
+        permissions:
+            contents: read
+            packages: write
+        # if: ${{ github.event.issue.pull_request != null && startsWith(github.event.comment.body, '/deploy') }}
         uses: ./.github/workflows/build-and-push-docker-image.yml 
 
     deploy-to-dev:
