@@ -18,10 +18,10 @@ helm dependency build ./helm/eventhub-backend/
 Задеплоить в кластер
 
 ```shell
-helm upgrade \
+helm upgrade eventhub-backend \
     --install \
     --namespace eventhub-backend \
-    --create-namespace eventhub-backend \
+    --create-namespace \
     ./helm/eventhub-backend/ \
     --reuse-values \
     -f ./helm/eventhub-backend/values.yaml \
