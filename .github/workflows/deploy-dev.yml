@@ -2,8 +2,7 @@ name: "Deploy to dev"
 
 on:
     issue_comment:
-        types:
-            - created
+        types: created
 
 jobs:
     build-docker-image-for-dev:
