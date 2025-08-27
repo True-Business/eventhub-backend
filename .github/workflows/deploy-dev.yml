@@ -1,0 +1,19 @@
+name: "Deploy to dev"
+
+on:
+    workflow_dispatch:
+
+jobs:
+    build-docker-image-for-dev:
+        uses: ./.github/workflows/build-and-push-docker-image.yml 
+
+    deploy-to-dev:
+        needs: build-docker-image-for-dev
+        uses: ./.github/workflows/deploy.yml
+        with:
+            target-namespace: ${{ vars.DEV_NAMESPACE }}
+        secrets:
+            kubeconfig: ${{ secrets.KUBECONFIG }}
+            postgresPassword: ${{ secrets.DEV_POSTGRES_PASSWORD }}
+            userPassword: ${{ secrets.DEV_USER_PASSWORD }}
+    
