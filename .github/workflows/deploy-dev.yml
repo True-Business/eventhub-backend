@@ -1,9 +1,13 @@
 name: "Deploy to dev"
 
-on: workflow_dispatch
+on:
+    issue_comment:
+        types:
+            - created
 
 jobs:
     build-docker-image-for-dev:
+        if: ${{ github.event.issue.pull_request != null && startsWith(github.event.comment.body, '/deploy') }}
         uses: ./.github/workflows/build-and-push-docker-image.yml 
 
     deploy-to-dev:
