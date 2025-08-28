@@ -4,6 +4,8 @@ metadata:
   name: eventhub-backend-ingress
   labels:
     {{- include "eventhub-backend.labels" . | nindent 4 }}
+  annotations:
+    kubernetes.io/ingress.class: nginx
 spec:
   ingressClassName: {{ .Values.eventhubBackendDeploy.ingress.className }}
   {{- if .Values.eventhubBackendDeploy.ingress.tls }}
