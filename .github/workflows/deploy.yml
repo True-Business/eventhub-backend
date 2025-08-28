@@ -6,6 +6,9 @@ on:
             target-namespace:
                 required: true
                 type: string
+            ingress-host:
+                required: true
+                type: string
         secrets:
             kubeconfig:
                 required: true
@@ -58,6 +61,7 @@ jobs:
                     -f ./helm/eventhub-backend/postgres.values.yaml \
                     --set eventhubBackendDeploy.container.image.tag="${{ env.IMAGE_TAG }}" \
                     --set postgresql.auth.postgresPassword="${{ secrets.postgresPassword }}" \
-                    --set postgresql.auth.password="${{ secrets.userPassword }}"
+                    --set postgresql.auth.password="${{ secrets.userPassword }}" \
+                    --set eventhubBackendDeploy.ingress.host="${{ inputs.ingress-host }}"
 
                     
