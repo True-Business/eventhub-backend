@@ -19,7 +19,7 @@ jobs:
         uses: ./.github/workflows/deploy.yml
         with:
             target-namespace: ${{ vars.PROD_NAMESPACE }}
-            ingress-path: /prod/
+            ingress-path: "/prod"
         secrets:
             kubeconfig: ${{ secrets.KUBECONFIG }}
             postgresPassword: ${{ secrets.PROD_POSTGRES_PASSWORD }}
