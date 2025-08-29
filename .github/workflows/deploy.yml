@@ -62,6 +62,7 @@ jobs:
                     --set eventhubBackendDeploy.container.image.tag="${{ env.IMAGE_TAG }}" \
                     --set postgresql.auth.postgresPassword="${{ secrets.postgresPassword }}" \
                     --set postgresql.auth.password="${{ secrets.userPassword }}" \
-                    --set eventhubBackendDeploy.ingress.paths[0].path="${{ inputs.ingress-path }}"
+                    --set eventhubBackendDeploy.ingress.paths[0].path="${{ inputs.ingress-path }}" \
+                    --set eventhubBackendDeploy.ingress.paths[0].pathType=ImplementationSpecific
 
                     
