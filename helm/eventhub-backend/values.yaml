@@ -20,6 +20,9 @@ eventhubBackendDeploy:
       readOnlyRootFilesystem: false
       runAsNonRoot: false
       runAsUser: 1000
+    env:
+      - name: EMAIL_LOGIN
+        value: "events.hub@mail.ru"
 
   service:
     type: LoadBalancer
