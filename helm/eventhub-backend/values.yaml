@@ -27,7 +27,7 @@ eventhubBackendDeploy:
   
   ingress:
     className: nginx
-    host: eventhub.backend
+    host: eventhub-backend.ru
     paths:
       - path: "/"
         pathType: Prefix

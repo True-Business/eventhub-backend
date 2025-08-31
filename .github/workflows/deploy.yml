@@ -1,0 +1,68 @@
+name: "Base deploy"
+
+on:
+    workflow_call:
+        inputs:
+            target-namespace:
+                required: true
+                type: string
+            ingress-path:
+                required: true
+                type: string
+        secrets:
+            kubeconfig:
+                required: true
+            postgresPassword:
+                required: true
+            userPassword:
+                required: true
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout 
+              uses: actions/checkout@v4
+
+            - name: Setup Helm
+              uses: azure/setup-helm@v4.3.0
+
+            - name: Download dependency charts
+              run: helm dependency build ./helm/eventhub-backend
+
+            - name: Run helm lint
+              run: helm lint ./helm/eventhub-backend
+
+            - name: Download image version artifact
+              uses: actions/download-artifact@v4
+              with:
+                name: image-version
+                path: .
+
+            - name: "Set image tag variable"
+              run: |
+                cat image-version.txt
+                FILE_CONTENT=$(cat image-version.txt)
+                echo "IMAGE_TAG=$FILE_CONTENT" >> $GITHUB_ENV
+
+            - name: "Prepare kubeconfig"
+              run: echo "${{ secrets.kubeconfig }}" > kubeconf
+
+            - name: "Run helm upgrade"
+              run: |
+                helm upgrade eventhub-backend \
+                    --kubeconfig kubeconf \
+                    --install \
+                    --namespace ${{ inputs.target-namespace }} \
+                    --create-namespace \
+                    ./helm/eventhub-backend/ \
+                    --reuse-values \
+                    -f ./helm/eventhub-backend/values.yaml \
+                    -f ./helm/eventhub-backend/postgres.values.yaml \
+                    --set eventhubBackendDeploy.container.image.tag="${{ env.IMAGE_TAG }}" \
+                    --set postgresql.auth.postgresPassword="${{ secrets.postgresPassword }}" \
+                    --set postgresql.auth.password="${{ secrets.userPassword }}" \
+                    --set eventhubBackendDeploy.ingress.paths[0].path="${{ inputs.ingress-path }}" \
+                    --set eventhubBackendDeploy.ingress.paths[0].pathType=ImplementationSpecific
+
+                    

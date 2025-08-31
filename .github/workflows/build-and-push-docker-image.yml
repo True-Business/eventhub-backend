@@ -1,11 +1,7 @@
 name: "Build and push docker image"
 
 on:
-    push:
-        branches:
-            - "**"
-        tags:
-            - "v*"
+    workflow_call:
 
 jobs:
     build-and-push-docker:
