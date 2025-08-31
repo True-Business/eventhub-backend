@@ -1,6 +1,7 @@
 name: "Deploy to dev"
 
-on: workflow_dispatch
+# on: workflow_dispatch
+on: push
 
 jobs:
     build-docker-image-for-dev:
