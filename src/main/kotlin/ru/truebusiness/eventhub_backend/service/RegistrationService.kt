@@ -1,6 +1,7 @@
 package ru.truebusiness.eventhub_backend.service
 
 import jakarta.transaction.Transactional
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import ru.truebusiness.eventhub_backend.conrollers.dto.RegistrationErrorReason
@@ -41,26 +42,29 @@ class RegistrationService(
      */
     @Transactional
     fun preRegisterUser(email: String, password: String): RegistrationResponseDto {
-        if (userCredentialsRepository.findByEmail(email) != null) {
+        try {
+            log.info("Started registration of new user...")
+
+            val newUser = userRepository.save(User())
+
+            log.info("New user registered! User id = ${newUser.id}")
+            log.info("Saving new user credentials...")
+
+            val credentials = UserCredentials().apply {
+                this.email = email
+                this.password = passwordEncoder.encode(password)
+                this.user = newUser
+            }
+            userCredentialsRepository.save(credentials)
+
+            log.info("Credentials for user ${newUser.id} saved!")
+            log.info("User created successfully! Warning: user is not confirmed!")
+
+            return RegistrationResponseDto.pending(newUser.id, newUser.registrationDate)
+        } catch (ex: DataIntegrityViolationException) {
+            log.error("Couldn't save credentials for user! Email violates unique constraint!")
             return RegistrationResponseDto.error(RegistrationErrorReason.USER_ALREADY_REGISTERED)
         }
-        log.info("Started registration of new user...")
-
-        val newUser = userRepository.save(User())
-
-        log.info("New user registered! User id = ${newUser.id}")
-        log.info("Saving new user credentials...")
-
-        val credentials = UserCredentials()
-        credentials.email = email
-        credentials.password = passwordEncoder.encode(password)
-        credentials.user = newUser
-        userCredentialsRepository.save(credentials)
-
-        log.info("Credentials for user ${newUser.id} saved!")
-        log.info("User created successfully! Warning: user is not confirmed!")
-
-        return RegistrationResponseDto.pending(newUser.id, newUser.registrationDate)
     }
 
     /**
