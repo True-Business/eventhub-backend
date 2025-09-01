@@ -8,8 +8,8 @@ eventhubBackendDeploy:
       tag: main-f0951d6
     resources:
       limits:
-        cpu: 500m
-        memory: 512Mi
+        cpu: 250m
+        memory: 256Mi
       requests:
         cpu: 250m
         memory: 256Mi
