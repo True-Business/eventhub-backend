@@ -34,6 +34,7 @@ class SecurityConfig(
             .authorizeHttpRequests { authRequest ->
                 authRequest
                     .requestMatchers("/api/v1/auth/**").permitAll()
+                    .requestMatchers("/actuator/**").permitAll()
                     .anyRequest().authenticated()
             }
             .httpBasic { }
