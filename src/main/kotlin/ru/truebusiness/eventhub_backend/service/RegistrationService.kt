@@ -76,20 +76,23 @@ class RegistrationService(
      */
     @Transactional
     fun addUserInfo(id: String, username: String, shortId: String): RegistrationResponseDto {
-        userRepository.findUserById(UUID.fromString(id))?.let { user ->
-            userRepository.findUserByShortId(shortId)?.let {
-                user.username = username
-                user.shortId = shortId
-                val updatedUser = userRepository.save(user)
-                return RegistrationResponseDto.success(updatedUser.id, updatedUser.registrationDate)
-            } ?: run {
-                log.warn("User with shortId $shortId already exists!")
-                return RegistrationResponseDto.error(RegistrationErrorReason.SHORT_ID_ALREADY_USED)
-            }
-        } ?: run {
+        val userId = UUID.fromString(id)
+
+        val user = userRepository.findUserById(userId) ?: run {
             log.error("User with id $id not found!")
             return RegistrationResponseDto.error(RegistrationErrorReason.USER_NOT_FOUND)
         }
+
+        userRepository.findUserByShortId(shortId)?.let { existingUser ->
+            log.warn("User with shortId $shortId already exists! (User ID: ${existingUser.id})")
+            return RegistrationResponseDto.error(RegistrationErrorReason.SHORT_ID_ALREADY_USED)
+        }
+
+        user.username = username
+        user.shortId = shortId
+        val updatedUser = userRepository.save(user)
+
+        return RegistrationResponseDto.success(updatedUser.id, updatedUser.registrationDate)
     }
 
     /**
