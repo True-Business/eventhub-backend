@@ -5,4 +5,5 @@
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
     <include file="db.changelog/create-events-table.xml"/>
+    <include file="db.changelog/create-user-table.xml"/>
 </databaseChangeLog>

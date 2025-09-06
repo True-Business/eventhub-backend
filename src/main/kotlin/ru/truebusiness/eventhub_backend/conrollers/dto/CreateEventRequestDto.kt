@@ -9,6 +9,10 @@ data class CreateEventRequestDto(
     val startDate: LocalDateTime?,
     val startTime: LocalDateTime?,
     val endTime: LocalDateTime?,
+    /**
+     * Возможно organizerId и organizationId имеет смысл перенести в хэдэры запроса и уже
+     * оттуда доставать их
+     */
     val organizerId: UUID?,
     val organizationId: UUID?,
     val eventCategory: Int?,

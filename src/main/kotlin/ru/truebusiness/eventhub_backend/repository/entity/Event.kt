@@ -5,7 +5,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.Table
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 @Entity
 @Table(name = "events")
@@ -16,6 +16,7 @@ class Event() {
 
     var name: String = ""
 
+    // TODO: startTime лишнее
     var startDate: LocalDateTime? = null
     var startTime: LocalDateTime? = null
     var endTime: LocalDateTime? = null
@@ -39,6 +40,7 @@ class Event() {
     var isWithRegister: Boolean? = null
     var peopleLimit: Int? = null
 
+    // TODO: registerEndDate лишнее, можно всё в registerEndTime запихать и назвать как registerEndDate
     var registerEndDate: LocalDate? = null
     var registerEndTime: LocalDateTime? = null
 }

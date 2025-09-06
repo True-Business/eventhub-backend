@@ -19,4 +19,5 @@ jobs:
             kubeconfig: ${{ secrets.KUBECONFIG }}
             postgresPassword: ${{ secrets.DEV_POSTGRES_PASSWORD }}
             userPassword: ${{ secrets.DEV_USER_PASSWORD }}
+            mailPassword: ${{ secrets.MAIL_APPLICATION_PASSWORD }}
     

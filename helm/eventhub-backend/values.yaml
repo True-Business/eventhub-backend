@@ -8,7 +8,7 @@ eventhubBackendDeploy:
       tag: main-f0951d6
     resources:
       limits:
-        cpu: 500m
+        cpu: 250m
         memory: 512Mi
       requests:
         cpu: 250m
@@ -20,6 +20,11 @@ eventhubBackendDeploy:
       readOnlyRootFilesystem: false
       runAsNonRoot: false
       runAsUser: 1000
+
+  appConfig:
+    mail:
+      login: "events.hub@mail.ru"
+      password: "0000"
 
   service:
     type: LoadBalancer
