@@ -24,6 +24,7 @@ eventhubBackendDeploy:
   appConfig:
     mail:
       login: "events.hub@mail.ru"
+      # This values must be set up in ci.
       password: "0000"
 
   service:
