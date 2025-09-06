@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 import java.util.*
 
 data class UserInfoRegistrationDto(
-    val id: UUID,
+    val id: String,
     val username: String,
     val shortId: String,
 )

@@ -37,7 +37,7 @@ class RegistrationController(
     }
 
     @PostMapping("/add-info")
-    fun postRegister(registrationDto: UserInfoRegistrationDto): ResponseEntity<RegistrationResponseDto> {
+    fun postRegister(@RequestBody registrationDto: UserInfoRegistrationDto): ResponseEntity<RegistrationResponseDto> {
         val response =
             registrationService.addUserInfo(registrationDto.id, registrationDto.username, registrationDto.shortId)
         return ResponseEntity.ok(response)

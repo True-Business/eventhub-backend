@@ -75,8 +75,8 @@ class RegistrationService(
      * @param shortId короткое имя пользователя в приложении
      */
     @Transactional
-    fun addUserInfo(id: UUID, username: String, shortId: String): RegistrationResponseDto {
-        userRepository.findUserById(id)?.let { user ->
+    fun addUserInfo(id: String, username: String, shortId: String): RegistrationResponseDto {
+        userRepository.findUserById(UUID.fromString(id))?.let { user ->
             userRepository.findUserByShortId(shortId)?.let {
                 user.username = username
                 user.shortId = shortId
