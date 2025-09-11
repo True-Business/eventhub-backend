@@ -1,0 +1,49 @@
+# values for minio operator tenant helm chart: https://github.com/minio/operator/tree/master/helm/tenant
+# (requires minio operator https://github.com/minio/operator/tree/master/helm/operator to be installed in cluster)
+
+tenant:
+  tenant:
+    name: eventhub-minio
+
+    image: 
+      repository: quay.io/minio/minio
+      tag: RELEASE.2025-09-07T16-13-09Z
+      pullPolicy: IfNotPresent
+
+    configSecret:
+      name: minio-env-configuration
+      # this value must be set up in ci
+      accessKey: myrootuser
+      # this value must be set up in ci
+      secretKey: myrootpassword
+
+    pools:
+    - servers: 1
+      name: pool-0
+      volumesPerServer: 1
+      size: 5Gi
+      resources:
+        requests:
+          memory: 256Mi
+          cpu: 250m
+        limits:
+          memory: 512Mi
+          cpu: 500m
+
+    buckets:
+    - name: eventhub
+  
+    exposeServices:
+      minio: true
+
+  ingress:
+    api:
+      enabled: true
+      ingressClassName: nginx
+      annotations:
+        kubernetes.io/ingress.class: nginx
+        nginx.ingress.kubernetes.io/use-regex: "true"
+        nginx.ingress.kubernetes.io/rewrite-target: /$2
+      path: "/some-minio(/|$)(.*)"
+      pathType: ImplementationSpecific
+      host: "eventhub-backend.ru"

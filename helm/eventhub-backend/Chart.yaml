@@ -9,3 +9,6 @@ dependencies:
   - name: postgresql
     version: "16.7.26"
     repository: oci://registry-1.docker.io/bitnamicharts
+  - name: tenant
+    version: "7.1.1"
+    repository: https://operator.min.io
