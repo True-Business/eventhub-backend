@@ -26,5 +26,6 @@ helm upgrade eventhub-backend \
     --reuse-values \
     -f ./helm/eventhub-backend/values.yaml \
     -f ./helm/eventhub-backend/postgres.values.yaml \
+    -f ./helm/eventhub-backend/minio.values.yaml \
     --kubeconfig PATH_TO_YOUR_KUBECONFIG_FILE
 ```

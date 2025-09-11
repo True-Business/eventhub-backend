@@ -9,6 +9,9 @@ on:
             ingress-path:
                 required: true
                 type: string
+            minio-ingress-path:
+                required: true
+                type: string
         secrets:
             kubeconfig:
                 required: true
@@ -17,6 +20,10 @@ on:
             userPassword:
                 required: true
             mailPassword:
+                required: true
+            minioRootUser:
+                required: true
+            minioRootPassword:
                 required: true
 
 jobs:
@@ -66,6 +73,7 @@ jobs:
                     --set postgresql.auth.password="${{ secrets.userPassword }}" \
                     --set eventhubBackendDeploy.appConfig.mail.password="${{ secrets.mailPassword }}" \
                     --set eventhubBackendDeploy.ingress.paths[0].path="${{ inputs.ingress-path }}" \
-                    --set eventhubBackendDeploy.ingress.paths[0].pathType=ImplementationSpecific
-
+                    --set tenant.ingress.api.path="${{ inputs.minio-ingress-path }}" \
+                    --set tenant.tenant.configSecret.accessKey="${{ secrets.minioRootUser }}" \
+                    --set tenant.tenant.configSecret.secretKey="${{ secrets.minioRootPassword }}"
                     
