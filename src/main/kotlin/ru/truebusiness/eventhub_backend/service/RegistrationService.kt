@@ -2,6 +2,7 @@ package ru.truebusiness.eventhub_backend.service
 
 import jakarta.transaction.Transactional
 import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import ru.truebusiness.eventhub_backend.conrollers.dto.RegistrationErrorReason
@@ -15,6 +16,7 @@ import ru.truebusiness.eventhub_backend.repository.entity.ConfirmationCode
 import ru.truebusiness.eventhub_backend.repository.entity.User
 import ru.truebusiness.eventhub_backend.repository.entity.UserCredentials
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 @Service
 class RegistrationService(
@@ -140,6 +142,14 @@ class RegistrationService(
 
             return Pair(savedCode.code!!, user.credentials?.email!!)
         } ?: throw UserNotFoundException("User with id $userId doesn't exist!", null)
+    }
+
+    @Scheduled(
+        fixedDelayString = "\${registration.cleanup.interval.minutes}",
+        timeUnit = TimeUnit.MINUTES
+    )
+    fun cleanupConfirmationCodes() {
+        confirmationCodeRepository.deleteExpiredConfirmationCodes()
     }
 
     fun sendCodeViaEmail(code: String, email: String?) {

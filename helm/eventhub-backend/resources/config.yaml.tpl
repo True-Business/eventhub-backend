@@ -23,6 +23,11 @@ spring:
 server:
   port: {{ .Values.eventhubBackendDeploy.service.port }}
 
+registration:
+  cleanup:
+    interval:
+      minutes: {{ .Values.eventhubBackendDeploy.registration.cleanup.interval.minutes }}
+
 management:
   endpoint:
     health:

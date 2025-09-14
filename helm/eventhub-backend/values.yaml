@@ -30,6 +30,11 @@ eventhubBackendDeploy:
   service:
     type: LoadBalancer
     port: 8080
+
+  registration:
+    cleanup:
+      interval:
+        minutes: 5
   
   ingress:
     className: nginx
