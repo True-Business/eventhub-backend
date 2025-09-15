@@ -68,6 +68,7 @@ jobs:
                     --reuse-values \
                     -f ./helm/eventhub-backend/values.yaml \
                     -f ./helm/eventhub-backend/postgres.values.yaml \
+                    -f ./helm/eventhub-backend/minio.values.yaml \
                     --set eventhubBackendDeploy.container.image.tag="${{ env.IMAGE_TAG }}" \
                     --set postgresql.auth.postgresPassword="${{ secrets.postgresPassword }}" \
                     --set postgresql.auth.password="${{ secrets.userPassword }}" \
