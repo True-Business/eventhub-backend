@@ -21,7 +21,7 @@ jobs:
             postgresPassword: ${{ secrets.DEV_POSTGRES_PASSWORD }}
             userPassword: ${{ secrets.DEV_USER_PASSWORD }}
             mailPassword: ${{ secrets.MAIL_APPLICATION_PASSWORD }}
-            minioRootUser: ${{ secrets.DEV_MINIO_ROOT_USER }}
-            minioRootPassword: ${{ secrets.DEV_MINIO_ROOT_PASSWORD }}
+            minioUser: ${{ secrets.DEV_MINIO_USER }}
+            minioPassword: ${{ secrets.DEV_MINIO_PASSWORD }}
             
     

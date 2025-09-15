@@ -21,9 +21,9 @@ on:
                 required: true
             mailPassword:
                 required: true
-            minioRootUser:
+            minioUser:
                 required: true
-            minioRootPassword:
+            minioPassword:
                 required: true
 
 jobs:
@@ -74,6 +74,6 @@ jobs:
                     --set eventhubBackendDeploy.appConfig.mail.password="${{ secrets.mailPassword }}" \
                     --set eventhubBackendDeploy.ingress.paths[0].path="${{ inputs.ingress-path }}" \
                     --set tenant.ingress.api.path="${{ inputs.minio-ingress-path }}" \
-                    --set tenant.tenant.configSecret.accessKey="${{ secrets.minioRootUser }}" \
-                    --set tenant.tenant.configSecret.secretKey="${{ secrets.minioRootPassword }}"
+                    --set tenant.tenant.configSecret.accessKey="${{ secrets.minioUser }}" \
+                    --set tenant.tenant.configSecret.secretKey="${{ secrets.minioPassword }}"
                     
