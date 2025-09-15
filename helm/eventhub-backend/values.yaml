@@ -26,6 +26,12 @@ eventhubBackendDeploy:
       login: "events.hub@mail.ru"
       # This values must be set up in ci.
       password: "0000"
+    minio:
+      # This values must be set up in ci
+      user: "miniouser"
+      password: "miniopassword"
+      hostPort: "example-minio.com:9000"
+      bucket: "eventhub"
 
   service:
     type: LoadBalancer

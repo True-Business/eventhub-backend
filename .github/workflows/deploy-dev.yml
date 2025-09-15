@@ -15,13 +15,14 @@ jobs:
         with:
             target-namespace: ${{ vars.DEV_NAMESPACE }}
             ingress-path: "/dev(/|$)(.*)"
-            minio-ingress-path: "/minio-dev(/|$)(.*)"
         secrets:
             kubeconfig: ${{ secrets.KUBECONFIG }}
             postgresPassword: ${{ secrets.DEV_POSTGRES_PASSWORD }}
             userPassword: ${{ secrets.DEV_USER_PASSWORD }}
             mailPassword: ${{ secrets.MAIL_APPLICATION_PASSWORD }}
-            minioUser: ${{ secrets.DEV_MINIO_USER }}
-            minioPassword: ${{ secrets.DEV_MINIO_PASSWORD }}
+            minioUser: ${{ secrets.MINIO_USER }}
+            minioPassword: ${{ secrets.MINIO_PASSWORD }}
+            minioHostPort: ${{ secrets.MINIO_HOST_PORT }}
+            minioBucket: ${{ secrets.MINIO_BUCKET }}
             
     

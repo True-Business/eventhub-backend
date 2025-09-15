@@ -10,7 +10,6 @@ resources/
 templates/              # шаблоны манифестов для kubernetes
     deployment.yaml     # шаблон для деплоймента приложения, здесь описываются задаются ENV переменные
 Chart.yaml              # базовая информация о helm chart
-minio.values.yaml       # значения для шаблонов стороннего minio helm chart-а
 postgres.values.yaml    # значения для шаблонов стороннего postgres helm chart-а
 values.yaml             # значения для шаблонов eventhub-backend 
 ```
@@ -42,7 +41,7 @@ values.yaml             # значения для шаблонов eventhub-back
    ```
    3. Используя команду `helm template` проверяем, что шаблоны рендерятся ожидаемым образом. В директории с этим README выполняем команду:
    ```shell
-   helm template . --output-dir _rendered --values values.yaml --values postgres.values.yaml --values minio.values.yaml
+   helm template . --output-dir _rendered --values values.yaml --values postgres.values.yaml
    ```
    4. Указанная выше команда сложит в папку _rendered манифесты с подставленными значениями
    5. Команда из п.3.3 может упасть, если у вас не скачаны зависимые helm chart-ы. Чтобы их скачать выполните в директории с этим README:

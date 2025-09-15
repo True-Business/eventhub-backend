@@ -9,9 +9,6 @@ on:
             ingress-path:
                 required: true
                 type: string
-            minio-ingress-path:
-                required: true
-                type: string
         secrets:
             kubeconfig:
                 required: true
@@ -24,6 +21,10 @@ on:
             minioUser:
                 required: true
             minioPassword:
+                required: true
+            minioBucket:
+                required: true
+            minioHostPort:
                 required: true
 
 jobs:
@@ -68,13 +69,12 @@ jobs:
                     --reuse-values \
                     -f ./helm/eventhub-backend/values.yaml \
                     -f ./helm/eventhub-backend/postgres.values.yaml \
-                    -f ./helm/eventhub-backend/minio.values.yaml \
                     --set eventhubBackendDeploy.container.image.tag="${{ env.IMAGE_TAG }}" \
                     --set postgresql.auth.postgresPassword="${{ secrets.postgresPassword }}" \
                     --set postgresql.auth.password="${{ secrets.userPassword }}" \
                     --set eventhubBackendDeploy.appConfig.mail.password="${{ secrets.mailPassword }}" \
                     --set eventhubBackendDeploy.ingress.paths[0].path="${{ inputs.ingress-path }}" \
-                    --set tenant.ingress.api.path="${{ inputs.minio-ingress-path }}" \
-                    --set tenant.tenant.configSecret.accessKey="${{ secrets.minioUser }}" \
-                    --set tenant.tenant.configSecret.secretKey="${{ secrets.minioPassword }}"
-                    
+                    --set eventhubBackendDeploy.appConfig.minio.user="${{ secrets.minioUser }}" \
+                    --set eventhubBackendDeploy.appConfig.minio.password="${{ secrets.minioPassword }}" \
+                    --set eventhubBackendDeploy.appConfig.minio.hostPort="${{ secrets.minioHostPort }}" \
+                    --set eventhubBackendDeploy.appConfig.minio.bucket="${{ secrets.minioBucket }}"                   
