@@ -6,8 +6,13 @@ services:
       DB_URL: jdbc:postgresql://eventhub-database:5432/eventhub
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
+      MINIO_USER: miniouser
+      MINIO_PASSWORD: miniopassword
     ports:
       - "9092:8080"
+    depends_on:
+      - db
+      - minio
 
   db:
     container_name: eventhub-database
@@ -21,6 +26,19 @@ services:
     volumes:
       - eventhub-postgres:/var/lib/postgresql/data
 
+  minio:
+    container_name: minio
+    image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: miniouser
+      MINIO_ROOT_PASSWORD: miniopassword
+    volumes:
+      - eventhub-minio:/data
+
   mailhog:
     image: mailhog/mailhog
     ports:
@@ -28,3 +46,4 @@ services:
       - "8025:8025" # веб-интерфейс
 volumes:
   eventhub-postgres:
+  eventhub-minio:
