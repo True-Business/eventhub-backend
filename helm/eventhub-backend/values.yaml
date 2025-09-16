@@ -26,14 +26,13 @@ eventhubBackendDeploy:
       login: "events.hub@mail.ru"
       # This values must be set up in ci.
       password: "0000"
+    registration:
+      cleanupInterval-Minutes: 5
+      tokenExpirationMinutes: 5
 
   service:
     type: LoadBalancer
     port: 8080
-
-  registration:
-    cleanup-interval-minutes: 5
-    token_expiration_minutes: 5
   
   ingress:
     className: nginx

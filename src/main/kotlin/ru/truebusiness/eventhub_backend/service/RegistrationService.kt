@@ -3,7 +3,6 @@ package ru.truebusiness.eventhub_backend.service
 import jakarta.transaction.Transactional
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.dao.DataIntegrityViolationException
-import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import ru.truebusiness.eventhub_backend.conrollers.dto.RegistrationErrorReason
@@ -18,8 +17,7 @@ import ru.truebusiness.eventhub_backend.repository.entity.User
 import ru.truebusiness.eventhub_backend.repository.entity.UserCredentials
 import java.time.Duration
 import java.time.Instant
-import java.util.*
-import java.util.concurrent.TimeUnit
+import java.util.UUID
 
 @Service
 class RegistrationService(
@@ -28,7 +26,7 @@ class RegistrationService(
     private val confirmationCodeRepository: ConfirmationCodeRepository,
     private val passwordEncoder: PasswordEncoder,
     private val emailService: EmailService,
-    @Value("\${app.registration.token-expiration-minutes}")
+    @Value("\${app.registration.tokenExpirationMinutes}")
     private val tokenExpirationMinutes: Long,
 ) {
     companion object {
@@ -68,7 +66,7 @@ class RegistrationService(
             log.info("User created successfully! Warning: user is not confirmed!")
 
             return RegistrationResponseDto.pending(newUser.id, newUser.registrationDate)
-        } catch (ex: DataIntegrityViolationException) {
+        } catch (_: DataIntegrityViolationException) {
             log.error("Couldn't save credentials for user! Email violates unique constraint!")
             return RegistrationResponseDto.error(RegistrationErrorReason.USER_ALREADY_REGISTERED)
         }
@@ -110,19 +108,20 @@ class RegistrationService(
      */
     @Transactional
     fun verifyRegistrationCode(code: String): RegistrationResponseDto {
-        val confCode = confirmationCodeRepository.findByCode(code)
-        return if (confCode != null && Instant.now().isBefore(confCode.expiresAt)) {
-            log.debug("Confirmation code {} found", confCode)
-            confirmationCodeRepository.delete(confCode)
-            confCode.user.let {
-                it.isConfirmed = true
-                userRepository.save(it)
-                log.debug("User {} status successfully updated!", it.id)
-                RegistrationResponseDto.success(it.id, it.registrationDate)
+        return confirmationCodeRepository.findByCode(code)?.let {confCode ->
+            if (Instant.now().isBefore(confCode.expiresAt)) {
+                log.debug("Confirmation code {} found", confCode)
+                confirmationCodeRepository.delete(confCode)
+                confCode.user.let {
+                    it.isConfirmed = true
+                    userRepository.save(it)
+                    log.debug("User {} status successfully updated!", it.id)
+                    RegistrationResponseDto.success(it.id, it.registrationDate)
+                }
+            } else {
+                RegistrationResponseDto.error(RegistrationErrorReason.CONFIRMATION_CODE_EXPIRED)
             }
-        } else if (confCode != null) {
-            RegistrationResponseDto.error(RegistrationErrorReason.CONFIRMATION_CODE_EXPIRED)
-        } else {
+        } ?: run {
             log.error("Could not find confirmation code $code")
             RegistrationResponseDto.error(RegistrationErrorReason.INCORRECT_CONFIRMATION_CODE)
         }
@@ -137,26 +136,17 @@ class RegistrationService(
     @Transactional
     fun createConfirmationCode(userId: String): Pair<String, String> {
         log.debug("Creating confirmation code for user with id: $userId")
-        val usr = userRepository.findUserById(UUID.fromString(userId))
-        return if (usr != null) {
+        return userRepository.findUserById(UUID.fromString(userId))?.let {
             val savedCode = ConfirmationCode(
-                code =  generateCode(),
+                code = generateCode(),
                 expiresAt = getCodeExpiration(),
-                user = usr
+                user = it
             ).let(confirmationCodeRepository::save)
             log.debug("Confirmation code for user with id: $userId was saved! Code: ${savedCode.code}")
-            Pair(savedCode.code, usr.credentials?.email!!)
-        } else {
+            Pair(savedCode.code, it.credentials?.email!!)
+        } ?: run {
             throw UserNotFoundException("User with id $userId doesn't exist!", null)
         }
-    }
-
-    @Scheduled(
-        fixedDelayString = "\${app.registration.cleanup-interval-minutes}",
-        timeUnit = TimeUnit.MINUTES
-    )
-    fun cleanupConfirmationCodes() {
-        confirmationCodeRepository.deleteByExpiresAtBefore(Instant.now())
     }
 
     fun sendCodeViaEmail(code: String, email: String?) {

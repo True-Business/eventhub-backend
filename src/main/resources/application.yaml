@@ -25,8 +25,8 @@ server:
 
 app:
   registration:
-    cleanup-interval-minutes: 5
-    token-expiration-minutes: 5
+    cleanupIntervalMinutes: 5
+    tokenExpirationMinutes: 5
 
 management:
   endpoint:
