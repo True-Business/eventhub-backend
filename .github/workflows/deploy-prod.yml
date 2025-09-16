@@ -29,4 +29,4 @@ jobs:
             minioUser: ${{ secrets.MINIO_USER }}
             minioPassword: ${{ secrets.MINIO_PASSWORD }}
             minioHostPort: ${{ secrets.MINIO_HOST_PORT }}
-            minioBucket: ${{ secrets.MINIO_BUCKET }}
+            minioBucket: ${{ secrets.PROD_MINIO_BUCKET }}
