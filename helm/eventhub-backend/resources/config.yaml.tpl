@@ -24,9 +24,8 @@ server:
   port: {{ .Values.eventhubBackendDeploy.service.port }}
 
 registration:
-  cleanup:
-    interval:
-      minutes: {{ .Values.eventhubBackendDeploy.registration.cleanup.interval.minutes }}
+  cleanup-interval-minutes: {{ .Values.eventhubBackendDeploy.registration.cleanup-interval-minutes }}
+  cleanup-interval-minutes: {{ .Values.eventhubBackendDeploy.registration.token-expiration-minutes }}
 
 management:
   endpoint:

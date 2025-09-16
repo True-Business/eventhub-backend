@@ -23,10 +23,10 @@ spring:
 server:
   port: 8080
 
-registration:
-  cleanup:
-    interval:
-      minutes: 5
+app:
+  registration:
+    cleanup-interval-minutes: 5
+    token-expiration-minutes: 5
 
 management:
   endpoint:

@@ -42,6 +42,9 @@
             <column name="user_id" type="uuid">
                 <constraints nullable="false"/>
             </column>
+            <column name="expires_at" type="TIMESTAMPTZ">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
         <addForeignKeyConstraint baseTableName="user_credentials"
                                  baseColumnNames="user_id"

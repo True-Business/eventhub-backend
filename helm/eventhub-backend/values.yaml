@@ -32,9 +32,8 @@ eventhubBackendDeploy:
     port: 8080
 
   registration:
-    cleanup:
-      interval:
-        minutes: 5
+    cleanup-interval-minutes: 5
+    token_expiration_minutes: 5
   
   ingress:
     className: nginx
