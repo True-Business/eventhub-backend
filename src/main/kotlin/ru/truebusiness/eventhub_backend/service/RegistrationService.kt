@@ -156,7 +156,7 @@ class RegistrationService(
         timeUnit = TimeUnit.MINUTES
     )
     fun cleanupConfirmationCodes() {
-        confirmationCodeRepository.deleteExpiredConfirmationCodes(Instant.now())
+        confirmationCodeRepository.deleteByExpiresAtBefore(Instant.now())
     }
 
     fun sendCodeViaEmail(code: String, email: String?) {
