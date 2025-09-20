@@ -26,13 +26,21 @@ spec:
           - name: DB_URL
             value: jdbc:postgresql://eventhub-backend-postgresql:5432/{{ .Values.postgresql.auth.database }}
           - name: DB_USERNAME
-            value: {{ .Values.postgresql.auth.username }}
+            value: {{ .Values.postgresql.auth.username | quote }}
           - name: DB_PASSWORD
-            value: {{ .Values.postgresql.auth.password }}
+            value: {{ .Values.postgresql.auth.password | quote }}
           - name: EMAIL_LOGIN
-            value: {{ .Values.eventhubBackendDeploy.appConfig.mail.login }}
+            value: {{ .Values.eventhubBackendDeploy.appConfig.mail.login | quote }}
           - name: MAIL_APPLICATION_PASSWORD
-            value: {{ .Values.eventhubBackendDeploy.appConfig.mail.password }}
+            value: {{ .Values.eventhubBackendDeploy.appConfig.mail.password | quote }}
+          - name: MINIO_USER
+            value: {{ .Values.eventhubBackendDeploy.appConfig.minio.user | quote }} 
+          - name: MINIO_PASSWORD
+            value: {{ .Values.eventhubBackendDeploy.appConfig.minio.password | quote }}
+          - name: MINIO_HOST_PORT
+            value: {{ .Values.eventhubBackendDeploy.appConfig.minio.hostPort | quote }}
+          - name: MINIO_BUCKET
+            value: {{ .Values.eventhubBackendDeploy.appConfig.minio.bucket | quote }}
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
