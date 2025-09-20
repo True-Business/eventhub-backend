@@ -43,4 +43,6 @@ class Event() {
     // TODO: registerEndDate лишнее, можно всё в registerEndTime запихать и назвать как registerEndDate
     var registerEndDate: LocalDate? = null
     var registerEndTime: LocalDateTime? = null
+
+    var isDraft: Boolean = true
 }

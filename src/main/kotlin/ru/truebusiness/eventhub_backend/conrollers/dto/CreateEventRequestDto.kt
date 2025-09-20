@@ -27,5 +27,6 @@ data class CreateEventRequestDto(
     val isWithRegister: Boolean?,
     val peopleLimit: Int?,
     val registerEndDate: LocalDate?,
-    val registerEndTime: LocalDateTime?
+    val registerEndTime: LocalDateTime?,
+    val isDraft: Boolean?,
 )
