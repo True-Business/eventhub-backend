@@ -1,46 +1,60 @@
 package ru.truebusiness.eventhub_backend.repository.entity
 
-import jakarta.persistence.Entity
-import jakarta.persistence.Id
-import jakarta.persistence.Table
-import java.time.LocalDate
-import java.time.LocalDateTime
+import jakarta.persistence.*
+import java.time.Instant
 import java.util.UUID
+
+enum class EventCategory {
+    PLACEHOLDER
+}
+
+enum class EventStatus {
+    DRAFT,
+    PLANNED,
+    ENDED,
+    CANCELED
+}
 
 @Entity
 @Table(name = "events")
-class Event() {
+class Event {
 
     @Id
     var id: UUID = UUID.randomUUID()
 
     var name: String = ""
 
-    // TODO: startTime лишнее
-    var startDate: LocalDateTime? = null
-    var startTime: LocalDateTime? = null
-    var endTime: LocalDateTime? = null
+    var startDateTime: Instant = Instant.now()
 
-    var updatedAt: LocalDateTime? = LocalDateTime.now()
+    var endDateTime: Instant? = null
 
-    var organizerId: UUID? = null
-    var organizationId: UUID? = null
-    var eventCategory: Int? = null
+    var updatedAt: Instant = Instant.now()
 
-    var address: String? = null
-    var route: String? = null
-    var description: String? = null
+    @ManyToOne
+    @JoinColumn(name = "organizer_id")
+    var organizer: User? = null
 
-    var isFree: Boolean? = null
+    @ManyToOne
+    @JoinColumn(name = "organization_id")
+    var organization: Organization? = null
+
+    @Enumerated(EnumType.STRING)
+    var eventCategory: EventCategory = EventCategory.PLACEHOLDER
+
+    var address: String = ""
+    var route: String = ""
+    var description: String = ""
+
+    var isFree: Boolean = false
     var price: Double? = null
-    var isOpen: Boolean? = null
+    var isOpen: Boolean = false
 
-    var eventStatus: String? = null
-    var city: String? = null
-    var isWithRegister: Boolean? = null
+    @Enumerated(EnumType.STRING)
+    var eventStatus: EventStatus = EventStatus.DRAFT
+
+    var city: String = ""
+    var isWithRegister: Boolean = false
     var peopleLimit: Int? = null
 
-    // TODO: registerEndDate лишнее, можно всё в registerEndTime запихать и назвать как registerEndDate
-    var registerEndDate: LocalDate? = null
-    var registerEndTime: LocalDateTime? = null
+    var registerEndDateTime: Instant? = null
 }

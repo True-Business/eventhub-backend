@@ -5,7 +5,7 @@ import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.UUID
 
 
@@ -19,7 +19,7 @@ class User {
 
     var shortId: String = ""
 
-    var registrationDate: LocalDateTime? = LocalDateTime.now()
+    var registrationDate: Instant = Instant.now()
 
     var isConfirmed: Boolean = false
 
