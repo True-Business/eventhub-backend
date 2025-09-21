@@ -3,6 +3,7 @@ package ru.truebusiness.eventhub_backend.service
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import ru.truebusiness.eventhub_backend.conrollers.dto.NewEventResponse
+import ru.truebusiness.eventhub_backend.exceptions.EventNotFoundException
 import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.mapper.EventMapper
 import ru.truebusiness.eventhub_backend.repository.EventRepository
@@ -34,7 +35,10 @@ class EventService(
     fun updateEvent(eventID: UUID, eventModel: EventModel): NewEventResponse {
         log.info("Updating event: $eventID")
 
-        val event: Event = eventMapper.eventModelToEventEntity(eventID, eventModel)
+        val event: Event = eventRepository.findById(eventID)
+            .orElseThrow { EventNotFoundException("Event with id $eventID doesn't exist!", null) }
+        eventMapper.eventModelToEventEntity(eventModel, event)
+
         val updatedEvent = eventRepository.save(event)
 
         log.info("New event updated successfully!")
