@@ -8,6 +8,7 @@ import ru.truebusiness.eventhub_backend.mapper.EventMapper
 import ru.truebusiness.eventhub_backend.repository.EventRepository
 import ru.truebusiness.eventhub_backend.repository.entity.Event
 import ru.truebusiness.eventhub_backend.service.model.EventModel
+import java.util.UUID
 
 @Service
 class EventService(
@@ -27,6 +28,19 @@ class EventService(
         return NewEventResponse(
             newEvent.id,
             newEvent.name
+        )
+    }
+
+    fun updateEvent(eventID: UUID, eventModel: EventModel): NewEventResponse {
+        log.info("Updating event: $eventID")
+
+        val event: Event = eventMapper.eventModelToEventEntity(eventID, eventModel)
+        val updatedEvent = eventRepository.save(event)
+
+        log.info("New event updated successfully!")
+        return NewEventResponse(
+            updatedEvent.id,
+            updatedEvent.name
         )
     }
 }
