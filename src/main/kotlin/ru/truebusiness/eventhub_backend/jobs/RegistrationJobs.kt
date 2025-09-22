@@ -16,7 +16,6 @@ class RegistrationJobs(
     @Scheduled(
         cron = "\${app.registration.cleanupJob.cron}",
         zone = "\${app.registration.cleanupJob.zone}",
-        timeUnit = TimeUnit.MINUTES
     )
     fun cleanupConfirmationCodes() {
         val deleted = confirmationCodeRepository.deleteByExpiresAtBefore(
