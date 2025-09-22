@@ -31,6 +31,12 @@ eventhubBackendDeploy:
         cron: "0 0 0 * * *"
         zone: "Europe/Moscow"
       tokenExpirationMinutes: 5
+    minio:
+      # This values must be set up in ci
+      user: "miniouser"
+      password: "miniopassword"
+      hostPort: "example-minio.com:9000"
+      bucket: "eventhub"
 
   service:
     type: LoadBalancer
@@ -40,8 +46,8 @@ eventhubBackendDeploy:
     className: nginx
     host: eventhub-backend.ru
     paths:
-      - path: "/"
-        pathType: Prefix
+      - path: "/some(/|$)(.*)"
+        pathType: ImplementationSpecific
     tls: []
 
 # This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
