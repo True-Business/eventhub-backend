@@ -141,7 +141,9 @@
             <column name="is_free" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
-            <column name="price" type="DECIMAL(10,2)"/>
+            <column name="price" type="DECIMAL(10,2)">
+                <constraints nullable="false"/>
+            </column>
             <column name="is_open" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>

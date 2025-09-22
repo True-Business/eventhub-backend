@@ -46,7 +46,7 @@ class Event {
     var description: String = ""
 
     var isFree: Boolean = false
-    var price: Double? = null
+    var price: Double = 0.0
     var isOpen: Boolean = false
 
     @Enumerated(EnumType.STRING)
