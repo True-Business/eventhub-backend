@@ -17,9 +17,7 @@ import ru.truebusiness.eventhub_backend.repository.entity.User
 import ru.truebusiness.eventhub_backend.repository.entity.UserCredentials
 import java.time.Duration
 import java.time.Instant
-import java.util.Stack
 import java.util.UUID
-import java.util.concurrent.atomic.AtomicInteger
 
 @Service
 class RegistrationService(

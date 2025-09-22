@@ -24,7 +24,9 @@ server:
   port: {{ .Values.eventhubBackendDeploy.service.port }}
 app:
   registration:
-    cleanupIntervalMinutes: {{ .Values.eventhubBackendDeploy.appConfig.registration.cleanupIntervalMinutes }}
+    cleanupJob:
+      cron: {{ .Values.eventhubBackendDeploy.appConfig.registration.cleanupJob.cron }}
+      zone: {{ .Values.eventhubBackendDeploy.appConfig.registration.cleanupJob.zone }}
     tokenExpirationMinutes: {{ .Values.eventhubBackendDeploy.appConfig.registration.tokenExpirationMinutes }}
 
 management:

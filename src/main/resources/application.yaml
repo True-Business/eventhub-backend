@@ -25,7 +25,9 @@ server:
 
 app:
   registration:
-    cleanupIntervalMinutes: 5
+    cleanupJob:
+      cron: "0 0 0 * * *"
+      zone: "Europe/Moscow"
     tokenExpirationMinutes: 5
 
 management:
