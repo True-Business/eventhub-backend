@@ -1,31 +1,30 @@
 package ru.truebusiness.eventhub_backend.conrollers.dto
 
-import java.time.LocalDate
-import java.time.LocalDateTime
+import ru.truebusiness.eventhub_backend.repository.entity.EventCategory
+import ru.truebusiness.eventhub_backend.repository.entity.EventStatus
+import java.time.Instant
 import java.util.*
 
 data class CreateEventRequestDto(
     val name: String,
-    val startDate: LocalDateTime?,
-    val startTime: LocalDateTime?,
-    val endTime: LocalDateTime?,
+    val startDateTime: Instant,
+    val endDateTime: Instant?,
     /**
      * Возможно organizerId и organizationId имеет смысл перенести в хэдэры запроса и уже
      * оттуда доставать их
      */
-    val organizerId: UUID?,
+    val organizerId: UUID,
     val organizationId: UUID?,
-    val eventCategory: Int?,
-    val address: String?,
-    val route: String?,
-    val description: String?,
-    val isFree: Boolean?,
-    val price: Double?,
-    val isOpen: Boolean?,
-    val eventStatus: String?,
-    val city: String?,
-    val isWithRegister: Boolean?,
+    val eventCategory: EventCategory,
+    val address: String,
+    val route: String,
+    val description: String,
+    val isFree: Boolean,
+    val price: Double,
+    val isOpen: Boolean,
+    val eventStatus: EventStatus,
+    val city: String,
+    val isWithRegister: Boolean,
     val peopleLimit: Int?,
-    val registerEndDate: LocalDate?,
-    val registerEndTime: LocalDateTime?
+    val registerEndDateTime: Instant?,
 )

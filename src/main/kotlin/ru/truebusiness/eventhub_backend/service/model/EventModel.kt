@@ -1,35 +1,34 @@
 package ru.truebusiness.eventhub_backend.service.model
 
-import java.time.LocalDate
-import java.time.LocalDateTime
+import ru.truebusiness.eventhub_backend.repository.entity.EventCategory
+import ru.truebusiness.eventhub_backend.repository.entity.EventStatus
+import java.time.Instant
 import java.util.*
 
 class EventModel {
     var name: String = ""
 
-    var startDate: LocalDateTime? = null
-    var startTime: LocalDateTime? = null
-    var endTime: LocalDateTime? = null
+    var startDateTime: Instant = Instant.now()
+    var endDateTime: Instant? = null
 
-    var updatedAt: LocalDateTime? = LocalDateTime.now()
+    var updatedAt: Instant = Instant.now()
 
     var organizerId: UUID? = null
     var organizationId: UUID? = null
-    var eventCategory: Int? = null
+    var eventCategory: EventCategory = EventCategory.PLACEHOLDER
 
-    var address: String? = null
-    var route: String? = null
-    var description: String? = null
+    var address: String = ""
+    var route: String = ""
+    var description: String = ""
 
-    var isFree: Boolean? = null
-    var price: Double? = null
-    var isOpen: Boolean? = null
+    var isFree: Boolean = false
+    var price: Double = 0.0
+    var isOpen: Boolean = false
 
-    var eventStatus: String? = null
-    var city: String? = null
-    var isWithRegister: Boolean? = null
+    var eventStatus: EventStatus = EventStatus.DRAFT
+    var city: String = ""
+    var isWithRegister: Boolean = false
     var peopleLimit: Int? = null
 
-    var registerEndDate: LocalDate? = null
-    var registerEndTime: LocalDateTime? = null
+    var registerEndDateTime: Instant? = null
 }
