@@ -27,7 +27,7 @@ eventhubBackendDeploy:
       # This values must be set up in ci.
       password: "0000"
     registration:
-      cleanupInterval-Minutes: 5
+      cleanupIntervalMinutes: 5
       tokenExpirationMinutes: 5
 
   service:

@@ -22,10 +22,10 @@ spring:
             enable: false
 server:
   port: {{ .Values.eventhubBackendDeploy.service.port }}
-
-registration:
-  cleanup-interval-minutes: {{ .Values.eventhubBackendDeploy.registration.cleanupIntervalMinutes }}
-  cleanup-interval-minutes: {{ .Values.eventhubBackendDeploy.registration.tokenExpirationMinutes }}
+app:
+  registration:
+    cleanupIntervalMinutes: {{ .Values.eventhubBackendDeploy.appConfig.registration.cleanupIntervalMinutes }}
+    tokenExpirationMinutes: {{ .Values.eventhubBackendDeploy.appConfig.registration.tokenExpirationMinutes }}
 
 management:
   endpoint:
