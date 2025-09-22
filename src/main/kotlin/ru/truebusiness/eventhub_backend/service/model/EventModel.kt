@@ -2,7 +2,7 @@ package ru.truebusiness.eventhub_backend.service.model
 
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 class EventModel {
     var name: String = ""

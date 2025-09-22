@@ -1,7 +1,7 @@
 package ru.truebusiness.eventhub_backend.conrollers.dto
 
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 data class UserInfoRegistrationDto(
     val id: String,

@@ -2,7 +2,7 @@ package ru.truebusiness.eventhub_backend.repository.entity
 
 import jakarta.persistence.*
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 
 @Entity
 @Table(name = "confirmation_codes")

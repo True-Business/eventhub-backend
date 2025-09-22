@@ -6,4 +6,5 @@
 
     <include file="db.changelog/create-events-table.xml"/>
     <include file="db.changelog/create-user-table.xml"/>
+    <include file="/db.changelog/add-expires-at-to-confirmation-codes.xml" />
 </databaseChangeLog>

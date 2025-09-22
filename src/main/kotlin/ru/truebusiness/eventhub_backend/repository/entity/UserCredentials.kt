@@ -6,19 +6,17 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
-import java.util.UUID
+import java.util.*
 
 @Entity
 @Table(name = "user_credentials")
-class UserCredentials {
+class UserCredentials(
     @Id
-    var id: UUID? = UUID.randomUUID()
-
-    var email: String? = ""
-
-    var password: String? = ""
+    var id: UUID = UUID.randomUUID(),
+    var email: String,
+    var password: String,
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    var user: User? = null
-}
+    var user: User
+)
