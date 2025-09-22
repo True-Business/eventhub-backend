@@ -1,12 +1,12 @@
 package ru.truebusiness.eventhub_backend.conrollers.dto
 
-import java.util.*
+import java.util.UUID
 
 data class CreateOrganizationRequestDto(
     val name: String,
     val description: String,
     val address: String?,
-    val picture: String?,
+    val pictureUrl: String?,
     //todo: убрать creatorId, когда пробросим хедеры
     val creatorId: UUID
 )
