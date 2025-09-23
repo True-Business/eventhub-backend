@@ -18,7 +18,7 @@ class OrganizationService(
     private val log by logger()
 
     @Transactional
-    fun createOrganization(organizationModel: OrganizationModel): OrganizationDto {
+    fun create(organizationModel: OrganizationModel): OrganizationDto {
         log.info("Creating new organization: ${organizationModel.name}")
         // todo: прокинуть сюда creatorId из хедера в контроллере как аргумент
 
