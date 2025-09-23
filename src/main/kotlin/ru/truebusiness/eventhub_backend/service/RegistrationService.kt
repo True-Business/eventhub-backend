@@ -14,7 +14,7 @@ import ru.truebusiness.eventhub_backend.repository.UserRepository
 import ru.truebusiness.eventhub_backend.repository.entity.ConfirmationCode
 import ru.truebusiness.eventhub_backend.repository.entity.User
 import ru.truebusiness.eventhub_backend.repository.entity.UserCredentials
-import java.util.*
+import java.util.UUID
 
 @Service
 class RegistrationService(

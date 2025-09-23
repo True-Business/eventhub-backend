@@ -3,7 +3,7 @@ package ru.truebusiness.eventhub_backend.conrollers.dto
 import ru.truebusiness.eventhub_backend.repository.entity.EventCategory
 import ru.truebusiness.eventhub_backend.repository.entity.EventStatus
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 
 data class CreateEventRequestDto(
     val name: String,
@@ -15,14 +15,13 @@ data class CreateEventRequestDto(
      */
     val organizerId: UUID,
     val organizationId: UUID?,
-    val eventCategory: EventCategory,
+    val category: EventCategory,
     val address: String,
     val route: String,
     val description: String,
-    val isFree: Boolean,
     val price: Double,
     val isOpen: Boolean,
-    val eventStatus: EventStatus,
+    val status: EventStatus,
     val city: String,
     val isWithRegister: Boolean,
     val peopleLimit: Int?,

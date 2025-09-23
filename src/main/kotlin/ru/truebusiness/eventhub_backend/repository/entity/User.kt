@@ -5,6 +5,7 @@ import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
+import jakarta.persistence.Column
 import java.time.Instant
 import java.util.UUID
 
@@ -13,15 +14,19 @@ import java.util.UUID
 @Table(name = "users")
 class User {
     @Id
-    var id: UUID? = UUID.randomUUID()
+    var id: UUID = UUID.randomUUID()
 
-    var username: String = ""
+    @Column(nullable = false)
+    var username: String? = null
 
-    var shortId: String = ""
+    @Column(nullable = false)
+    var shortId: String? = null
 
+    @Column(nullable = false)
     var registrationDate: Instant = Instant.now()
 
-    var isConfirmed: Boolean = false
+    @Column(nullable = false)
+    var isConfirmed: Boolean? = null
 
     @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL])
     var credentials: UserCredentials? = null
