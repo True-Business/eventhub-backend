@@ -14,7 +14,7 @@ import ru.truebusiness.eventhub_backend.repository.UserRepository
 import ru.truebusiness.eventhub_backend.repository.entity.ConfirmationCode
 import ru.truebusiness.eventhub_backend.repository.entity.User
 import ru.truebusiness.eventhub_backend.repository.entity.UserCredentials
-import java.util.*
+import java.util.UUID
 
 @Service
 class RegistrationService(
@@ -45,16 +45,14 @@ class RegistrationService(
         try {
             log.info("Started registration of new user...")
 
-            val newUser = userRepository.save(User())
+            val newUser = userRepository.save(User(username = "", shortId = "",
+                isConfirmed = false, credentials = null))
 
             log.info("New user registered! User id = ${newUser.id}")
             log.info("Saving new user credentials...")
 
-            val credentials = UserCredentials().apply {
-                this.email = email
-                this.password = passwordEncoder.encode(password)
-                this.user = newUser
-            }
+            val credentials = UserCredentials(email = email,
+                password = passwordEncoder.encode(password), user =  newUser)
             userCredentialsRepository.save(credentials)
 
             log.info("Credentials for user ${newUser.id} saved!")
@@ -132,9 +130,7 @@ class RegistrationService(
         log.info("Creating confirmation code for user with id: $userId")
 
         userRepository.findUserById(UUID.fromString(userId))?.let { user ->
-            val confirmationCode = ConfirmationCode()
-            confirmationCode.user = user
-            confirmationCode.code = generateCode()
+            val confirmationCode = ConfirmationCode(code = generateCode(), user = user)
             val savedCode = confirmationCodeRepository.save(confirmationCode)
             log.info("Confirmation code for user with id: $userId was saved! Code: ${savedCode.code}")
 
