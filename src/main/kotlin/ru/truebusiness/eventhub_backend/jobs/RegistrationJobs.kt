@@ -1,11 +1,11 @@
 package ru.truebusiness.eventhub_backend.jobs
 
+import jakarta.transaction.Transactional
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.repository.ConfirmationCodeRepository
 import java.time.Instant
-import java.util.concurrent.TimeUnit
 
 @Component
 class RegistrationJobs(
@@ -17,6 +17,7 @@ class RegistrationJobs(
         cron = "\${app.registration.cleanupJob.cron}",
         zone = "\${app.registration.cleanupJob.zone}",
     )
+    @Transactional
     fun cleanupConfirmationCodes() {
         val deleted = confirmationCodeRepository.deleteByExpiresAtBefore(
             Instant.now()
