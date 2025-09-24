@@ -22,6 +22,12 @@ spring:
             enable: false
 server:
   port: {{ .Values.eventhubBackendDeploy.service.port }}
+app:
+  registration:
+    cleanupJob:
+      cron: {{ .Values.eventhubBackendDeploy.appConfig.registration.cleanupJob.cron }}
+      zone: {{ .Values.eventhubBackendDeploy.appConfig.registration.cleanupJob.zone }}
+    tokenExpirationMinutes: {{ .Values.eventhubBackendDeploy.appConfig.registration.tokenExpirationMinutes }}
 
 management:
   endpoint:

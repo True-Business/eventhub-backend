@@ -5,7 +5,9 @@ import org.springframework.stereotype.Repository
 import ru.truebusiness.eventhub_backend.repository.entity.ConfirmationCode
 import ru.truebusiness.eventhub_backend.repository.entity.User
 import ru.truebusiness.eventhub_backend.repository.entity.UserCredentials
-import java.util.*
+import java.time.Instant
+import java.util.Date
+import java.util.UUID
 
 @Repository
 interface UserRepository: JpaRepository<User, UUID> {
@@ -21,4 +23,5 @@ interface UserCredentialsRepository : JpaRepository<UserCredentials, UUID> {
 @Repository
 interface ConfirmationCodeRepository : JpaRepository<ConfirmationCode, UUID> {
     fun findByCode(code: String): ConfirmationCode?
+    fun deleteByExpiresAtBefore(expiresAt: Instant): Int
 }

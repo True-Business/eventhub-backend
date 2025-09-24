@@ -2,7 +2,7 @@ package ru.truebusiness.eventhub_backend.conrollers.dto
 
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 data class CreateEventRequestDto(
     val name: String,
