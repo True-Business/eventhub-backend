@@ -38,7 +38,7 @@ class OrganizationService(
             newOrganization.description,
             newOrganization.address,
             newOrganization.pictureUrl,
-            newOrganization.creatorId
+            newOrganization.creator.id
         )
     }
 }
