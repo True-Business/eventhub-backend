@@ -1,7 +1,7 @@
 package ru.truebusiness.eventhub_backend.conrollers.dto
 
-import java.time.LocalDateTime
-import java.util.*
+import java.time.Instant
+import java.util.UUID
 
 data class UserInfoRegistrationDto(
     val id: String,
@@ -16,7 +16,7 @@ data class UserCredentialsRegistrationDto(
 
 data class RegistrationResponseDto(
     val id: UUID?,
-    val registrationDate: LocalDateTime?,
+    val registrationDate: Instant?,
     override val status: String,
     override val reason: String?,
 ): BaseStatusDto(status, reason) {
@@ -31,7 +31,7 @@ data class RegistrationResponseDto(
                 )
         }
 
-        fun pending(id: UUID?, registrationDate: LocalDateTime?): RegistrationResponseDto {
+        fun pending(id: UUID?, registrationDate: Instant?): RegistrationResponseDto {
             return RegistrationResponseDto(
                 id = id,
                 registrationDate = registrationDate,
@@ -40,7 +40,7 @@ data class RegistrationResponseDto(
             )
         }
 
-        fun success(id: UUID?, registrationDate: LocalDateTime?): RegistrationResponseDto {
+        fun success(id: UUID?, registrationDate: Instant?): RegistrationResponseDto {
             return RegistrationResponseDto(
                 id = id,
                 registrationDate = registrationDate,

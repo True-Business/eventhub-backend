@@ -10,15 +10,14 @@ import java.util.UUID
 
 @Entity
 @Table(name = "user_credentials")
-class UserCredentials {
+class UserCredentials(
     @Id
-    var id: UUID? = UUID.randomUUID()
+    var id: UUID = UUID.randomUUID(),
 
-    var email: String? = ""
-
-    var password: String? = ""
+    var email: String,
+    var password: String,
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    var user: User? = null
-}
+    @JoinColumn(name = "user_id", nullable = false)
+    var user: User
+)

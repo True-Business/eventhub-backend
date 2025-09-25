@@ -6,6 +6,7 @@ on:
             - "main"
         tags:
             - "v*"
+    workflow_dispatch:
 
 jobs:
     build-docker-image-for-prod:
@@ -25,3 +26,7 @@ jobs:
             postgresPassword: ${{ secrets.PROD_POSTGRES_PASSWORD }}
             userPassword: ${{ secrets.PROD_USER_PASSWORD }}
             mailPassword: ${{ secrets.MAIL_APPLICATION_PASSWORD }}
+            minioUser: ${{ secrets.MINIO_USER }}
+            minioPassword: ${{ secrets.MINIO_PASSWORD }}
+            minioHostPort: ${{ secrets.MINIO_HOST_PORT }}
+            minioBucket: ${{ secrets.PROD_MINIO_BUCKET }}
