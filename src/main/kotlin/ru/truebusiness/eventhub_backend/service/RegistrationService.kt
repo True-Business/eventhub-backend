@@ -103,21 +103,19 @@ class RegistrationService(
      */
     @Transactional
     fun verifyRegistrationCode(code: String): RegistrationResponseDto {
-        confirmationCodeRepository.findByCode(code)?.let { confirmationCode ->
-            log.info("Confirmation code found! Updating user status...")
-
-            confirmationCode.user?.let {
-                it.isConfirmed = true
-                userRepository.save(it)
-                log.info("User ${it.id} status successfully updated!")
-                confirmationCodeRepository.delete(confirmationCode)
-
-                return RegistrationResponseDto.success(it.id, it.registrationDate)
-            } ?: log.error("Could not update user confirmation status!")
-            return RegistrationResponseDto.error(RegistrationErrorReason.USER_NOT_FOUND)
-        } ?: run {
+        val confirmationCode = confirmationCodeRepository.findByCode(code) ?: run {
             log.error("Could not find confirmation code $code")
             return RegistrationResponseDto.error(RegistrationErrorReason.INCORRECT_CONFIRMATION_CODE)
+        }
+        log.info("Confirmation code found! Updating user status...")
+
+        confirmationCode.user!!.let {
+            it.isConfirmed = true
+            userRepository.save(it)
+            log.info("User ${it.id} status successfully updated!")
+            confirmationCodeRepository.delete(confirmationCode)
+
+            return RegistrationResponseDto.success(it.id, it.registrationDate)
         }
     }
 
@@ -131,15 +129,18 @@ class RegistrationService(
     fun createConfirmationCode(userId: String): Pair<String, String> {
         log.info("Creating confirmation code for user with id: $userId")
 
-        userRepository.findUserById(UUID.fromString(userId))?.let { user ->
-            val confirmationCode = ConfirmationCode()
-            confirmationCode.user = user
-            confirmationCode.code = generateCode()
-            val savedCode = confirmationCodeRepository.save(confirmationCode)
-            log.info("Confirmation code for user with id: $userId was saved! Code: ${savedCode.code}")
+        val user = userRepository.findUserById(UUID.fromString(userId))
+            ?: throw UserNotFoundException(
+                "User with id $userId doesn't exist!", null
+            )
 
-            return Pair(savedCode.code!!, user.credentials?.email!!)
-        } ?: throw UserNotFoundException("User with id $userId doesn't exist!", null)
+        val confirmationCode = ConfirmationCode()
+        confirmationCode.user = user
+        confirmationCode.code = generateCode()
+        val savedCode = confirmationCodeRepository.save(confirmationCode)
+        log.info("Confirmation code for user with id: $userId was saved! Code: ${savedCode.code}")
+
+        return Pair(savedCode.code!!, user.credentials?.email!!)
     }
 
     fun sendCodeViaEmail(code: String, email: String?) {
