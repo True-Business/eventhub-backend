@@ -35,6 +35,14 @@ class SecurityConfig(
                 authRequest
                     .requestMatchers("/api/v1/auth/**").permitAll()
                     .requestMatchers("/actuator/**").permitAll()
+                    .requestMatchers(
+                        "api/event-hub",
+                        "api/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/v3/api-docs/**",
+                        "/swagger-resources/**",
+                        "/webjars/**",
+                    ).permitAll()
                     .anyRequest().authenticated()
             }
             .httpBasic { }

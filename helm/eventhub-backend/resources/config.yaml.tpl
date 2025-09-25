@@ -23,6 +23,12 @@ spring:
 server:
   port: {{ .Values.eventhubBackendDeploy.service.port }}
 
+springdoc:
+  swagger-ui:
+    path: /api/event-hub
+  api-docs:
+    path: /v3/api-docs
+
 management:
   endpoint:
     health:
