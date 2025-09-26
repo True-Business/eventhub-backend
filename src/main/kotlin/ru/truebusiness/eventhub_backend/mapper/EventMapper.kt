@@ -7,6 +7,8 @@ import ru.truebusiness.eventhub_backend.service.model.EventModel
 
 @Mapper(componentModel = "spring")
 interface EventMapper {
+
     fun eventDtoToEventModel(eventRequestDto: CreateEventRequestDto): EventModel
+
     fun eventModelToEventEntity(eventModel: EventModel): Event
 }
