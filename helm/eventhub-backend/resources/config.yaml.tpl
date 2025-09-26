@@ -7,6 +7,10 @@ spring:
     password: ${DB_PASSWORD}
   liquibase:
     change-log: classpath:db.changelog/db.changelog-master.xml
+  jpa:
+    properties:
+      hibernate:
+        physical_naming_strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
   mail:
     host: smtp.mail.ru
     port: 465
