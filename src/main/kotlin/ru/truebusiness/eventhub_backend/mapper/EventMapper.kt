@@ -5,6 +5,7 @@ import org.mapstruct.Mapper
 import org.mapstruct.MappingTarget
 import org.mapstruct.NullValuePropertyMappingStrategy
 import ru.truebusiness.eventhub_backend.conrollers.dto.CreateEventRequestDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.EventDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.UpdateEventRequestDto
 import ru.truebusiness.eventhub_backend.repository.entity.Event
 import ru.truebusiness.eventhub_backend.service.model.EventModel
@@ -20,4 +21,6 @@ interface EventMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     fun eventModelToEventEntity(eventModel: EventModel, @MappingTarget event: Event)
+
+    fun eventEntityToEventDTO(event: Event): EventDto
 }

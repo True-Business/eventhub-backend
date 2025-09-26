@@ -2,6 +2,7 @@ package ru.truebusiness.eventhub_backend.service
 
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
+import ru.truebusiness.eventhub_backend.conrollers.dto.EventDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.NewEventResponse
 import ru.truebusiness.eventhub_backend.exceptions.EventNotFoundException
 import ru.truebusiness.eventhub_backend.logger
@@ -19,20 +20,17 @@ class EventService(
     private val log by logger()
 
     @Transactional
-    fun create(eventModel: EventModel): NewEventResponse {
+    fun create(eventModel: EventModel): EventDto {
         log.info("Creating new event: ${eventModel.name}")
 
         val event: Event = eventMapper.eventModelToEventEntity(eventModel)
         val newEvent = eventRepository.save(event)
 
         log.info("New event created successfully!")
-        return NewEventResponse(
-            newEvent.id,
-            newEvent.name
-        )
+        return eventMapper.eventEntityToEventDTO(newEvent);
     }
 
-    fun update(eventID: UUID, eventModel: EventModel): NewEventResponse {
+    fun updateByID(eventID: UUID, eventModel: EventModel): EventDto {
         log.info("Updating event: $eventID")
 
         val event: Event = eventRepository.findById(eventID)
@@ -42,9 +40,6 @@ class EventService(
         val updatedEvent = eventRepository.save(event)
 
         log.info("New event updated successfully!")
-        return NewEventResponse(
-            updatedEvent.id,
-            updatedEvent.name
-        )
+        return eventMapper.eventEntityToEventDTO(updatedEvent);
     }
 }
