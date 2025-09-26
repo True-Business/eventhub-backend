@@ -21,17 +21,17 @@ class EventController(
     private val eventMapper: EventMapper
 ) {
     @PostMapping
-    fun createEvent(@RequestBody createEventRequestDto: CreateEventRequestDto): ResponseEntity<NewEventResponse> {
-        val response = eventService.createEvent(eventMapper.eventDtoToEventModel(createEventRequestDto))
+    fun create(@RequestBody createEventRequestDto: CreateEventRequestDto): ResponseEntity<NewEventResponse> {
+        val response = eventService.create(eventMapper.eventDtoToEventModel(createEventRequestDto))
         return ResponseEntity.ok(response)
     }
 
     @PutMapping("/{eventID}")
-    fun updateEvent(
+    fun update(
         @PathVariable("eventID") eventID: UUID,
         @RequestBody updateEventRequestDto: UpdateEventRequestDto
     ): ResponseEntity<NewEventResponse> {
-        val response = eventService.updateEvent(eventID, eventMapper.eventDtoToEventModel(updateEventRequestDto))
+        val response = eventService.update(eventID, eventMapper.eventDtoToEventModel(updateEventRequestDto))
         return ResponseEntity.ok(response)
     }
 }
