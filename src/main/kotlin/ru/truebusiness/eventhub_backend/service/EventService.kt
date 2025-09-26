@@ -19,7 +19,7 @@ class EventService(
     private val log by logger()
 
     @Transactional
-    fun createEvent(eventModel: EventModel): NewEventResponse {
+    fun create(eventModel: EventModel): NewEventResponse {
         log.info("Creating new event: ${eventModel.name}")
 
         val event: Event = eventMapper.eventModelToEventEntity(eventModel)
@@ -32,7 +32,7 @@ class EventService(
         )
     }
 
-    fun updateEvent(eventID: UUID, eventModel: EventModel): NewEventResponse {
+    fun update(eventID: UUID, eventModel: EventModel): NewEventResponse {
         log.info("Updating event: $eventID")
 
         val event: Event = eventRepository.findById(eventID)
