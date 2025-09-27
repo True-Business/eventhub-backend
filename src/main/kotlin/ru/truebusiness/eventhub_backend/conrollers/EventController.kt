@@ -1,14 +1,18 @@
 package ru.truebusiness.eventhub_backend.conrollers
 
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import ru.truebusiness.eventhub_backend.mapper.EventMapper
 import ru.truebusiness.eventhub_backend.conrollers.dto.CreateEventRequestDto
-import ru.truebusiness.eventhub_backend.conrollers.dto.NewEventResponse
+import ru.truebusiness.eventhub_backend.conrollers.dto.EventDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.UpdateEventRequestDto
 import ru.truebusiness.eventhub_backend.service.EventService
+import java.util.UUID
 
 @RestController
 @RequestMapping("/api/v1/event")
@@ -17,8 +21,17 @@ class EventController(
     private val eventMapper: EventMapper
 ) {
     @PostMapping
-    fun createEvent(@RequestBody createEventRequestDto: CreateEventRequestDto): ResponseEntity<NewEventResponse> {
-        val response = eventService.createEvent(eventMapper.eventDtoToEventModel(createEventRequestDto))
-        return ResponseEntity.ok(response)
+    fun create(@RequestBody createEventRequestDto: CreateEventRequestDto): ResponseEntity<EventDto> {
+        val response = eventService.create(eventMapper.eventDtoToEventModel(createEventRequestDto))
+        return ResponseEntity.ok(eventMapper.eventModelToEventDTO(response))
+    }
+
+    @PutMapping("/{eventID}")
+    fun updateById(
+        @PathVariable("eventID") eventID: UUID,
+        @RequestBody updateEventRequestDto: UpdateEventRequestDto
+    ): ResponseEntity<EventDto> {
+        val response = eventService.update( eventMapper.eventDtoToEventModel(eventID, updateEventRequestDto))
+        return ResponseEntity.ok(eventMapper.eventModelToEventDTO(response))
     }
 }
