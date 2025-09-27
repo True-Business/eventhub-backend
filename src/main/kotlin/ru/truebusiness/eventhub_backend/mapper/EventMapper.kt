@@ -9,16 +9,19 @@ import ru.truebusiness.eventhub_backend.conrollers.dto.EventDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.UpdateEventRequestDto
 import ru.truebusiness.eventhub_backend.repository.entity.Event
 import ru.truebusiness.eventhub_backend.service.model.EventModel
+import java.util.UUID
 
 @Mapper(componentModel = "spring")
 interface EventMapper {
     fun eventDtoToEventModel(eventRequestDto: CreateEventRequestDto): EventModel
     fun eventModelToEventEntity(eventModel: EventModel): Event
 
-    fun eventDtoToEventModel(eventRequestDto: UpdateEventRequestDto): EventModel
+    fun eventDtoToEventModel(eventID: UUID, eventRequestDto: UpdateEventRequestDto): EventModel
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     fun eventModelToEventEntity(eventModel: EventModel, @MappingTarget event: Event)
 
-    fun eventEntityToEventDTO(event: Event): EventDto
+    fun eventModelToEventDTO(eventModel: EventModel): EventDto
+
+    fun eventToEventModel(event: Event): EventModel
 }
