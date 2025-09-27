@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController
 import ru.truebusiness.eventhub_backend.mapper.EventMapper
 import ru.truebusiness.eventhub_backend.conrollers.dto.CreateEventRequestDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.EventDto
-import ru.truebusiness.eventhub_backend.conrollers.dto.NewEventResponse
 import ru.truebusiness.eventhub_backend.conrollers.dto.UpdateEventRequestDto
 import ru.truebusiness.eventhub_backend.service.EventService
 import java.util.UUID
@@ -24,15 +23,15 @@ class EventController(
     @PostMapping
     fun create(@RequestBody createEventRequestDto: CreateEventRequestDto): ResponseEntity<EventDto> {
         val response = eventService.create(eventMapper.eventDtoToEventModel(createEventRequestDto))
-        return ResponseEntity.ok(response)
+        return ResponseEntity.ok(eventMapper.eventModelToEventDTO(response))
     }
 
     @PutMapping("/{eventID}")
-    fun update(
+    fun updateById(
         @PathVariable("eventID") eventID: UUID,
         @RequestBody updateEventRequestDto: UpdateEventRequestDto
     ): ResponseEntity<EventDto> {
-        val response = eventService.updateByID(eventID, eventMapper.eventDtoToEventModel(updateEventRequestDto))
-        return ResponseEntity.ok(response)
+        val response = eventService.update( eventMapper.eventDtoToEventModel(eventID, updateEventRequestDto))
+        return ResponseEntity.ok(eventMapper.eventModelToEventDTO(response))
     }
 }

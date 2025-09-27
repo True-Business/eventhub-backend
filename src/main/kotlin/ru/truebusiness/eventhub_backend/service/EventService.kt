@@ -2,8 +2,6 @@ package ru.truebusiness.eventhub_backend.service
 
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
-import ru.truebusiness.eventhub_backend.conrollers.dto.EventDto
-import ru.truebusiness.eventhub_backend.conrollers.dto.NewEventResponse
 import ru.truebusiness.eventhub_backend.exceptions.EventNotFoundException
 import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.mapper.EventMapper
@@ -20,26 +18,26 @@ class EventService(
     private val log by logger()
 
     @Transactional
-    fun create(eventModel: EventModel): EventDto {
+    fun create(eventModel: EventModel): EventModel {
         log.info("Creating new event: ${eventModel.name}")
 
         val event: Event = eventMapper.eventModelToEventEntity(eventModel)
         val newEvent = eventRepository.save(event)
 
         log.info("New event created successfully!")
-        return eventMapper.eventEntityToEventDTO(newEvent);
+        return eventMapper.eventToEventModel(newEvent)
     }
 
-    fun updateByID(eventID: UUID, eventModel: EventModel): EventDto {
-        log.info("Updating event: $eventID")
+    fun update(eventModel: EventModel): EventModel {
+        log.info("Updating event: ${eventModel.id}")
 
-        val event: Event = eventRepository.findById(eventID)
-            .orElseThrow { EventNotFoundException("Event with id $eventID doesn't exist!", null) }
+        val event: Event = eventRepository.findById(eventModel.id)
+            .orElseThrow { EventNotFoundException("Event with id ${eventModel.id} doesn't exist!", null) }
         eventMapper.eventModelToEventEntity(eventModel, event)
 
         val updatedEvent = eventRepository.save(event)
 
-        log.info("New event updated successfully!")
-        return eventMapper.eventEntityToEventDTO(updatedEvent);
+        log.info("Event updated successfully!")
+        return eventMapper.eventToEventModel(updatedEvent)
     }
 }

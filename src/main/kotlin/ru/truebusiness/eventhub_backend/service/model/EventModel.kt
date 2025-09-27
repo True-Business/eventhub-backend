@@ -4,6 +4,7 @@ import java.time.Instant
 import java.util.UUID
 
 class EventModel(
+    var id: UUID,
     var name: String,
     var startDateTime: Instant,
     var endDateTime: Instant?,
