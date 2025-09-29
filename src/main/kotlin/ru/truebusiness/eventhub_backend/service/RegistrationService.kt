@@ -14,7 +14,7 @@ import ru.truebusiness.eventhub_backend.repository.UserRepository
 import ru.truebusiness.eventhub_backend.repository.entity.ConfirmationCode
 import ru.truebusiness.eventhub_backend.repository.entity.User
 import ru.truebusiness.eventhub_backend.repository.entity.UserCredentials
-import java.util.*
+import java.util.UUID
 
 @Service
 class RegistrationService(
@@ -45,16 +45,14 @@ class RegistrationService(
         try {
             log.info("Started registration of new user...")
 
-            val newUser = userRepository.save(User())
+            val newUser = userRepository.save(User(username = "", shortId = "",
+                isConfirmed = false, credentials = null))
 
             log.info("New user registered! User id = ${newUser.id}")
             log.info("Saving new user credentials...")
 
-            val credentials = UserCredentials().apply {
-                this.email = email
-                this.password = passwordEncoder.encode(password)
-                this.user = newUser
-            }
+            val credentials = UserCredentials(email = email,
+                password = passwordEncoder.encode(password), user =  newUser)
             userCredentialsRepository.save(credentials)
 
             log.info("Credentials for user ${newUser.id} saved!")
@@ -103,19 +101,21 @@ class RegistrationService(
      */
     @Transactional
     fun verifyRegistrationCode(code: String): RegistrationResponseDto {
-        val confirmationCode = confirmationCodeRepository.findByCode(code) ?: run {
+        confirmationCodeRepository.findByCode(code)?.let { confirmationCode ->
+            log.info("Confirmation code found! Updating user status...")
+
+            confirmationCode.user?.let {
+                it.isConfirmed = true
+                userRepository.save(it)
+                log.info("User ${it.id} status successfully updated!")
+                confirmationCodeRepository.delete(confirmationCode)
+
+                return RegistrationResponseDto.success(it.id, it.registrationDate)
+            } ?: log.error("Could not update user confirmation status!")
+            return RegistrationResponseDto.error(RegistrationErrorReason.USER_NOT_FOUND)
+        } ?: run {
             log.error("Could not find confirmation code $code")
             return RegistrationResponseDto.error(RegistrationErrorReason.INCORRECT_CONFIRMATION_CODE)
-        }
-        log.info("Confirmation code found! Updating user status...")
-
-        confirmationCode.user!!.let {
-            it.isConfirmed = true
-            userRepository.save(it)
-            log.info("User ${it.id} status successfully updated!")
-            confirmationCodeRepository.delete(confirmationCode)
-
-            return RegistrationResponseDto.success(it.id, it.registrationDate)
         }
     }
 
@@ -129,18 +129,13 @@ class RegistrationService(
     fun createConfirmationCode(userId: String): Pair<String, String> {
         log.info("Creating confirmation code for user with id: $userId")
 
-        val user = userRepository.findUserById(UUID.fromString(userId))
-            ?: throw UserNotFoundException(
-                "User with id $userId doesn't exist!", null
-            )
+        userRepository.findUserById(UUID.fromString(userId))?.let { user ->
+            val confirmationCode = ConfirmationCode(code = generateCode(), user = user)
+            val savedCode = confirmationCodeRepository.save(confirmationCode)
+            log.info("Confirmation code for user with id: $userId was saved! Code: ${savedCode.code}")
 
-        val confirmationCode = ConfirmationCode()
-        confirmationCode.user = user
-        confirmationCode.code = generateCode()
-        val savedCode = confirmationCodeRepository.save(confirmationCode)
-        log.info("Confirmation code for user with id: $userId was saved! Code: ${savedCode.code}")
-
-        return Pair(savedCode.code!!, user.credentials?.email!!)
+            return Pair(savedCode.code!!, user.credentials?.email!!)
+        } ?: throw UserNotFoundException("User with id $userId doesn't exist!", null)
     }
 
     fun sendCodeViaEmail(code: String, email: String?) {

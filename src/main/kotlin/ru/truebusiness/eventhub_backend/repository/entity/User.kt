@@ -5,24 +5,20 @@ import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.UUID
-
 
 @Entity
 @Table(name = "users")
-class User {
+class User(
     @Id
-    var id: UUID? = UUID.randomUUID()
+    var id: UUID = UUID.randomUUID(),
 
-    var username: String = ""
-
-    var shortId: String = ""
-
-    var registrationDate: LocalDateTime? = LocalDateTime.now()
-
-    var isConfirmed: Boolean = false
+    var username: String,
+    var shortId: String,
+    var registrationDate: Instant = Instant.now(),
+    var isConfirmed: Boolean,
 
     @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL])
-    var credentials: UserCredentials? = null
-}
+    var credentials: UserCredentials?
+)

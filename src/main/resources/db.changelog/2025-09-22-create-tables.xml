@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.30.xsd">
+
+    <changeSet id="add_users_table" author="m.potapov">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="users"/>
+            </not>
+        </preConditions>
+        <comment>Created the users table.</comment>
+        <createTable tableName="users">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="username" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="short_id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="registration_date" type="TIMESTAMPTZ">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_confirmed" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add_user_credentials_table" author="m.potapov">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="user_credentials"/>
+            </not>
+        </preConditions>
+        <comment>Created the user_credentials table.</comment>
+        <createTable tableName="user_credentials">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="email" type="VARCHAR(255)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="user_credentials"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_user_credentials_user"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+        <createIndex tableName="user_credentials" indexName="index_user_credentials_email">
+            <column name="email"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="add_confirmation_codes_table" author="m.potapov">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="confirmation_codes"/>
+            </not>
+        </preConditions>
+        <comment>Created the confirmation_codes table.</comment>
+        <createTable tableName="confirmation_codes">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="code" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="confirmation_codes"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_confirmation_codes_user"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="add_organizations_table" author="m.potapov">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="organizations"/>
+            </not>
+        </preConditions>
+        <comment>Created the organizations table.</comment>
+        <createTable tableName="organizations">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="description" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="address" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_verified" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creator_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="organizations"
+                                 baseColumnNames="creator_id"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_organizations_users"
+                                 onDelete="CASCADE"/>
+        <createIndex tableName="organizations" indexName="index_organizations_name">
+            <column name="name"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="add_events_table" author="m.potapov">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="events"/>
+            </not>
+        </preConditions>
+        <comment>Created the events table.</comment>
+        <createTable tableName="events">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(128)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="start_datetime" type="TIMESTAMPTZ">
+                <constraints nullable="false"/>
+            </column>
+            <column name="end_datetime" type="TIMESTAMPTZ"/>
+            <column name="updated_at" type="TIMESTAMPTZ">
+                <constraints nullable="false"/>
+            </column>
+            <column name="organizer_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="organization_id" type="UUID"/>
+            <column name="category" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="address" type="VARCHAR(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="route" type="VARCHAR(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(1024)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price" type="DECIMAL(10,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_open" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="city" type="VARCHAR(128)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_with_register" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="people_limit" type="INT"/>
+            <column name="register_end_datetime" type="TIMESTAMPTZ"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="events"
+                                 baseColumnNames="organizer_id"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_events_users"
+                                 onDelete="CASCADE"/>
+        <addForeignKeyConstraint baseTableName="events"
+                                 baseColumnNames="organization_id"
+                                 referencedTableName="organizations"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_events_organizations"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+</databaseChangeLog>
