@@ -1,46 +1,38 @@
 package ru.truebusiness.eventhub_backend.repository.entity
 
 import jakarta.persistence.Entity
-import jakarta.persistence.Id
 import jakarta.persistence.Table
-import java.time.LocalDate
-import java.time.LocalDateTime
+import jakarta.persistence.Id
+import jakarta.persistence.Enumerated
+import jakarta.persistence.EnumType
+import java.time.Instant
 import java.util.UUID
 
 @Entity
 @Table(name = "events")
-class Event() {
-
+class Event(
     @Id
-    var id: UUID = UUID.randomUUID()
+    var id: UUID = UUID.randomUUID(),
 
-    var name: String = ""
+    var name: String,
+    var startDateTime: Instant,
+    var endDateTime: Instant?,
+    var updatedAt: Instant = Instant.now(),
+    var organizerId: UUID,
+    var organizationId: UUID?,
 
-    // TODO: startTime лишнее
-    var startDate: LocalDateTime? = null
-    var startTime: LocalDateTime? = null
-    var endTime: LocalDateTime? = null
+    @Enumerated(EnumType.STRING)
+    var category: EventCategory,
+    var address: String,
+    var route: String,
+    var description: String,
+    var price: Double,
+    var isOpen: Boolean,
 
-    var updatedAt: LocalDateTime? = LocalDateTime.now()
-
-    var organizerId: UUID? = null
-    var organizationId: UUID? = null
-    var eventCategory: Int? = null
-
-    var address: String? = null
-    var route: String? = null
-    var description: String? = null
-
-    var isFree: Boolean? = null
-    var price: Double? = null
-    var isOpen: Boolean? = null
-
-    var eventStatus: String? = null
-    var city: String? = null
-    var isWithRegister: Boolean? = null
-    var peopleLimit: Int? = null
-
-    // TODO: registerEndDate лишнее, можно всё в registerEndTime запихать и назвать как registerEndDate
-    var registerEndDate: LocalDate? = null
-    var registerEndTime: LocalDateTime? = null
-}
+    @Enumerated(EnumType.STRING)
+    var status: EventStatus,
+    var city: String,
+    var isWithRegister: Boolean,
+    var peopleLimit: Int?,
+    var registerEndDateTime: Instant?
+)

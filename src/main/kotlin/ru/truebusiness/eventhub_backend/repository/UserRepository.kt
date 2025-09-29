@@ -6,7 +6,6 @@ import ru.truebusiness.eventhub_backend.repository.entity.ConfirmationCode
 import ru.truebusiness.eventhub_backend.repository.entity.User
 import ru.truebusiness.eventhub_backend.repository.entity.UserCredentials
 import java.time.Instant
-import java.util.Date
 import java.util.UUID
 
 @Repository

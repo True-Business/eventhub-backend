@@ -50,7 +50,8 @@ class RegistrationService(
         try {
             log.info("Started registration of new user...")
 
-            val newUser = userRepository.save(User())
+            val newUser = userRepository.save(User(username = "", shortId = "",
+                isConfirmed = false, credentials = null))
 
             log.info("New user registered! User id = ${newUser.id}")
             log.info("Saving new user credentials...")
