@@ -1,0 +1,31 @@
+package ru.truebusiness.eventhub_backend.conrollers.dto
+
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.util.UUID
+
+data class UpdateEventRequestDto(
+    val name: String,
+    val startDate: LocalDateTime?,
+    val startTime: LocalDateTime?,
+    val endTime: LocalDateTime?,
+    /**
+     * Возможно organizerId и organizationId имеет смысл перенести в хэдэры запроса и уже
+     * оттуда доставать их
+     */
+    val organizerId: UUID?,
+    val organizationId: UUID?,
+    val eventCategory: Int?,
+    val address: String?,
+    val route: String?,
+    val description: String?,
+    val isFree: Boolean?,
+    val price: Double?,
+    val isOpen: Boolean?,
+    val eventStatus: String?,
+    val city: String?,
+    val isWithRegister: Boolean?,
+    val peopleLimit: Int?,
+    val registerEndDate: LocalDate?,
+    val registerEndTime: LocalDateTime?,
+)

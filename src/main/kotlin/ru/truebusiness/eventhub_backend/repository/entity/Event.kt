@@ -34,5 +34,7 @@ class Event(
     var city: String,
     var isWithRegister: Boolean,
     var peopleLimit: Int?,
-    var registerEndDateTime: Instant?
+    var registerEndDateTime: Instant?,
+
+    var isDraft: Boolean,
 )
