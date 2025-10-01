@@ -10,5 +10,5 @@ class OrganizationModel (
     var pictureUrl: String?,
 
     var isVerified: Boolean = false,
-    var creatorId: UUID?
+    var creatorId: UUID
 )
