@@ -1,7 +1,28 @@
 package ru.truebusiness.eventhub_backend.conrollers.dto
 
+import io.swagger.v3.oas.annotations.media.Schema
+
+@Schema(
+    description = "Статус процесса регистрации",
+    example = "SUCCESS",
+    allowableValues = ["PENDING", "SUCCESS", "ERROR"]
+)
 enum class RegistrationStatus {
-    SUCCESS,
+    /**
+     * Регистрация подтверждена кодом, но не завершена (ожидает добавления информации)
+     */
+    @Schema(description = "Регистрация подтверждена кодом, но не завершена")
     PENDING,
+
+    /**
+     * Регистрация успешно завершена
+     */
+    @Schema(description = "Регистрация успешно завершена")
+    SUCCESS,
+
+    /**
+     * Ошибка в процессе регистрации
+     */
+    @Schema(description = "Ошибка в процессе регистрации")
     ERROR,
 }
