@@ -125,4 +125,5 @@ data class CreateEventRequestDto(
         requiredMode = Schema.RequiredMode.NOT_REQUIRED
     )
     val registerEndDateTime: Instant?,
+    val isDraft: Boolean,
 )
