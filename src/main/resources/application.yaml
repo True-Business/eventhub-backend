@@ -27,6 +27,13 @@ spring:
 server:
   port: 8080
 
+app:
+  registration:
+    cleanupJob:
+      cron: 0 0 * * * *
+      zone: Europe/Moscow
+    confirmationCodeExpirationMinutes: 5
+
 management:
   endpoint:
     health:

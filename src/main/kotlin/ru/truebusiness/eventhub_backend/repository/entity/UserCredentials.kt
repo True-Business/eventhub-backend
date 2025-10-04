@@ -13,11 +13,10 @@ import java.util.UUID
 class UserCredentials(
     @Id
     var id: UUID = UUID.randomUUID(),
-
     var email: String,
     var password: String,
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     var user: User
 )

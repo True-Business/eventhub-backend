@@ -1,6 +1,7 @@
 package ru.truebusiness.eventhub_backend.service
 
 import jakarta.transaction.Transactional
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -14,6 +15,8 @@ import ru.truebusiness.eventhub_backend.repository.UserRepository
 import ru.truebusiness.eventhub_backend.repository.entity.ConfirmationCode
 import ru.truebusiness.eventhub_backend.repository.entity.User
 import ru.truebusiness.eventhub_backend.repository.entity.UserCredentials
+import java.time.Duration
+import java.time.Instant
 import java.util.UUID
 
 @Service
@@ -22,7 +25,9 @@ class RegistrationService(
     private val userCredentialsRepository: UserCredentialsRepository,
     private val confirmationCodeRepository: ConfirmationCodeRepository,
     private val passwordEncoder: PasswordEncoder,
-    private val emailService: EmailService
+    private val emailService: EmailService,
+    @param:Value("\${app.registration.confirmationCodeExpirationMinutes}")
+    private val confirmationCodeExpirationMinutes: Long,
 ) {
     companion object {
         private const val CODE_MIN_VALUE: Int = 1000
@@ -51,15 +56,18 @@ class RegistrationService(
             log.info("New user registered! User id = ${newUser.id}")
             log.info("Saving new user credentials...")
 
-            val credentials = UserCredentials(email = email,
-                password = passwordEncoder.encode(password), user =  newUser)
-            userCredentialsRepository.save(credentials)
+            UserCredentials(
+                email = email,
+                password = passwordEncoder.encode(password),
+                user = newUser
+            ).also(userCredentialsRepository::save)
+
 
             log.info("Credentials for user ${newUser.id} saved!")
             log.info("User created successfully! Warning: user is not confirmed!")
 
             return RegistrationResponseDto.pending(newUser.id, newUser.registrationDate)
-        } catch (ex: DataIntegrityViolationException) {
+        } catch (_: DataIntegrityViolationException) {
             log.error("Couldn't save credentials for user! Email violates unique constraint!")
             return RegistrationResponseDto.error(RegistrationErrorReason.USER_ALREADY_REGISTERED)
         }
@@ -101,21 +109,27 @@ class RegistrationService(
      */
     @Transactional
     fun verifyRegistrationCode(code: String): RegistrationResponseDto {
-        confirmationCodeRepository.findByCode(code)?.let { confirmationCode ->
-            log.info("Confirmation code found! Updating user status...")
+        val savedCode = confirmationCodeRepository.findByCode(code) ?: run {
+            return RegistrationResponseDto.error(
+                RegistrationErrorReason.INCORRECT_CONFIRMATION_CODE
+            )
+        }
 
-            confirmationCode.user?.let {
-                it.isConfirmed = true
-                userRepository.save(it)
-                log.info("User ${it.id} status successfully updated!")
-                confirmationCodeRepository.delete(confirmationCode)
+        return when {
+            Instant.now().isBefore(savedCode.expiresAt) -> {
+                log.debug("Confirmation code {} found", savedCode)
+                confirmationCodeRepository.delete(savedCode)
+                with(savedCode.user) {
+                    isConfirmed = true
+                    userRepository.save(this)
+                    log.debug("User {} status successfully updated!", id)
+                    RegistrationResponseDto.success(id, registrationDate)
+                }
+            }
 
-                return RegistrationResponseDto.success(it.id, it.registrationDate)
-            } ?: log.error("Could not update user confirmation status!")
-            return RegistrationResponseDto.error(RegistrationErrorReason.USER_NOT_FOUND)
-        } ?: run {
-            log.error("Could not find confirmation code $code")
-            return RegistrationResponseDto.error(RegistrationErrorReason.INCORRECT_CONFIRMATION_CODE)
+            else -> {
+                RegistrationResponseDto.error(RegistrationErrorReason.CONFIRMATION_CODE_EXPIRED)
+            }
         }
     }
 
@@ -127,20 +141,31 @@ class RegistrationService(
      */
     @Transactional
     fun createConfirmationCode(userId: String): Pair<String, String> {
-        log.info("Creating confirmation code for user with id: $userId")
+        log.debug("Creating confirmation code for user with id: $userId")
+        val user = userRepository.findUserById(UUID.fromString(userId)) ?: run {
+            throw UserNotFoundException(
+                "User with id $userId doesn't exist!", null
+            )
+        }
 
-        userRepository.findUserById(UUID.fromString(userId))?.let { user ->
-            val confirmationCode = ConfirmationCode(code = generateCode(), user = user)
-            val savedCode = confirmationCodeRepository.save(confirmationCode)
-            log.info("Confirmation code for user with id: $userId was saved! Code: ${savedCode.code}")
+        val savedCode = ConfirmationCode(
+            code = generateConfirmationCode(),
+            expiresAt = calculateConfirmationCodeExpirationTime(),
+            user = user
+        ).let(confirmationCodeRepository::save)
 
-            return Pair(savedCode.code!!, user.credentials?.email!!)
-        } ?: throw UserNotFoundException("User with id $userId doesn't exist!", null)
+        log.debug("Confirmation code for user with id: $userId was saved! Code: ${savedCode.code}")
+        return Pair(savedCode.code, user.credentials?.email!!)
     }
 
     fun sendCodeViaEmail(code: String, email: String?) {
         emailService.sendConfirmationCode(code, email)
     }
 
-    private fun generateCode() : String = (CODE_MIN_VALUE..CODE_MAX_VALUE).random().toString()
+    private fun generateConfirmationCode(): String =
+        (CODE_MIN_VALUE..CODE_MAX_VALUE).random().toString()
+
+    private fun calculateConfirmationCodeExpirationTime() = Instant.now().plus(
+        Duration.ofMinutes(confirmationCodeExpirationMinutes)
+    )
 }
