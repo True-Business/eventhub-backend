@@ -31,7 +31,7 @@ app:
     cleanupJob:
       cron: {{ .Values.eventhubBackendDeploy.appConfig.registration.cleanupJob.cron }}
       zone: {{ .Values.eventhubBackendDeploy.appConfig.registration.cleanupJob.zone }}
-    tokenExpirationMinutes: {{ .Values.eventhubBackendDeploy.appConfig.registration.tokenExpirationMinutes }}
+    confirmationCodeExpirationMinutes: {{ .Values.eventhubBackendDeploy.appConfig.registration.confirmationCodeExpirationMinutes }}
 
 management:
   endpoint:

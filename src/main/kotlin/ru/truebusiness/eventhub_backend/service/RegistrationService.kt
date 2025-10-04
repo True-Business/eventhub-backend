@@ -26,7 +26,7 @@ class RegistrationService(
     private val confirmationCodeRepository: ConfirmationCodeRepository,
     private val passwordEncoder: PasswordEncoder,
     private val emailService: EmailService,
-    @param:Value("\${app.registration.tokenExpirationMinutes}")
+    @param:Value("\${app.registration.confirmationCodeExpirationMinutes}")
     private val confirmationCodeExpirationMinutes: Long,
 ) {
     companion object {

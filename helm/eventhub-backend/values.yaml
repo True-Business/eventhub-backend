@@ -30,7 +30,7 @@ eventhubBackendDeploy:
       cleanupJob:
         cron: "0 0 0 * * *"
         zone: "Europe/Moscow"
-      tokenExpirationMinutes: 5
+      confirmationCodeExpirationMinutes: 5
     minio:
       # This values must be set up in ci
       user: "miniouser"

@@ -32,7 +32,7 @@ app:
     cleanupJob:
       cron: 0 0 * * * *
       zone: Europe/Moscow
-    tokenExpirationMinutes: 5
+    confirmationCodeExpirationMinutes: 5
 
 management:
   endpoint:
