@@ -4,6 +4,7 @@ import java.time.Instant
 import java.util.UUID
 
 class EventModel(
+    var id: UUID,
     var name: String,
     var startDateTime: Instant,
     var endDateTime: Instant?,
@@ -20,5 +21,6 @@ class EventModel(
     var city: String,
     var isWithRegister: Boolean,
     var peopleLimit: Int?,
-    var registerEndDateTime: Instant?
+    var registerEndDateTime: Instant?,
+    var isDraft: Boolean,
 )

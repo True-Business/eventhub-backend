@@ -10,7 +10,7 @@ import org.testcontainers.containers.PostgreSQLContainer
 class TestContainersConfig(image: String) : GenericContainer<TestContainersConfig>(image)
 
 object Containers {
-    val postgres = TestContainersConfig("docker.io/bitnami/postgresql:17.6.0-debian-12-r0").apply {
+    val postgres = TestContainersConfig("docker.io/bitnamilegacy/postgresql:17.6.0-debian-12-r0").apply {
         addEnv("POSTGRESQL_DATABASE", "testdb")
         addEnv("POSTGRESQL_USERNAME", "test")
         addEnv("POSTGRESQL_PASSWORD", "test")
