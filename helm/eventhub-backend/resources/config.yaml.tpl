@@ -26,6 +26,12 @@ spring:
             enable: false
 server:
   port: {{ .Values.eventhubBackendDeploy.service.port }}
+app:
+  registration:
+    cleanupJob:
+      cron: {{ .Values.eventhubBackendDeploy.appConfig.registration.cleanupJob.cron }}
+      zone: {{ .Values.eventhubBackendDeploy.appConfig.registration.cleanupJob.zone }}
+    confirmationCodeExpirationMinutes: {{ .Values.eventhubBackendDeploy.appConfig.registration.confirmationCodeExpirationMinutes }}
 
 springdoc:
   swagger-ui:

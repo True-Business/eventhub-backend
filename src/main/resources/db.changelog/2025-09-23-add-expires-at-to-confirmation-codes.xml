@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+    <changeSet id="add-expires-at-to-confirmation-codes" author="denis zhdanov">
+        <addColumn tableName="confirmation_codes">
+            <column name="expires_at"
+                    type="TIMESTAMPTZ"
+                    defaultValueComputed="NOW() + INTERVAL '5 minutes'">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <comment>
+            Adds expires_at column to track expiration time of confirmation
+            codes
+        </comment>
+    </changeSet>
+
+</databaseChangeLog>

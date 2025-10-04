@@ -26,6 +26,11 @@ eventhubBackendDeploy:
       login: "events.hub@mail.ru"
       # This values must be set up in ci.
       password: "0000"
+    registration:
+      cleanupJob:
+        cron: "0 0 0 * * *"
+        zone: "Europe/Moscow"
+      confirmationCodeExpirationMinutes: 5
     minio:
       # This values must be set up in ci
       user: "miniouser"

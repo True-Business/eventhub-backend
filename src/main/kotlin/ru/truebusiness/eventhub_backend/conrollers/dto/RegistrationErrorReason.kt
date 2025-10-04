@@ -14,6 +14,7 @@ enum class RegistrationErrorReason {
     INCORRECT_CONFIRMATION_CODE,
 
     @Schema(description = "Пользователь с таким email уже зарегистрирован")
+    CONFIRMATION_CODE_EXPIRED,
     USER_ALREADY_REGISTERED,
 
     @Schema(description = "Email не указан в запросе")
