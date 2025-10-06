@@ -1,5 +1,6 @@
 package ru.truebusiness.eventhub_backend.repository.entity
 
+import java.time.Instant
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
@@ -13,6 +14,7 @@ class ConfirmationCode(
     @Id
     var id: UUID = UUID.randomUUID(),
     var code: String,
+    var expiresAt: Instant,
 
     @ManyToOne
     @JoinColumn(name = "user_id")
