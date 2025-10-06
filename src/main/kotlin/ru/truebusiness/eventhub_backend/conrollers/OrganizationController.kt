@@ -16,16 +16,7 @@ class OrganizationController(
 ) {
     @PostMapping
     fun create(@RequestBody createOrganizationRequestDto: CreateOrganizationRequestDto): ResponseEntity<Any> {
-        return try {
-            val response = organizationService.create(organizationMapper.organizationDtoToOrganizationModel(createOrganizationRequestDto))
-            ResponseEntity.ok(response)
-        } catch (e: OrganizationAlreadyExistsException) {
-            ResponseEntity.status(HttpStatus.CONFLICT).body(
-                mapOf(
-                    "error" to "Organization already exists",
-                    "message" to e.message
-                )
-            )
-        }
+        val response = organizationService.create(organizationMapper.organizationDtoToOrganizationModel(createOrganizationRequestDto))
+        return ResponseEntity.ok(response)
     }
 }
