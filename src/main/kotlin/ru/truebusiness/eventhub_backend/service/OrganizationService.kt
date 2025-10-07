@@ -32,13 +32,8 @@ class OrganizationService(
         val newOrganization = organizationRepository.save(organization)
 
         log.info("New organization created successfully!")
-        return OrganizationDto(
-            newOrganization.id,
-            newOrganization.name,
-            newOrganization.description,
-            newOrganization.address,
-            newOrganization.pictureUrl,
-            newOrganization.creator.id
+        return organizationMapper.organizationEntityToOrganizationDTO(
+            newOrganization
         )
     }
 }

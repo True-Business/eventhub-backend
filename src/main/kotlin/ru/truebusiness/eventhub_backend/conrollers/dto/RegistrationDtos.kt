@@ -9,7 +9,7 @@ data class UserInfoRegistrationDto(
         description = "Уникальный идентификатор пользователя в системе",
         example = "user123"
     )
-    val id: String,
+    val id: UUID,
 
     @field:Schema(description = "Имя пользователя", example = "john_doe")
     val username: String,
@@ -32,13 +32,14 @@ data class UserCredentialsRegistrationDto(
 )
 
 data class RegistrationResponseDto(
-    @field:Schema(
+    @param:Schema(
         description = "Уникальный идентификатор регистрации",
         example = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
     )
-    val id: UUID?,
-    val registrationDate: Instant?,
-    @field:Schema(
+    val id: UUID,
+
+    val registrationDate: Instant,
+    @param:Schema(
         description = """
             Статус регистрации:
             * PENDING - регистрация подтверждена, но не завершена
@@ -49,32 +50,11 @@ data class RegistrationResponseDto(
         example = "SUCCESS"
     )
     override val status: RegistrationStatus,
-    @field:Schema(
-        description = """
-            Причина ошибки (присутствует только при статусе ERROR). 
-            Возможные значения:
-            * USER_NOT_FOUND - пользователь не найден
-            * INCORRECT_CONFIRMATION_CODE - неверный код подтверждения
-            * USER_ALREADY_REGISTERED - пользователь уже зарегистрирован
-            * MISSING_EMAIL - отсутствует email в запросе
-            * SHORT_ID_ALREADY_USED - короткий идентификатор уже занят
-        """, example = "USER_ALREADY_REGISTERED", nullable = true
-    )
-    override val reason: String? = null,
-) : BaseStatusDto<RegistrationStatus>(status, reason) {
+) : BaseStatusDto<RegistrationStatus> {
 
     companion object {
-        fun error(reason: RegistrationErrorReason): RegistrationResponseDto {
-            return RegistrationResponseDto(
-                id = null,
-                registrationDate = null,
-                status = RegistrationStatus.ERROR,
-                reason = reason.name,
-            )
-        }
-
         fun pending(
-            id: UUID?, registrationDate: Instant?
+            id: UUID, registrationDate: Instant
         ): RegistrationResponseDto {
             return RegistrationResponseDto(
                 id = id,
@@ -84,7 +64,7 @@ data class RegistrationResponseDto(
         }
 
         fun success(
-            id: UUID?, registrationDate: Instant?
+            id: UUID, registrationDate: Instant
         ): RegistrationResponseDto {
             return RegistrationResponseDto(
                 id = id,

@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
-import ru.truebusiness.eventhub_backend.exceptions.UserNotFoundException
+import ru.truebusiness.eventhub_backend.exceptions.users.UserNotFoundException
 import ru.truebusiness.eventhub_backend.repository.UserCredentialsRepository
 
 @Configuration
@@ -17,8 +17,9 @@ class SecurityConfig(
 ) {
     @Bean
     fun userDetailsService(): UserDetailsService = UserDetailsService { email ->
-        val credentials = userCredentialsRepository.findByEmail(email)
-            ?: throw UserNotFoundException("User with email $email not found!", null)
+        val credentials = userCredentialsRepository.findByEmail(email) ?: run {
+            throw UserNotFoundException.withEmail(email)
+        }
 
         User.builder()
             .username(credentials.email)
