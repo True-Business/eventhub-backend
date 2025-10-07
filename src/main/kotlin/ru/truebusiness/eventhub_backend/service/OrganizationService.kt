@@ -4,11 +4,13 @@ import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import ru.truebusiness.eventhub_backend.conrollers.dto.OrganizationDto
 import ru.truebusiness.eventhub_backend.exceptions.OrganizationAlreadyExistsException
+import ru.truebusiness.eventhub_backend.exceptions.OrganizationNotFoundException
 import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.mapper.OrganizationMapper
 import ru.truebusiness.eventhub_backend.repository.OrganizationRepository
 import ru.truebusiness.eventhub_backend.repository.entity.Organization
 import ru.truebusiness.eventhub_backend.service.model.OrganizationModel
+import java.util.UUID
 
 @Service
 class OrganizationService(
@@ -39,6 +41,22 @@ class OrganizationService(
             newOrganization.address,
             newOrganization.pictureUrl,
             newOrganization.creator.id
+        )
+    }
+
+    @Transactional
+    fun getByID(id: UUID): OrganizationDto {
+        val organization = organizationRepository.findById(id)
+            .orElseThrow { OrganizationNotFoundException("Organization with id '${id}' does not exist", null) }
+
+        log.info("Organization found!")
+        return OrganizationDto(
+            organization.id,
+            organization.name,
+            organization.description,
+            organization.address,
+            organization.pictureUrl,
+            organization.creator.id
         )
     }
 }
