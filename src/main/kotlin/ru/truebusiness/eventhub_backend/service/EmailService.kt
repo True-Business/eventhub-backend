@@ -8,27 +8,23 @@ import ru.truebusiness.eventhub_backend.logger
 
 @Service
 class EmailService(
+    @param:Value("\${spring.mail.username}")
+    private val emailLogin: String,
     private val mailSender: JavaMailSender,
 ) {
     private val log by logger()
 
-    @Value("\${spring.mail.username}")
-    private lateinit var emailLogin: String
-
-    fun sendConfirmationCode(code: String, to: String?) {
+    fun sendConfirmationCode(code: String, to: String) {
         log.info("Sending confirmation code: {} on email: {}", code, to)
-        to?.let { email ->
-            val message = SimpleMailMessage()
-            message.setTo(email)
-            message.from = emailLogin
-            message.subject = "Confirm your registration to EventHub"
-            message.text = """
+        val message = SimpleMailMessage()
+        message.setTo(to)
+        message.from = emailLogin
+        message.subject = "Confirm your registration to EventHub"
+        message.text = """
                 Hello! 
                 
                 Your confirmation code is: $code
                 """.trimIndent()
-            mailSender.send(message)
-            log.info("Successfully sent to email $email")
-        } ?: log.error("Failed to send confirmation code!")
+        mailSender.send(message)
     }
 }
