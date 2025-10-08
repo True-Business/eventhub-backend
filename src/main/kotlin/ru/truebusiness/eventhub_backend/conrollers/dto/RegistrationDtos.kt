@@ -2,12 +2,13 @@ package ru.truebusiness.eventhub_backend.conrollers.dto
 
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.Instant
+import java.time.ZonedDateTime
 import java.util.UUID
 
 data class UserInfoRegistrationDto(
     @field:Schema(
         description = "Уникальный идентификатор пользователя в системе",
-        example = "user123"
+        example = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
     )
     val id: UUID,
 
@@ -16,7 +17,7 @@ data class UserInfoRegistrationDto(
 
     @field:Schema(
         description = "Короткий идентификатор для отображения",
-        example = "JD123"
+        example = "@JD123"
     )
     val shortId: String,
 )

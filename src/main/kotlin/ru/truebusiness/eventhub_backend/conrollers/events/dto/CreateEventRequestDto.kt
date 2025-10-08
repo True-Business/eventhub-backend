@@ -2,7 +2,6 @@ package ru.truebusiness.eventhub_backend.conrollers.events.dto
 
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.Instant
-import java.time.LocalDateTime
 import java.util.UUID
 import ru.truebusiness.eventhub_backend.repository.entity.EventCategory
 import ru.truebusiness.eventhub_backend.repository.entity.EventStatus
@@ -20,7 +19,7 @@ data class CreateEventRequestDto(
         format = "date-time",
         example = "2025-04-05T10:00:00Z",
     )
-    val startDateTime: LocalDateTime,
+    val startDateTime: Instant,
 
     @param:Schema(
         description = "Дата и время окончания события (может быть null, если неизвестно)",
@@ -28,7 +27,7 @@ data class CreateEventRequestDto(
         format = "date-time",
         example = "2025-04-05T17:00:00Z"
     )
-    val endDateTime: LocalDateTime?,
+    val endDateTime: Instant?,
 
     @param:Schema(
         description = "Идентификатор организатора события",
@@ -106,7 +105,7 @@ data class CreateEventRequestDto(
     val peopleLimit: Int?,
 
     @param:Schema(
-        description = "Дата и время окончания регистрации на событие (может быть null)",
+        description = "Дата и время окончания регистрации на событие",
         type = "string",
         format = "date-time",
         example = "2025-04-01T23:59:59Z",

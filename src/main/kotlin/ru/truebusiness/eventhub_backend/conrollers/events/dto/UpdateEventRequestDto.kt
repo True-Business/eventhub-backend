@@ -2,6 +2,7 @@ package ru.truebusiness.eventhub_backend.conrollers.events.dto
 
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDateTime
+import java.time.Instant
 import java.util.UUID
 import ru.truebusiness.eventhub_backend.repository.entity.EventCategory
 import ru.truebusiness.eventhub_backend.repository.entity.EventStatus
@@ -20,7 +21,7 @@ data class UpdateEventRequestDto(
         example = "2025-04-05T10:00:00Z",
         nullable = true
     )
-    val startDateTime: LocalDateTime?,
+    val startDateTime: Instant?,
     @param:Schema(
         description = "Новая дата окончания события",
         type = "string",
@@ -28,7 +29,7 @@ data class UpdateEventRequestDto(
         example = "2025-04-05T17:00:00Z",
         nullable = true
     )
-    val endDateTime: LocalDateTime?,
+    val endDateTime: Instant?,
     /**
      * Возможно organizerId и organizationId имеет смысл перенести в хэдэры запроса и уже
      * оттуда доставать их
@@ -124,5 +125,5 @@ data class UpdateEventRequestDto(
         example = "2025-03-25T23:59:59Z",
         nullable = true
     )
-    val registerEndDateTime: LocalDateTime?,
+    val registerEndDateTime: Instant?,
 )

@@ -3,6 +3,7 @@ package ru.truebusiness.eventhub_backend.service.users
 import jakarta.transaction.Transactional
 import java.time.Duration
 import java.time.Instant
+import java.time.ZonedDateTime
 import java.util.UUID
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.dao.DataIntegrityViolationException

@@ -8,7 +8,8 @@ class DataIntegrityViolationExceptionAnalyzer {
         fun isUniqueViolation(ex: DataIntegrityViolationException): Boolean {
             val psqlException = ex.rootCause as? PSQLException ?: return false
             val serverError = psqlException.serverErrorMessage ?: return false
-            return PostgreSQLErrorCodes.UniqueConstraint.code == serverError.sqlState
+            val code = serverError.sqlState ?: return false
+            return PostgreSQLErrorCodes.UniqueConstraint.code == code
         }
     }
 }

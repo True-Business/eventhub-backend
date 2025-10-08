@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 )
 enum class RegistrationStatus {
     /**
-     * Регистрация подтверждена кодом, но не завершена (ожидает добавления информации)
+     * Регистрация не завершена (ожидает подтверждения кодом)
      */
     @Schema(description = "Регистрация подтверждена кодом, но не завершена")
     PENDING,
