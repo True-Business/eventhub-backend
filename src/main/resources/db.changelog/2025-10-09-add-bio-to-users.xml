@@ -6,6 +6,11 @@
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.30.xsd">
 
     <changeSet id="add-bio-to-users" author="Matvey">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="users" columnName="bio"/>
+            </not>
+        </preConditions>
         <comment>Added bio column to the users table.</comment>
         <addColumn tableName="users">
             <column name="bio"
