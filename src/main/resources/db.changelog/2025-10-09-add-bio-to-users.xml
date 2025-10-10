@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.30.xsd">
+
+    <changeSet id="add-bio-to-users" author="Matvey">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="users" columnName="bio"/>
+            </not>
+        </preConditions>
+        <comment>Added bio column to the users table.</comment>
+        <addColumn tableName="users">
+            <column name="bio"
+                    type="VARCHAR(512)"
+                    defaultValue="">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

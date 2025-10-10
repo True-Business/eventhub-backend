@@ -5,6 +5,11 @@
                                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
 
     <changeSet id="add-expires-at-to-confirmation-codes" author="denis zhdanov">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="confirmation_codes" columnName="expires_at"/>
+            </not>
+        </preConditions>
         <addColumn tableName="confirmation_codes">
             <column name="expires_at"
                     type="TIMESTAMPTZ"
