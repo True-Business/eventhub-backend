@@ -7,17 +7,13 @@ import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
-import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 import java.io.IOException
-import java.nio.charset.StandardCharsets
-import java.util.*
+import java.util.UUID
 
 @Component
-class AuthenticationContextRequestFilter(
-    private val userDetailsService: UserDetailsService,
-) : OncePerRequestFilter() {
+class AuthenticationContextRequestFilter : OncePerRequestFilter() {
 
     @Throws(ServletException::class, IOException::class)
     override fun doFilterInternal(
@@ -25,32 +21,22 @@ class AuthenticationContextRequestFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        val authHeader = request.getHeader("Authorization")
+        val auth = SecurityContextHolder.getContext().authentication
 
-        if (authHeader != null && authHeader.startsWith("Basic ")) {
-            val base64Credentials = authHeader.substring("Basic ".length)
-            val credentials = String(Base64.getDecoder().decode(base64Credentials), StandardCharsets.UTF_8)
-
-            val parts = credentials.split(":", limit = 2)
-            if (parts.size == 2) {
-                val email = parts[0]
-
-                setAuth(email)
-            }
+        if (auth == null || !auth.isAuthenticated) {
+            filterChain.doFilter(request, response)
+            return
         }
 
-        filterChain.doFilter(request, response)
-    }
-
-    private fun setAuth(email: String) {
-        val userDetails: UserDetails = userDetailsService.loadUserByUsername(email)
-
-        val auth = UsernamePasswordAuthenticationToken(
+        val userDetails = auth.principal as UserDetails
+        val authentication = UsernamePasswordAuthenticationToken(
             UUID.fromString(userDetails.username),
             null,
             userDetails.authorities
         )
 
-        SecurityContextHolder.getContext().authentication = auth
+        SecurityContextHolder.getContext().authentication = authentication
+
+        filterChain.doFilter(request, response)
     }
 }

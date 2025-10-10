@@ -1,3 +1,3 @@
 package ru.truebusiness.eventhub_backend.exceptions
 
-class UserNotFoundException(message: String, cause: Throwable?) : RuntimeException(message, cause)
+class UserNotFoundException(message: String, cause: Throwable? = null) : RuntimeException(message, cause)

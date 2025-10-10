@@ -1,3 +1,5 @@
 package ru.truebusiness.eventhub_backend.exceptions
 
-class WrongOrganizerException (message: String, cause: Throwable?) : RuntimeException(message, cause)
+import org.springframework.security.access.AccessDeniedException
+
+class WrongOrganizerException(message: String, cause: Throwable? = null) : AccessDeniedException(message, cause)

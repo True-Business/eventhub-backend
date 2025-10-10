@@ -2,7 +2,6 @@ package ru.truebusiness.eventhub_backend.service
 
 import jakarta.transaction.Transactional
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.core.userdetails.User
 import org.springframework.stereotype.Service
 import ru.truebusiness.eventhub_backend.exceptions.EventNotDraftException
 import ru.truebusiness.eventhub_backend.exceptions.EventNotFoundException
@@ -23,7 +22,7 @@ class EventService(
 
     @Transactional
     fun create(eventModel: EventModel): EventModel {
-        log.info("Creating new event: ${eventModel.name}")
+        log.info("Creating new event: {}", eventModel.name)
 
         val event: Event = eventMapper.eventModelToEventEntity(eventModel)
         val newEvent = eventRepository.save(event)
@@ -33,15 +32,15 @@ class EventService(
     }
 
     fun update(eventModel: EventModel): EventModel {
-        log.info("Updating event: ${eventModel.id}")
+        log.info("Updating event: {}", eventModel.id)
 
         val event: Event = eventRepository.findById(eventModel.id)
-            .orElseThrow { EventNotFoundException("Event with id ${eventModel.id} doesn't exist!", null) }
+            .orElseThrow { EventNotFoundException("Event with id ${eventModel.id} doesn't exist!") }
         eventMapper.eventModelToEventEntity(eventModel, event)
 
         val updatedEvent = eventRepository.save(event)
 
-        log.info("Event updated successfully!")
+        log.info("Event {} updated successfully!", eventModel.id)
         return eventMapper.eventToEventModel(updatedEvent)
     }
 
@@ -56,20 +55,21 @@ class EventService(
     }
 
     fun deleteDraft(eventID: UUID) {
-        log.info("Deleting draft event: $eventID")
+        log.info("Deleting draft event: {}", eventID)
 
         val userID = SecurityContextHolder.getContext().authentication.principal as UUID
         val event = eventRepository.findById(eventID)
-            .orElseThrow{EventNotFoundException("Event with id $eventID doesn't exist!", null)}
+            .orElseThrow{EventNotFoundException("Event with id $eventID doesn't exist!")}
 
         if (event.organizerId != userID) {
-            throw WrongOrganizerException("User with id $userID is not organizer of event with id $eventID!", null)
-        } else if (!event.isDraft) {
-            throw EventNotDraftException("Event with id $eventID is not draft!", null)
+            throw WrongOrganizerException("User with id $userID is not organizer of event with id $eventID!")
+        }
+        if (!event.isDraft) {
+            throw EventNotDraftException("Event with id $eventID is not draft!")
         }
 
         eventRepository.deleteById(eventID)
 
-        log.info("Event deleted successfully!")
+        log.info("Event {} deleted successfully!", eventID)
     }
 }
