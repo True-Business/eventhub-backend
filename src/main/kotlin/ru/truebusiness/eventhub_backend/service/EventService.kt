@@ -40,4 +40,14 @@ class EventService(
         log.info("Event updated successfully!")
         return eventMapper.eventToEventModel(updatedEvent)
     }
+
+    fun get(eventID: UUID): EventModel {
+        log.info("Get event: $eventID")
+
+        val event: Event = eventRepository.findById(eventID)
+            .orElseThrow { EventNotFoundException("Event with id $eventID doesn't exist!", null) }
+
+        log.info("Event get successfully!")
+        return eventMapper.eventToEventModel(event)
+    }
 }

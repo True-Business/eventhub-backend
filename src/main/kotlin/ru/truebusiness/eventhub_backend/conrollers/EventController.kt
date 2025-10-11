@@ -1,6 +1,7 @@
 package ru.truebusiness.eventhub_backend.conrollers
 
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
@@ -32,6 +33,14 @@ class EventController(
         @RequestBody updateEventRequestDto: UpdateEventRequestDto
     ): ResponseEntity<EventDto> {
         val response = eventService.update( eventMapper.eventDtoToEventModel(eventID, updateEventRequestDto))
+        return ResponseEntity.ok(eventMapper.eventModelToEventDTO(response))
+    }
+
+    @GetMapping("/{eventID}")
+    fun getById(
+        @PathVariable("eventID") eventID: UUID,
+    ): ResponseEntity<EventDto> {
+        val response = eventService.get(eventID)
         return ResponseEntity.ok(eventMapper.eventModelToEventDTO(response))
     }
 }
