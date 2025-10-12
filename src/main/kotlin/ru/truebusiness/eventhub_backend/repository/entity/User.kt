@@ -16,6 +16,7 @@ class User(
 
     var username: String,
     var shortId: String,
+    var bio: String,
     var registrationDate: Instant = Instant.now(),
     var isConfirmed: Boolean,
 
