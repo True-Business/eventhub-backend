@@ -45,18 +45,11 @@ class OrganizationService(
     }
 
     @Transactional
-    fun getByID(id: UUID): OrganizationDto {
+    fun getByID(id: UUID): Organization {
         val organization = organizationRepository.findById(id)
             .orElseThrow { OrganizationNotFoundException("Organization with id '${id}' does not exist", null) }
 
         log.info("Organization found!")
-        return OrganizationDto(
-            organization.id,
-            organization.name,
-            organization.description,
-            organization.address,
-            organization.pictureUrl,
-            organization.creator.id
-        )
+        return organization
     }
 }

@@ -26,8 +26,16 @@ class OrganizationController(
     }
 
     @GetMapping("/{organizationID}")
-    fun read(@PathVariable("organizationID") organizationID: UUID): ResponseEntity<OrganizationDto> {
-        val response = organizationService.getByID(organizationID)
+    fun get(@PathVariable("organizationID") organizationID: UUID): ResponseEntity<OrganizationDto> {
+        val organization = organizationService.getByID(organizationID)
+        val response = OrganizationDto(
+            organization.id,
+            organization.name,
+            organization.description,
+            organization.address,
+            organization.pictureUrl,
+            organization.creator.id
+        )
         return ResponseEntity.ok(response)
     }
 }
