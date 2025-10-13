@@ -10,14 +10,13 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import ru.truebusiness.eventhub_backend.conrollers.ApiV1Controller
 import ru.truebusiness.eventhub_backend.conrollers.dto.CreateOrganizationRequestDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.ErrorResponseDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.OrganizationDto
 
 @RestController
-@RequestMapping("/organization")
-interface OrganizationController : ApiV1Controller {
+@RequestMapping("/api/v1/organization")
+interface OrganizationController {
     @Operation(
         summary = "Создание новой организации", description = """
             Создает новую организацию. 

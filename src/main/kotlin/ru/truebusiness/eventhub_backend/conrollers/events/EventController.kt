@@ -20,7 +20,7 @@ import ru.truebusiness.eventhub_backend.conrollers.events.dto.EventDto
 import ru.truebusiness.eventhub_backend.conrollers.events.dto.UpdateEventRequestDto
 
 @RestController
-@RequestMapping("/event")
+@RequestMapping("/api/v1/event")
 interface EventController {
     @PostMapping
     @Operation(

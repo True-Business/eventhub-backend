@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestMapping
-import ru.truebusiness.eventhub_backend.conrollers.ApiV1Controller
 import ru.truebusiness.eventhub_backend.conrollers.dto.ErrorResponseDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.RegistrationResponseDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.UserCredentialsRegistrationDto
@@ -24,8 +23,8 @@ import ru.truebusiness.eventhub_backend.conrollers.dto.UserInfoRegistrationDto
     name = "Регистрация пользователей",
     description = "API для регистрации пользователей"
 )
-@RequestMapping("/auth")
-interface RegistrationController : ApiV1Controller {
+@RequestMapping("/api/v1/auth")
+interface RegistrationController {
     @Operation(
         summary = "Регистрация нового пользователя",
         description = "Создаёт нового пользователя с указанным email и паролем. Возвращает статус PENDING до подтверждения email.",
