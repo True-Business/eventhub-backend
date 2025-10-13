@@ -12,20 +12,9 @@ import ru.truebusiness.eventhub_backend.service.model.OrganizationModel
 import java.util.UUID
 
 @Mapper(componentModel = "spring")
-abstract class OrganizationMapper {
-    @Autowired
-    protected lateinit var userRepository: UserRepository
-
-    abstract fun organizationDtoToOrganizationModel(organizationRequestDto: CreateOrganizationRequestDto): OrganizationModel
-    @Mapping(target = "creator", expression = "java(mapCreatorIdToUser(organizationModel.getCreatorId()))")
+interface OrganizationMapper {
+    fun organizationDtoToOrganizationModel(organizationRequestDto: CreateOrganizationRequestDto): OrganizationModel
+    @Mapping(target = "creator.id", source = "creatorId")
     @Mapping(target = "id", expression = "java(java.util.UUID.randomUUID())")
-    abstract fun organizationModelToOrganizationEntity(organizationModel: OrganizationModel): Organization
-
-    protected fun mapCreatorIdToUser(creatorId: UUID): User {
-        userRepository.findUserById(creatorId)?.let {
-            return it
-        } ?: run {
-            throw UserNotFoundException("Creator not found", null)
-        }
-    }
+    fun organizationModelToOrganizationEntity(organizationModel: OrganizationModel): Organization
 }
