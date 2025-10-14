@@ -32,8 +32,8 @@ class EventService(
         log.info("Updating event: ${eventModel.id}")
 
         val event: Event = eventRepository.findById(eventModel.id).orElseThrow {
-                EventNotFoundException.byId(eventModel.id)
-            }
+            EventNotFoundException.byId(eventModel.id)
+        }
         eventMapper.eventModelToEventEntity(eventModel, event)
 
         val updatedEvent = eventRepository.save(event)
@@ -46,8 +46,8 @@ class EventService(
         log.info("Get event: {}", eventID)
 
         val event: Event = eventRepository.findById(eventID).orElseThrow {
-                EventNotFoundException.byId(eventID)
-            }
+            EventNotFoundException.byId(eventID)
+        }
 
         return eventMapper.eventToEventModel(event)
     }
