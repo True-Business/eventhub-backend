@@ -30,4 +30,13 @@ class ControllerExceptionHandler {
             message = ex.message ?: "Organization already exists"
         )
     }
+
+    @ExceptionHandler(OrganizationNotFoundException::class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    fun handleOrganizationNotFound(ex: OrganizationNotFoundException): ErrorResponseDto {
+        return ErrorResponseDto(
+            code = HttpStatus.NOT_FOUND.value(),
+            message = ex.message ?: "Organization not found"
+        )
+    }
 }

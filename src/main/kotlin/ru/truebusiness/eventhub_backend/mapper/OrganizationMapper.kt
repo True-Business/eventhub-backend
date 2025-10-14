@@ -2,10 +2,15 @@ package ru.truebusiness.eventhub_backend.mapper
 
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
+import org.springframework.beans.factory.annotation.Autowired
 import ru.truebusiness.eventhub_backend.conrollers.dto.CreateOrganizationRequestDto
+import ru.truebusiness.eventhub_backend.exceptions.UserNotFoundException
+import ru.truebusiness.eventhub_backend.repository.UserRepository
 import ru.truebusiness.eventhub_backend.conrollers.dto.OrganizationDto
 import ru.truebusiness.eventhub_backend.repository.entity.Organization
+import ru.truebusiness.eventhub_backend.repository.entity.User
 import ru.truebusiness.eventhub_backend.service.model.OrganizationModel
+import java.util.UUID
 
 @Mapper(componentModel = "spring")
 interface OrganizationMapper {
@@ -20,4 +25,9 @@ interface OrganizationMapper {
 
     @Mapping(source = "creator.id", target = "creatorId")
     fun organizationEntityToOrganizationDTO(entity: Organization): OrganizationDto
+
+    fun organizationDtoToOrganizationModel(organizationRequestDto: CreateOrganizationRequestDto): OrganizationModel
+    @Mapping(target = "creator.id", source = "creatorId")
+    @Mapping(target = "id", expression = "java(java.util.UUID.randomUUID())")
+    fun organizationModelToOrganizationEntity(organizationModel: OrganizationModel): Organization
 }
