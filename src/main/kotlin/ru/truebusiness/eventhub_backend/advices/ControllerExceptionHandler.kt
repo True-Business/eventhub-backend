@@ -28,7 +28,7 @@ class ControllerExceptionHandler {
     fun handleOrganizationAlreadyExists(ex: OrganizationAlreadyExistsException): ErrorResponseDto {
         return ErrorResponseDto(
             code = HttpStatus.CONFLICT.value(),
-            message = ex.message ?: "Organization already exists"
+            message = ex.message
         )
     }
 
@@ -37,7 +37,7 @@ class ControllerExceptionHandler {
     fun handleOrganizationNotFound(ex: OrganizationNotFoundException): ErrorResponseDto {
         return ErrorResponseDto(
             code = HttpStatus.NOT_FOUND.value(),
-            message = ex.message ?: "Organization not found"
+            message = ex.message
         )
     }
 }
