@@ -23,8 +23,8 @@ class Organization(
     var pictureUrl: String?,
 
     @Column(nullable = false)
-    val isVerified: Boolean = false,
+    var isVerified: Boolean = false,
     @ManyToOne
     @JoinColumn(name = "creator_id", nullable = false)
-    val creator: User
+    var creator: User
 )

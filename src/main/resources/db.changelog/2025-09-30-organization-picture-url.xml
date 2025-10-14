@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.30.xsd">
+
+    <changeSet id="add_picture_url_column" author="s.rozhkov">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="organizations" columnName="picture_url" />
+            </not>
+        </preConditions>
+        <comment>Added picture_url column to organizations table.</comment>
+        <addColumn tableName="organizations">
+            <column name="picture_url" type="VARCHAR(255)" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="remove_address_constraint" author="s.rozhkov">
+        <dropNotNullConstraint tableName="organizations" columnName="address" />
+    </changeSet>
+
+</databaseChangeLog>
