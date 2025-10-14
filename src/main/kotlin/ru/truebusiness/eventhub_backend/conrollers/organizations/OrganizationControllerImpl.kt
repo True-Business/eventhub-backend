@@ -1,5 +1,6 @@
 package ru.truebusiness.eventhub_backend.conrollers.organizations
 
+import java.util.UUID
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
@@ -23,5 +24,10 @@ class OrganizationControllerImpl(
         )
 
         return ResponseEntity(dto, HttpStatus.CREATED)
+    }
+
+    override fun get(organizationID: UUID): ResponseEntity<OrganizationDto> {
+        val organization = organizationService.getByID(organizationID)
+        return ResponseEntity.ok(organization)
     }
 }

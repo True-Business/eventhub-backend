@@ -35,4 +35,9 @@ class EventControllerImpl(
         )
         return ResponseEntity.ok(eventMapper.eventModelToEventDTO(response))
     }
+
+    override fun getById(eventID: UUID): ResponseEntity<EventDto> {
+            val response = eventService.get(eventID)
+            return ResponseEntity.ok(eventMapper.eventModelToEventDTO(response))
+    }
 }
