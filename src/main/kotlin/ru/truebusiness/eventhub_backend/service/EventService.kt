@@ -28,6 +28,7 @@ class EventService(
         return eventMapper.eventToEventModel(newEvent)
     }
 
+    @Transactional
     fun update(eventModel: EventModel): EventModel {
         log.info("Updating event: ${eventModel.id}")
 
