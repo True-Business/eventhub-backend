@@ -25,7 +25,7 @@ class OrganizationService(
     fun create(organizationModel: OrganizationModel): OrganizationDto {
         try {
             /*
-            пользователя можно получать через principal и тогда не нужно
+            id пользователя можно получать через principal и тогда не нужно
             проверять на его наличие в userRepository
             */
             val user = userRepository.getReferenceById(
