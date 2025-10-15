@@ -26,7 +26,9 @@ class OrganizationService(
         try {
             /*
             id пользователя можно получать через principal и тогда не нужно
-            проверять на его наличие в userRepository
+            проверять на его наличие в userRepository, хотя как будто желательно
+            в catch блоке все же сделать проверку не навернулся ли наш констрейт
+            все же, ибо конкурентность
             */
             val user = userRepository.getReferenceById(
                 organizationModel.creatorId
