@@ -6,13 +6,17 @@ import jakarta.persistence.Id
 import jakarta.persistence.Column
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.JoinColumn
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
 import java.util.UUID
 
 @Entity
 @Table(name = "organizations")
 class Organization(
     @Id
-    var id: UUID = UUID.randomUUID(),
+    @Column(nullable = false, unique = true)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    var id: UUID?,
 
     @Column(nullable = false, unique = true)
     var name: String,

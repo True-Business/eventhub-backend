@@ -15,6 +15,5 @@ import java.util.UUID
 interface OrganizationMapper {
     fun organizationDtoToOrganizationModel(organizationRequestDto: CreateOrganizationRequestDto): OrganizationModel
     @Mapping(target = "creator.id", source = "creatorId")
-    @Mapping(target = "id", expression = "java(java.util.UUID.randomUUID())")
     fun organizationModelToOrganizationEntity(organizationModel: OrganizationModel): Organization
 }
