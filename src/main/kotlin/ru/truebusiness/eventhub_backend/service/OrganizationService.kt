@@ -25,12 +25,13 @@ class OrganizationService(
     @Transactional
     fun create(organizationModel: OrganizationModel): OrganizationDto {
         try {
-            val user = organizationModel.creatorId.let {
-                if (!userRepository.existsById(it)) {
-                    throw UserNotFoundException.withId(it)
-                }
-                userRepository.getReferenceById(it)
-            }
+            /*
+            пользователя можно получать через principal и тогда не нужно
+            проверять на его наличие в userRepository
+            */
+            val user = userRepository.getReferenceById(
+                organizationModel.creatorId
+            )
 
             val createdOrganization =
                 organizationMapper.organizationModelToOrganizationEntity(
