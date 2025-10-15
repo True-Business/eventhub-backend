@@ -1,6 +1,7 @@
 package ru.truebusiness.eventhub_backend.conrollers
 
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -37,5 +38,11 @@ class OrganizationController(
             organization.creator.id
         )
         return ResponseEntity.ok(response)
+    }
+
+    @DeleteMapping("/{organizationID}")
+    fun delete(@PathVariable("organizationID") organizationID: UUID): ResponseEntity<Void> {
+        organizationService.deleteById(organizationID)
+        return ResponseEntity.noContent().build()
     }
 }

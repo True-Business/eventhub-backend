@@ -52,4 +52,14 @@ class OrganizationService(
         log.info("Organization found!")
         return organization
     }
+
+    @Transactional
+    fun deleteById(id: UUID) {
+        organizationRepository.findById(id).ifPresentOrElse(
+            organizationRepository::delete
+        ) {
+            throw OrganizationNotFoundException("Organization with id '${id}' does not exist", null)
+        }
+        log.info("Organization deleted!")
+    }
 }
