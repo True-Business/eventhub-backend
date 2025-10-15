@@ -30,7 +30,7 @@ class EventService(
 
     @Transactional
     fun update(eventModel: EventModel): EventModel {
-        log.info("Updating event: ${eventModel.id}")
+        log.info("Updating event: {}", eventModel.id)
 
         val event: Event = eventRepository.findById(eventModel.id).orElseThrow {
             EventNotFoundException.byId(eventModel.id)
@@ -39,7 +39,7 @@ class EventService(
 
         val updatedEvent = eventRepository.save(event)
 
-        log.info("Event updated successfully!")
+        log.info("Updated event: {}", eventModel.id)
         return eventMapper.eventToEventModel(updatedEvent)
     }
 
