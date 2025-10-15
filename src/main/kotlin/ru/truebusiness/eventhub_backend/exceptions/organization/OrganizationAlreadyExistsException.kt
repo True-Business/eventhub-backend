@@ -1,4 +1,4 @@
-package ru.truebusiness.eventhub_backend.exceptions.organizations
+package ru.truebusiness.eventhub_backend.exceptions.organization
 
 class OrganizationAlreadyExistsException private constructor(
     message: String

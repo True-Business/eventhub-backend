@@ -3,13 +3,12 @@ package ru.truebusiness.eventhub_backend.service.users
 import jakarta.transaction.Transactional
 import java.time.Duration
 import java.time.Instant
-import java.time.ZonedDateTime
 import java.util.UUID
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
-import ru.truebusiness.eventhub_backend.conrollers.dto.RegistrationResponseDto
+import ru.truebusiness.eventhub_backend.conrollers.users.dto.RegistrationResponseDto
 import ru.truebusiness.eventhub_backend.exceptions.users.InvalidConfirmationCode
 import ru.truebusiness.eventhub_backend.exceptions.users.UserAlreadyExistsException
 import ru.truebusiness.eventhub_backend.exceptions.users.UserNotFoundException
@@ -21,7 +20,7 @@ import ru.truebusiness.eventhub_backend.repository.entity.ConfirmationCode
 import ru.truebusiness.eventhub_backend.repository.entity.User
 import ru.truebusiness.eventhub_backend.repository.entity.UserCredentials
 import ru.truebusiness.eventhub_backend.service.EmailService
-import ru.truebusiness.eventhub_backend.service.users.utils.DataIntegrityViolationExceptionAnalyzer
+import ru.truebusiness.eventhub_backend.service.utils.DataIntegrityViolationExceptionAnalyzer
 
 @Service
 class RegistrationService(

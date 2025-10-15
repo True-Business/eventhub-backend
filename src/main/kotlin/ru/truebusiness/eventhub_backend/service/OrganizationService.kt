@@ -2,16 +2,15 @@ package ru.truebusiness.eventhub_backend.service
 
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
-import ru.truebusiness.eventhub_backend.conrollers.dto.OrganizationDto
-import ru.truebusiness.eventhub_backend.exceptions.organizations.OrganizationAlreadyExistsException
-import ru.truebusiness.eventhub_backend.exceptions.organizations.OrganizationNotFoundException
+import ru.truebusiness.eventhub_backend.conrollers.organizations.dto.OrganizationDto
+import ru.truebusiness.eventhub_backend.exceptions.organization.OrganizationAlreadyExistsException
+import ru.truebusiness.eventhub_backend.exceptions.organization.OrganizationNotFoundException
 import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.mapper.OrganizationMapper
 import ru.truebusiness.eventhub_backend.repository.OrganizationRepository
 import ru.truebusiness.eventhub_backend.service.model.OrganizationModel
 import java.util.UUID
 import org.springframework.dao.DataIntegrityViolationException
-import ru.truebusiness.eventhub_backend.exceptions.users.UserNotFoundException
 import ru.truebusiness.eventhub_backend.repository.UserRepository
 
 @Service

@@ -1,4 +1,4 @@
-package ru.truebusiness.eventhub_backend.service.users.utils
+package ru.truebusiness.eventhub_backend.service.utils
 
 import org.postgresql.util.PSQLException
 import org.springframework.dao.DataIntegrityViolationException

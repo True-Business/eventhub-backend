@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import ru.truebusiness.eventhub_backend.conrollers.dto.ErrorResponseDto
-import ru.truebusiness.eventhub_backend.conrollers.dto.RegistrationResponseDto
-import ru.truebusiness.eventhub_backend.conrollers.dto.UserCredentialsRegistrationDto
-import ru.truebusiness.eventhub_backend.conrollers.dto.UserInfoRegistrationDto
+import ru.truebusiness.eventhub_backend.conrollers.users.dto.RegistrationResponseDto
+import ru.truebusiness.eventhub_backend.conrollers.users.dto.UserCredentialsRegistrationDto
+import ru.truebusiness.eventhub_backend.conrollers.users.dto.UserInfoRegistrationDto
 
 @Tag(
     name = "Регистрация пользователей",
