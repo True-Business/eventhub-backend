@@ -2,7 +2,7 @@ package ru.truebusiness.eventhub_backend.service
 
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
-import ru.truebusiness.eventhub_backend.conrollers.organizations.dto.OrganizationDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.organizations.OrganizationDto
 import ru.truebusiness.eventhub_backend.exceptions.organization.OrganizationAlreadyExistsException
 import ru.truebusiness.eventhub_backend.exceptions.organization.OrganizationNotFoundException
 import ru.truebusiness.eventhub_backend.logger

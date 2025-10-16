@@ -1,10 +1,9 @@
-package ru.truebusiness.eventhub_backend.conrollers.users.dto
+package ru.truebusiness.eventhub_backend.conrollers.dto.users
 
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.Instant
 import java.util.UUID
 import ru.truebusiness.eventhub_backend.conrollers.dto.BaseStatusDto
-import ru.truebusiness.eventhub_backend.conrollers.users.dto.RegistrationStatus
 
 data class UserInfoRegistrationDto(
     @field:Schema(

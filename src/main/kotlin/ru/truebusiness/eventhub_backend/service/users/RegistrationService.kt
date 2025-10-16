@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
-import ru.truebusiness.eventhub_backend.conrollers.users.dto.RegistrationResponseDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.users.RegistrationResponseDto
 import ru.truebusiness.eventhub_backend.exceptions.users.InvalidConfirmationCode
 import ru.truebusiness.eventhub_backend.exceptions.users.UserAlreadyExistsException
 import ru.truebusiness.eventhub_backend.exceptions.users.UserNotFoundException
@@ -107,19 +107,17 @@ class RegistrationService(
             log.error("User with id {} not found!", id)
             throw UserNotFoundException.withId(id)
         }
-        user.username = username
-        user.shortId = shortId
-        try {
-            val updatedUser = userRepository.save(user)
-            return RegistrationResponseDto.success(
-                updatedUser.id, updatedUser.registrationDate
-            )
-        } catch (e: DataIntegrityViolationException) {
-            if (!DataIntegrityViolationExceptionAnalyzer.isUniqueViolation(e)) {
-                throw e
-            }
-            throw UserAlreadyExistsException.withShortId(shortId)
+
+        user.let {
+            it.username = username
+            it.shortId = shortId
         }
+
+        val updatedUser = userRepository.save(user)
+
+        return RegistrationResponseDto.success(
+            updatedUser.id, updatedUser.registrationDate
+        )
     }
 
     /**

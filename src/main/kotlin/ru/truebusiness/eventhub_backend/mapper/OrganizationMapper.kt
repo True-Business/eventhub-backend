@@ -3,8 +3,8 @@ package ru.truebusiness.eventhub_backend.mapper
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 import org.mapstruct.MappingConstants
-import ru.truebusiness.eventhub_backend.conrollers.organizations.dto.CreateOrganizationRequestDto
-import ru.truebusiness.eventhub_backend.conrollers.organizations.dto.OrganizationDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.organizations.CreateOrganizationRequestDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.organizations.OrganizationDto
 import ru.truebusiness.eventhub_backend.repository.entity.Organization
 import ru.truebusiness.eventhub_backend.repository.entity.User
 import ru.truebusiness.eventhub_backend.service.model.OrganizationModel

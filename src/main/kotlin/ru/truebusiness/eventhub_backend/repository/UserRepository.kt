@@ -17,6 +17,7 @@ interface UserRepository: JpaRepository<User, UUID> {
 @Repository
 interface UserCredentialsRepository : JpaRepository<UserCredentials, UUID> {
     fun findByEmail(email: String): UserCredentials?
+    fun existsByEmail(email: String): Boolean
 }
 
 @Repository

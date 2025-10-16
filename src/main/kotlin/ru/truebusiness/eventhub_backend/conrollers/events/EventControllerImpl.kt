@@ -4,9 +4,9 @@ import java.util.UUID
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
-import ru.truebusiness.eventhub_backend.conrollers.events.dto.CreateEventRequestDto
-import ru.truebusiness.eventhub_backend.conrollers.events.dto.EventDto
-import ru.truebusiness.eventhub_backend.conrollers.events.dto.UpdateEventRequestDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.events.CreateEventRequestDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.events.EventDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.events.UpdateEventRequestDto
 import ru.truebusiness.eventhub_backend.mapper.EventMapper
 import ru.truebusiness.eventhub_backend.service.EventService
 

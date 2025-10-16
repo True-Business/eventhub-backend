@@ -1,4 +1,4 @@
-package ru.truebusiness.eventhub_backend.conrollers.events.dto
+package ru.truebusiness.eventhub_backend.conrollers.dto.events
 
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.Instant

@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import ru.truebusiness.eventhub_backend.conrollers.dto.ErrorResponseDto
-import ru.truebusiness.eventhub_backend.conrollers.events.dto.CreateEventRequestDto
-import ru.truebusiness.eventhub_backend.conrollers.events.dto.EventDto
-import ru.truebusiness.eventhub_backend.conrollers.events.dto.UpdateEventRequestDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.events.CreateEventRequestDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.events.EventDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.events.UpdateEventRequestDto
 
 @RestController
 @RequestMapping("/api/v1/event")

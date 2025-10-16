@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import ru.truebusiness.eventhub_backend.conrollers.organizations.dto.CreateOrganizationRequestDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.organizations.CreateOrganizationRequestDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.ErrorResponseDto
-import ru.truebusiness.eventhub_backend.conrollers.organizations.dto.OrganizationDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.organizations.OrganizationDto
 
 @RestController
 @RequestMapping("/api/v1/organization")

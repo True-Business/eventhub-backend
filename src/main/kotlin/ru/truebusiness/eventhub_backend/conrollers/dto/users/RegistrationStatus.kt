@@ -1,4 +1,4 @@
-package ru.truebusiness.eventhub_backend.conrollers.users.dto
+package ru.truebusiness.eventhub_backend.conrollers.dto.users
 
 import io.swagger.v3.oas.annotations.media.Schema
 

@@ -4,8 +4,8 @@ import java.util.UUID
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
-import ru.truebusiness.eventhub_backend.conrollers.organizations.dto.CreateOrganizationRequestDto
-import ru.truebusiness.eventhub_backend.conrollers.organizations.dto.OrganizationDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.organizations.CreateOrganizationRequestDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.organizations.OrganizationDto
 import ru.truebusiness.eventhub_backend.mapper.OrganizationMapper
 import ru.truebusiness.eventhub_backend.service.OrganizationService
 
