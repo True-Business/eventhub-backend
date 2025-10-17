@@ -1,11 +1,11 @@
-package ru.truebusiness.eventhub_backend.jobs
+package ru.truebusiness.eventhub_backend.jobs.registration
 
 import jakarta.transaction.Transactional
+import java.time.Instant
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.repository.ConfirmationCodeRepository
-import java.time.Instant
 
 @Component
 class RegistrationJobs(

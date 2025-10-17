@@ -2,68 +2,80 @@ package ru.truebusiness.eventhub_backend.service
 
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
-import ru.truebusiness.eventhub_backend.exceptions.OrganizationAlreadyExistsException
-import ru.truebusiness.eventhub_backend.exceptions.OrganizationNotFoundException
+import ru.truebusiness.eventhub_backend.conrollers.dto.organizations.OrganizationDto
+import ru.truebusiness.eventhub_backend.exceptions.organization.OrganizationAlreadyExistsException
+import ru.truebusiness.eventhub_backend.exceptions.organization.OrganizationNotFoundException
 import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.mapper.OrganizationMapper
 import ru.truebusiness.eventhub_backend.repository.OrganizationRepository
-import ru.truebusiness.eventhub_backend.repository.entity.Organization
 import ru.truebusiness.eventhub_backend.service.model.OrganizationModel
 import ru.truebusiness.eventhub_backend.service.model.UpdateOrganizationModel
 import java.util.UUID
+import ru.truebusiness.eventhub_backend.repository.UserRepository
 
 @Service
 class OrganizationService(
     private val organizationRepository: OrganizationRepository,
+    private val userRepository: UserRepository,
     private val organizationMapper: OrganizationMapper,
 ) {
     private val log by logger()
 
     @Transactional
-    fun create(organizationModel: OrganizationModel): OrganizationModel {
-        log.info("Creating new organization: ${organizationModel.name}")
-        // todo: прокинуть сюда creatorId из хедера в контроллере как аргумент
-
+    fun create(organizationModel: OrganizationModel): OrganizationDto {
+        /*
+        id пользователя можно получать через principal и тогда не нужно
+        проверять на его наличие в userRepository
+        */
         if (organizationRepository.existsByName(organizationModel.name)) {
-            throw OrganizationAlreadyExistsException(
-                "Organization with name '${organizationModel.name}' already exists", null
+            log.error(
+                "Failed to create organization {}, organization already exists",
+                organizationModel.name
             )
+            throw OrganizationAlreadyExistsException.withName(organizationModel.name)
         }
+        val user = userRepository.getReferenceById(organizationModel.creatorId)
+        val createdOrganization =
+            organizationMapper.organizationModelToOrganizationEntity(
+                organizationModel, user
+            ).let(organizationRepository::save)
 
-        val organization: Organization = organizationMapper.organizationModelToOrganizationEntity(organizationModel)
-        val newOrganization = organizationRepository.save(organization)
-
-        log.info("New organization created successfully!")
-        return organizationMapper.organizationEntityToOrganizationModel(newOrganization)
+        log.info("Create new organization {}", createdOrganization.name)
+        return organizationMapper.organizationEntityToOrganizationDTO(
+            createdOrganization
+        )
     }
 
-    @Transactional
-    fun getByID(id: UUID): OrganizationModel {
-        val organization = organizationRepository.findById(id)
-            .orElseThrow { OrganizationNotFoundException("Organization with id '${id}' does not exist", null) }
+    fun getByID(id: UUID): OrganizationDto {
+        val organization = organizationRepository.findById(id).orElseThrow {
+            OrganizationNotFoundException.withID(id)
+        }
 
-        log.info("Organization found!")
-        return organizationMapper.organizationEntityToOrganizationModel(organization)
+        log.info("Organization {} found", id)
+        return organizationMapper.organizationEntityToOrganizationDTO(
+            organization
+        )
     }
 
     @Transactional
     fun update(updateOrganizationModel: UpdateOrganizationModel): OrganizationModel {
-        log.info("Updating organization: ${updateOrganizationModel.id}")
+        log.info("Updating organization: {}", updateOrganizationModel.id)
 
         updateOrganizationModel.name?.let {
             if (organizationRepository.existsByName(it)) {
-                throw OrganizationAlreadyExistsException(
-                    "Organization with name '${updateOrganizationModel.name}' already exists", null
-                )
+                throw OrganizationAlreadyExistsException.withName(it                )
             }
         }
 
-        val organization = organizationRepository.findById(updateOrganizationModel.id)
-            .orElseThrow { OrganizationNotFoundException("Organization with id '${updateOrganizationModel.id}' does not exist", null) }
+        val organization =
+            organizationRepository.findById(updateOrganizationModel.id)
+                .orElseThrow {
+                    OrganizationNotFoundException.withID(updateOrganizationModel.id)
+                }
         organizationMapper.updateOrganizationModelToOrganizationEntity(updateOrganizationModel, organization)
         val updatedOrganization = organizationRepository.save(organization)
 
-        log.info("Organization updated successfully!")
+        log.info("Organization {} updated", organization.id)
         return organizationMapper.organizationEntityToOrganizationModel(updatedOrganization)
     }
 
@@ -72,8 +84,8 @@ class OrganizationService(
         organizationRepository.findById(id).ifPresentOrElse(
             organizationRepository::delete
         ) {
-            throw OrganizationNotFoundException("Organization with id '${id}' does not exist", null)
+            throw OrganizationNotFoundException.withID(id)
         }
-        log.info("Organization deleted!")
+        log.info("Organization {} deleted", id)
     }
 }

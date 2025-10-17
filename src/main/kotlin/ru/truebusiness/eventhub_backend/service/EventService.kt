@@ -2,7 +2,7 @@ package ru.truebusiness.eventhub_backend.service
 
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
-import ru.truebusiness.eventhub_backend.exceptions.EventNotFoundException
+import ru.truebusiness.eventhub_backend.exceptions.events.EventNotFoundException
 import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.mapper.EventMapper
 import ru.truebusiness.eventhub_backend.repository.EventRepository
@@ -28,26 +28,28 @@ class EventService(
         return eventMapper.eventToEventModel(newEvent)
     }
 
+    @Transactional
     fun update(eventModel: EventModel): EventModel {
-        log.info("Updating event: ${eventModel.id}")
+        log.info("Updating event: {}", eventModel.id)
 
-        val event: Event = eventRepository.findById(eventModel.id)
-            .orElseThrow { EventNotFoundException("Event with id ${eventModel.id} doesn't exist!", null) }
+        val event: Event = eventRepository.findById(eventModel.id).orElseThrow {
+            EventNotFoundException.byId(eventModel.id)
+        }
         eventMapper.eventModelToEventEntity(eventModel, event)
 
         val updatedEvent = eventRepository.save(event)
 
-        log.info("Event updated successfully!")
+        log.info("Updated event: {}", eventModel.id)
         return eventMapper.eventToEventModel(updatedEvent)
     }
 
     fun get(eventID: UUID): EventModel {
-        log.info("Get event: $eventID")
+        log.info("Get event: {}", eventID)
 
-        val event: Event = eventRepository.findById(eventID)
-            .orElseThrow { EventNotFoundException("Event with id $eventID doesn't exist!", null) }
+        val event: Event = eventRepository.findById(eventID).orElseThrow {
+            EventNotFoundException.byId(eventID)
+        }
 
-        log.info("Event get successfully!")
         return eventMapper.eventToEventModel(event)
     }
 }
