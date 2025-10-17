@@ -10,6 +10,7 @@ import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.mapper.EventMapper
 import ru.truebusiness.eventhub_backend.repository.EventRepository
 import ru.truebusiness.eventhub_backend.repository.entity.Event
+import ru.truebusiness.eventhub_backend.repository.entity.EventStatus
 import ru.truebusiness.eventhub_backend.service.model.EventModel
 import java.util.UUID
 
@@ -36,8 +37,13 @@ class EventService(
 
         val event: Event = eventRepository.findById(eventModel.id)
             .orElseThrow { EventNotFoundException("Event with id ${eventModel.id} doesn't exist!") }
-        eventMapper.eventModelToEventEntity(eventModel, event)
 
+        val userID = SecurityContextHolder.getContext().authentication.principal as UUID
+        if (event.organizerId != userID) {
+            throw WrongOrganizerException("User with id $userID is not organizer of event with id ${event.id}!")
+        }
+
+        eventMapper.eventModelToEventEntity(eventModel, event)
         val updatedEvent = eventRepository.save(event)
 
         log.info("Event {} updated successfully!", eventModel.id)
@@ -64,7 +70,7 @@ class EventService(
         if (event.organizerId != userID) {
             throw WrongOrganizerException("User with id $userID is not organizer of event with id $eventID!")
         }
-        if (!event.isDraft) {
+        if (event.status != EventStatus.DRAFT) {
             throw EventNotDraftException("Event with id $eventID is not draft!")
         }
 
