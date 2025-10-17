@@ -53,42 +53,39 @@ class RegistrationService(
     fun preRegisterUser(
         email: String, password: String
     ): RegistrationResponseDto {
-        try {
-            log.debug("Started registration of new user {}", email)
-
-            val newUser = userRepository.save(
-                User(
-                    username = "",
-                    shortId = "",
-                    isConfirmed = false,
-                    credentials = null
-                )
-            )
-
-            log.debug("New user registered! User {}:{}", email, newUser.id)
-
-            UserCredentials(
-                email = email,
-                password = passwordEncoder.encode(password),
-                user = newUser
-            ).also(userCredentialsRepository::save)
-
-
-            log.debug("Credentials for user {}:{} saved!", email, newUser.id)
-            log.debug(
-                "User created successfully! Warning: user {} is not confirmed!",
-                newUser.id
-            )
-
-            return RegistrationResponseDto.pending(
-                newUser.id, newUser.registrationDate
-            )
-        } catch (e: DataIntegrityViolationException) {
-            if (!DataIntegrityViolationExceptionAnalyzer.isUniqueViolation(e)) {
-                throw e
-            }
+        userCredentialsRepository.findByEmail(email) ?: {
             throw UserAlreadyExistsException.withEmail(email)
         }
+
+        log.debug("Started registration of new user {}", email)
+
+        val newUser = userRepository.save(
+            User(
+                username = "",
+                shortId = "",
+                isConfirmed = false,
+                credentials = null
+            )
+        )
+
+        log.debug("New user registered! User {}:{}", email, newUser.id)
+
+        UserCredentials(
+            email = email,
+            password = passwordEncoder.encode(password),
+            user = newUser
+        ).also(userCredentialsRepository::save)
+
+
+        log.debug("Credentials for user {}:{} saved!", email, newUser.id)
+        log.debug(
+            "User created successfully! Warning: user {} is not confirmed!",
+            newUser.id
+        )
+
+        return RegistrationResponseDto.pending(
+            newUser.id, newUser.registrationDate
+        )
     }
 
     /**
@@ -103,6 +100,10 @@ class RegistrationService(
     fun addUserInfo(
         id: UUID, username: String, shortId: String
     ): RegistrationResponseDto {
+        if (userRepository.existsByShortId(shortId)) {
+            throw UserAlreadyExistsException.withShortId(shortId)
+        }
+
         val user = userRepository.findUserById(id) ?: run {
             log.error("User with id {} not found!", id)
             throw UserNotFoundException.withId(id)

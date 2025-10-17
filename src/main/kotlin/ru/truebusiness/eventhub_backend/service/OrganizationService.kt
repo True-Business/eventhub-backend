@@ -23,34 +23,27 @@ class OrganizationService(
 
     @Transactional
     fun create(organizationModel: OrganizationModel): OrganizationDto {
-        try {
-            /*
-            id пользователя можно получать через principal и тогда не нужно
-            проверять на его наличие в userRepository, хотя как будто желательно
-            в catch блоке все же сделать проверку не навернулся ли наш констрейт
-            все же, ибо конкурентность
-            */
-            val user = userRepository.getReferenceById(
-                organizationModel.creatorId
-            )
-
-            val createdOrganization =
-                organizationMapper.organizationModelToOrganizationEntity(
-                    organizationModel, user
-                ).let(organizationRepository::save)
-
-            log.info("Create new organization {}", createdOrganization.name)
-            return organizationMapper.organizationEntityToOrganizationDTO(
-                createdOrganization
-            )
-        } catch (e: DataIntegrityViolationException) {
+        /*
+        id пользователя можно получать через principal и тогда не нужно
+        проверять на его наличие в userRepository
+        */
+        if (organizationRepository.existsByName(organizationModel.name)) {
             log.error(
-                "Failed to create organization {}", organizationModel.name, e
-            )
-            throw OrganizationAlreadyExistsException.withName(
+                "Failed to create organization {}, organization already exists",
                 organizationModel.name
             )
+            throw OrganizationAlreadyExistsException.withName(organizationModel.name)
         }
+        val user = userRepository.getReferenceById(organizationModel.creatorId)
+        val createdOrganization =
+            organizationMapper.organizationModelToOrganizationEntity(
+                organizationModel, user
+            ).let(organizationRepository::save)
+
+        log.info("Create new organization {}", createdOrganization.name)
+        return organizationMapper.organizationEntityToOrganizationDTO(
+            createdOrganization
+        )
     }
 
     @Transactional
