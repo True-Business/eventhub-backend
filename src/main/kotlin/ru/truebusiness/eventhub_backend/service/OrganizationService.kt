@@ -9,8 +9,8 @@ import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.mapper.OrganizationMapper
 import ru.truebusiness.eventhub_backend.repository.OrganizationRepository
 import ru.truebusiness.eventhub_backend.service.model.OrganizationModel
+import ru.truebusiness.eventhub_backend.service.model.UpdateOrganizationModel
 import java.util.UUID
-import org.springframework.dao.DataIntegrityViolationException
 import ru.truebusiness.eventhub_backend.repository.UserRepository
 
 @Service
@@ -46,7 +46,6 @@ class OrganizationService(
         )
     }
 
-    @Transactional
     fun getByID(id: UUID): OrganizationDto {
         val organization = organizationRepository.findById(id).orElseThrow {
             OrganizationNotFoundException.withID(id)
@@ -56,5 +55,37 @@ class OrganizationService(
         return organizationMapper.organizationEntityToOrganizationDTO(
             organization
         )
+    }
+
+    @Transactional
+    fun update(updateOrganizationModel: UpdateOrganizationModel): OrganizationModel {
+        log.info("Updating organization: {}", updateOrganizationModel.id)
+
+        updateOrganizationModel.name?.let {
+            if (organizationRepository.existsByName(it)) {
+                throw OrganizationAlreadyExistsException.withName(it                )
+            }
+        }
+
+        val organization =
+            organizationRepository.findById(updateOrganizationModel.id)
+                .orElseThrow {
+                    OrganizationNotFoundException.withID(updateOrganizationModel.id)
+                }
+        organizationMapper.updateOrganizationModelToOrganizationEntity(updateOrganizationModel, organization)
+        val updatedOrganization = organizationRepository.save(organization)
+
+        log.info("Organization {} updated", organization.id)
+        return organizationMapper.organizationEntityToOrganizationModel(updatedOrganization)
+    }
+
+    @Transactional
+    fun deleteById(id: UUID) {
+        organizationRepository.findById(id).ifPresentOrElse(
+            organizationRepository::delete
+        ) {
+            throw OrganizationNotFoundException.withID(id)
+        }
+        log.info("Organization {} deleted", id)
     }
 }

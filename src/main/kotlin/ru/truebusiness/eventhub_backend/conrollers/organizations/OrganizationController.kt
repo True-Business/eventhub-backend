@@ -8,13 +8,16 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import java.util.UUID
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import ru.truebusiness.eventhub_backend.conrollers.dto.organizations.CreateOrganizationRequestDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.ErrorResponseDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.UpdateOrganizationRequestDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.organizations.OrganizationDto
 
 @RestController
@@ -93,4 +96,13 @@ interface OrganizationController {
 
     @GetMapping("/{organizationID}")
     fun get(@PathVariable organizationID: UUID): ResponseEntity<OrganizationDto>
+
+    @PatchMapping("/{organizationID}")
+    fun update(
+        @PathVariable organizationID: UUID,
+        @RequestBody updateOrganizationRequestDto: UpdateOrganizationRequestDto
+    ): ResponseEntity<OrganizationDto>
+
+    @DeleteMapping("/{organizationID}")
+    fun delete(@PathVariable organizationID: UUID): ResponseEntity<Void>
 }
