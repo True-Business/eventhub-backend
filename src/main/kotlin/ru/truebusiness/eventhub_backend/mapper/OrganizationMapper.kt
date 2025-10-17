@@ -33,6 +33,7 @@ interface OrganizationMapper {
         organizationRequestDto: CreateOrganizationRequestDto
     ): OrganizationModel
 
+    @Mapping(target = "id", source = "organizationModel.id")
     fun organizationModelToOrganizationEntity(
         organizationModel: OrganizationModel, creator: User
     ): Organization
