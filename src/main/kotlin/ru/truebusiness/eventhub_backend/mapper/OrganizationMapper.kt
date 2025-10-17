@@ -34,6 +34,7 @@ interface OrganizationMapper {
     ): OrganizationModel
 
     @Mapping(target = "id", source = "organizationModel.id")
+    @Mapping(target = "creator", source = "creator")
     fun organizationModelToOrganizationEntity(
         organizationModel: OrganizationModel, creator: User
     ): Organization
