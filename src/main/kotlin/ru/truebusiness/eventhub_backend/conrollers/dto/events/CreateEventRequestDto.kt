@@ -111,5 +111,4 @@ data class CreateEventRequestDto(
         example = "2025-04-01T23:59:59Z",
     )
     val registerEndDateTime: Instant?,
-    val isDraft: Boolean,
 )

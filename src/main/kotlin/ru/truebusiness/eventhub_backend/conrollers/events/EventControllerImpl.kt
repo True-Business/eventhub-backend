@@ -40,4 +40,8 @@ class EventControllerImpl(
         val response = eventService.get(eventID)
         return ResponseEntity.ok(eventMapper.eventModelToEventDTO(response))
     }
+
+    override fun deleteDraft(eventID: UUID) {
+        eventService.deleteDraft(eventID)
+    }
 }
