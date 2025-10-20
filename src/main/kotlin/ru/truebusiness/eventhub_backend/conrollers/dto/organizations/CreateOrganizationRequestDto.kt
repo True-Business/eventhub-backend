@@ -1,4 +1,4 @@
-package ru.truebusiness.eventhub_backend.conrollers.dto
+package ru.truebusiness.eventhub_backend.conrollers.dto.organizations
 
 import java.util.UUID
 

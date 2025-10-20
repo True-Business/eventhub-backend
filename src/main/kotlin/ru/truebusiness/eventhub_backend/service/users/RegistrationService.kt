@@ -1,13 +1,17 @@
-package ru.truebusiness.eventhub_backend.service
+package ru.truebusiness.eventhub_backend.service.users
 
 import jakarta.transaction.Transactional
+import java.time.Duration
+import java.time.Instant
+import java.util.UUID
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
-import ru.truebusiness.eventhub_backend.conrollers.dto.RegistrationErrorReason
-import ru.truebusiness.eventhub_backend.conrollers.dto.RegistrationResponseDto
-import ru.truebusiness.eventhub_backend.exceptions.UserNotFoundException
+import ru.truebusiness.eventhub_backend.conrollers.dto.users.RegistrationResponseDto
+import ru.truebusiness.eventhub_backend.exceptions.users.InvalidConfirmationCode
+import ru.truebusiness.eventhub_backend.exceptions.users.UserAlreadyExistsException
+import ru.truebusiness.eventhub_backend.exceptions.users.UserNotFoundException
 import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.repository.ConfirmationCodeRepository
 import ru.truebusiness.eventhub_backend.repository.UserCredentialsRepository
@@ -15,9 +19,8 @@ import ru.truebusiness.eventhub_backend.repository.UserRepository
 import ru.truebusiness.eventhub_backend.repository.entity.ConfirmationCode
 import ru.truebusiness.eventhub_backend.repository.entity.User
 import ru.truebusiness.eventhub_backend.repository.entity.UserCredentials
-import java.time.Duration
-import java.time.Instant
-import java.util.UUID
+import ru.truebusiness.eventhub_backend.service.EmailService
+import ru.truebusiness.eventhub_backend.service.utils.DataIntegrityViolationExceptionAnalyzer
 
 @Service
 class RegistrationService(
@@ -42,35 +45,47 @@ class RegistrationService(
      *
      * @param email - почта пользователя.
      * @param password - пароль пользователя.
+     * @throws UserAlreadyExistsException
      *
      * @return идентификатор созданного пользователя и дату регистрации.
      */
     @Transactional
-    fun preRegisterUser(email: String, password: String): RegistrationResponseDto {
-        try {
-            log.info("Started registration of new user...")
-
-            val newUser = userRepository.save(User(username = "", shortId = "",
-                isConfirmed = false, credentials = null))
-
-            log.info("New user registered! User id = ${newUser.id}")
-            log.info("Saving new user credentials...")
-
-            UserCredentials(
-                email = email,
-                password = passwordEncoder.encode(password),
-                user = newUser
-            ).also(userCredentialsRepository::save)
-
-
-            log.info("Credentials for user ${newUser.id} saved!")
-            log.info("User created successfully! Warning: user is not confirmed!")
-
-            return RegistrationResponseDto.pending(newUser.id, newUser.registrationDate)
-        } catch (_: DataIntegrityViolationException) {
-            log.error("Couldn't save credentials for user! Email violates unique constraint!")
-            return RegistrationResponseDto.error(RegistrationErrorReason.USER_ALREADY_REGISTERED)
+    fun preRegisterUser(
+        email: String, password: String
+    ): RegistrationResponseDto {
+        userCredentialsRepository.findByEmail(email) ?: {
+            throw UserAlreadyExistsException.withEmail(email)
         }
+
+        log.debug("Started registration of new user {}", email)
+
+        val newUser = userRepository.save(
+            User(
+                username = "",
+                shortId = "",
+                isConfirmed = false,
+                credentials = null
+            )
+        )
+
+        log.debug("New user registered! User {}:{}", email, newUser.id)
+
+        UserCredentials(
+            email = email,
+            password = passwordEncoder.encode(password),
+            user = newUser
+        ).also(userCredentialsRepository::save)
+
+
+        log.debug("Credentials for user {}:{} saved!", email, newUser.id)
+        log.debug(
+            "User created successfully! Warning: user {} is not confirmed!",
+            newUser.id
+        )
+
+        return RegistrationResponseDto.pending(
+            newUser.id, newUser.registrationDate
+        )
     }
 
     /**
@@ -79,26 +94,31 @@ class RegistrationService(
      * @param id идентификатор пользователя в приложении
      * @param username имя пользователя в приложении
      * @param shortId короткое имя пользователя в приложении
+     * @throws UserAlreadyExistsException
      */
     @Transactional
-    fun addUserInfo(id: String, username: String, shortId: String): RegistrationResponseDto {
-        val userId = UUID.fromString(id)
-
-        val user = userRepository.findUserById(userId) ?: run {
-            log.error("User with id $id not found!")
-            return RegistrationResponseDto.error(RegistrationErrorReason.USER_NOT_FOUND)
+    fun addUserInfo(
+        id: UUID, username: String, shortId: String
+    ): RegistrationResponseDto {
+        if (userRepository.existsByShortId(shortId)) {
+            throw UserAlreadyExistsException.withShortId(shortId)
         }
 
-        userRepository.findUserByShortId(shortId)?.let { existingUser ->
-            log.warn("User with shortId $shortId already exists! (User ID: ${existingUser.id})")
-            return RegistrationResponseDto.error(RegistrationErrorReason.SHORT_ID_ALREADY_USED)
+        val user = userRepository.findUserById(id) ?: run {
+            log.error("User with id {} not found!", id)
+            throw UserNotFoundException.withId(id)
         }
 
-        user.username = username
-        user.shortId = shortId
+        user.let {
+            it.username = username
+            it.shortId = shortId
+        }
+
         val updatedUser = userRepository.save(user)
 
-        return RegistrationResponseDto.success(updatedUser.id, updatedUser.registrationDate)
+        return RegistrationResponseDto.success(
+            updatedUser.id, updatedUser.registrationDate
+        )
     }
 
     /**
@@ -106,30 +126,25 @@ class RegistrationService(
      * код удаляется.
      *
      * @param code введённый пользвоателем код.
+     * @throws InvalidConfirmationCode
      */
     @Transactional
     fun verifyRegistrationCode(code: String): RegistrationResponseDto {
         val savedCode = confirmationCodeRepository.findByCode(code) ?: run {
-            return RegistrationResponseDto.error(
-                RegistrationErrorReason.INCORRECT_CONFIRMATION_CODE
-            )
+            throw InvalidConfirmationCode.invalid(code)
+        }
+        if (Instant.now().isAfter(savedCode.expiresAt)) {
+            throw InvalidConfirmationCode.expired(code)
         }
 
-        return when {
-            Instant.now().isBefore(savedCode.expiresAt) -> {
-                log.debug("Confirmation code {} found", savedCode)
-                confirmationCodeRepository.delete(savedCode)
-                with(savedCode.user) {
-                    isConfirmed = true
-                    userRepository.save(this)
-                    log.debug("User {} status successfully updated!", id)
-                    RegistrationResponseDto.success(id, registrationDate)
-                }
-            }
+        log.debug("Confirmation code {} found", savedCode)
+        confirmationCodeRepository.delete(savedCode)
 
-            else -> {
-                RegistrationResponseDto.error(RegistrationErrorReason.CONFIRMATION_CODE_EXPIRED)
-            }
+        return with(savedCode.user) {
+            isConfirmed = true
+            userRepository.save(this)
+            log.debug("User {} status successfully updated!", id)
+            RegistrationResponseDto.success(id, registrationDate)
         }
     }
 
@@ -138,14 +153,13 @@ class RegistrationService(
      *
      * @param userId идентификатор пользователя.
      * @return пару - код и почту пользователя.
+     * @throws UserNotFoundException
      */
     @Transactional
-    fun createConfirmationCode(userId: String): Pair<String, String> {
-        log.debug("Creating confirmation code for user with id: $userId")
-        val user = userRepository.findUserById(UUID.fromString(userId)) ?: run {
-            throw UserNotFoundException(
-                "User with id $userId doesn't exist!", null
-            )
+    fun createConfirmationCode(userId: UUID): Pair<String, String> {
+        log.debug("Creating confirmation code for user with id: {}", userId)
+        val user = userRepository.findUserById(userId) ?: run {
+            throw UserNotFoundException.withId(userId)
         }
 
         val savedCode = ConfirmationCode(
@@ -154,11 +168,15 @@ class RegistrationService(
             user = user
         ).let(confirmationCodeRepository::save)
 
-        log.debug("Confirmation code for user with id: $userId was saved! Code: ${savedCode.code}")
+        log.debug(
+            "Confirmation code for user with id: {} was saved! Code: {}",
+            userId,
+            savedCode.code
+        )
         return Pair(savedCode.code, user.credentials?.email!!)
     }
 
-    fun sendCodeViaEmail(code: String, email: String?) {
+    fun sendCodeViaEmail(code: String, email: String) {
         emailService.sendConfirmationCode(code, email)
     }
 

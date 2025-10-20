@@ -20,7 +20,7 @@ class User(
     @Column(nullable = false)
     var shortId: String?,
     @Column(nullable = false)
-    var registrationDate: Instant? = Instant.now(),
+    var registrationDate: Instant = Instant.now(),
     @Column(nullable = false)
     var isConfirmed: Boolean?,
 

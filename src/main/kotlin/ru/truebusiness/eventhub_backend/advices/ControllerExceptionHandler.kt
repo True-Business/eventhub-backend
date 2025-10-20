@@ -1,11 +1,12 @@
-package ru.truebusiness.eventhub_backend.conrollers
+package ru.truebusiness.eventhub_backend.advices
 
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import ru.truebusiness.eventhub_backend.conrollers.dto.ErrorResponseDto
-import ru.truebusiness.eventhub_backend.exceptions.*
+import ru.truebusiness.eventhub_backend.exceptions.organization.OrganizationAlreadyExistsException
+import ru.truebusiness.eventhub_backend.exceptions.organization.OrganizationNotFoundException
 import ru.truebusiness.eventhub_backend.logger
 
 @RestControllerAdvice
@@ -19,7 +20,6 @@ class ControllerExceptionHandler {
         return ErrorResponseDto(
             code = HttpStatus.INTERNAL_SERVER_ERROR.value(),
             message = "An unexpected error occurred"
-            // do not expose internal errors to user, they might contain sensitive data
         )
     }
 
@@ -28,7 +28,7 @@ class ControllerExceptionHandler {
     fun handleOrganizationAlreadyExists(ex: OrganizationAlreadyExistsException): ErrorResponseDto {
         return ErrorResponseDto(
             code = HttpStatus.CONFLICT.value(),
-            message = ex.message ?: "Organization already exists"
+            message = ex.message
         )
     }
 
@@ -37,16 +37,7 @@ class ControllerExceptionHandler {
     fun handleOrganizationNotFound(ex: OrganizationNotFoundException): ErrorResponseDto {
         return ErrorResponseDto(
             code = HttpStatus.NOT_FOUND.value(),
-            message = ex.message ?: "Organization not found"
-        )
-    }
-
-    @ExceptionHandler(UserNotFoundException::class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    fun handleUserNotFound(ex: UserNotFoundException): ErrorResponseDto {
-        return ErrorResponseDto(
-            code = HttpStatus.NOT_FOUND.value(),
-            message = ex.message ?: "User not found"
+            message = ex.message
         )
     }
 }

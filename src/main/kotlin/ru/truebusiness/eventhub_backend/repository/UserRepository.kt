@@ -12,11 +12,13 @@ import java.util.UUID
 interface UserRepository: JpaRepository<User, UUID> {
     fun findUserById(id: UUID): User?
     fun findUserByShortId(shortId: String): User?
+    fun existsByShortId(id: String): Boolean
 }
 
 @Repository
 interface UserCredentialsRepository : JpaRepository<UserCredentials, UUID> {
     fun findByEmail(email: String): UserCredentials?
+    fun existsByEmail(email: String): Boolean
 }
 
 @Repository

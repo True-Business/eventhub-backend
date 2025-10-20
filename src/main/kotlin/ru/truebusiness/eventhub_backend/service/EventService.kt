@@ -3,9 +3,9 @@ package ru.truebusiness.eventhub_backend.service
 import jakarta.transaction.Transactional
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
-import ru.truebusiness.eventhub_backend.exceptions.EventNotDraftException
-import ru.truebusiness.eventhub_backend.exceptions.EventNotFoundException
-import ru.truebusiness.eventhub_backend.exceptions.WrongOrganizerException
+import ru.truebusiness.eventhub_backend.exceptions.events.EventNotFoundException
+import ru.truebusiness.eventhub_backend.exceptions.events.EventNotDraftException
+import ru.truebusiness.eventhub_backend.exceptions.organization.WrongOrganizerException
 import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.mapper.EventMapper
 import ru.truebusiness.eventhub_backend.repository.EventRepository
@@ -28,35 +28,39 @@ class EventService(
         val event: Event = eventMapper.eventModelToEventEntity(eventModel)
         val newEvent = eventRepository.save(event)
 
-        log.info("New event created successfully!")
+        log.info("New event created {}", newEvent.id)
         return eventMapper.eventToEventModel(newEvent)
     }
 
+    @Transactional
     fun update(eventModel: EventModel): EventModel {
         log.info("Updating event: {}", eventModel.id)
 
-        val event: Event = eventRepository.findById(eventModel.id)
-            .orElseThrow { EventNotFoundException("Event with id ${eventModel.id} doesn't exist!") }
+        val event: Event = eventRepository.findById(eventModel.id).orElseThrow {
+            EventNotFoundException.byId(eventModel.id)
+        }
 
         val userID = SecurityContextHolder.getContext().authentication.principal as UUID
         if (event.organizerId != userID) {
-            throw WrongOrganizerException("User with id $userID is not organizer of event with id ${event.id}!")
+            throw WrongOrganizerException.organizerIDDoesNotMatchUserID(
+                event.id, userID
+            )
         }
 
         eventMapper.eventModelToEventEntity(eventModel, event)
         val updatedEvent = eventRepository.save(event)
 
-        log.info("Event {} updated successfully!", eventModel.id)
+        log.info("Updated event: {}", eventModel.id)
         return eventMapper.eventToEventModel(updatedEvent)
     }
 
     fun get(eventID: UUID): EventModel {
-        log.info("Get event: $eventID")
+        log.info("Get event: {}", eventID)
 
-        val event: Event = eventRepository.findById(eventID)
-            .orElseThrow { EventNotFoundException("Event with id $eventID doesn't exist!", null) }
+        val event: Event = eventRepository.findById(eventID).orElseThrow {
+            EventNotFoundException.byId(eventID)
+        }
 
-        log.info("Event get successfully!")
         return eventMapper.eventToEventModel(event)
     }
 
@@ -65,13 +69,15 @@ class EventService(
 
         val userID = SecurityContextHolder.getContext().authentication.principal as UUID
         val event = eventRepository.findById(eventID)
-            .orElseThrow{EventNotFoundException("Event with id $eventID doesn't exist!")}
+            .orElseThrow{EventNotFoundException.byId(eventID)}
 
         if (event.organizerId != userID) {
-            throw WrongOrganizerException("User with id $userID is not organizer of event with id $eventID!")
+            throw WrongOrganizerException.organizerIDDoesNotMatchUserID(
+                eventID, userID
+            )
         }
         if (event.status != EventStatus.DRAFT) {
-            throw EventNotDraftException("Event with id $eventID is not draft!")
+            throw EventNotDraftException.byId(eventID)
         }
 
         eventRepository.deleteById(eventID)
