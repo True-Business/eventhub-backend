@@ -1,5 +1,6 @@
 package ru.truebusiness.eventhub_backend.mapper
 
+import java.util.UUID
 import org.mapstruct.BeanMapping
 import org.mapstruct.Mapper
 import org.mapstruct.MappingTarget
@@ -9,7 +10,6 @@ import ru.truebusiness.eventhub_backend.conrollers.dto.events.EventDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.events.UpdateEventRequestDto
 import ru.truebusiness.eventhub_backend.repository.entity.Event
 import ru.truebusiness.eventhub_backend.service.model.EventModel
-import java.util.UUID
 
 @Mapper(componentModel = "spring")
 interface EventMapper {

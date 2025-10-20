@@ -5,7 +5,6 @@ import java.time.Duration
 import java.time.Instant
 import java.util.UUID
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import ru.truebusiness.eventhub_backend.conrollers.dto.users.RegistrationResponseDto
@@ -20,7 +19,6 @@ import ru.truebusiness.eventhub_backend.repository.entity.ConfirmationCode
 import ru.truebusiness.eventhub_backend.repository.entity.User
 import ru.truebusiness.eventhub_backend.repository.entity.UserCredentials
 import ru.truebusiness.eventhub_backend.service.EmailService
-import ru.truebusiness.eventhub_backend.service.utils.DataIntegrityViolationExceptionAnalyzer
 
 @Service
 class RegistrationService(
