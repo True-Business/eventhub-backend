@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import ru.truebusiness.eventhub_backend.conrollers.dto.CreateOrganizationRequestDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.OrganizationDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.SearchOrganizationRequestDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.UpdateOrganizationRequestDto
 import ru.truebusiness.eventhub_backend.mapper.OrganizationMapper
 import ru.truebusiness.eventhub_backend.service.OrganizationService
@@ -60,5 +61,15 @@ class OrganizationController(
     fun delete(@PathVariable("organizationID") organizationID: UUID): ResponseEntity<Void> {
         organizationService.deleteById(organizationID)
         return ResponseEntity.noContent().build()
+    }
+
+    @PostMapping("/search")
+    fun search(@RequestBody searchOrganizationRequestDto: SearchOrganizationRequestDto): ResponseEntity<List<OrganizationDto>> {
+        val response = organizationMapper.organizationModelListToOrganizationDtoList(
+            organizationService.search(
+                organizationMapper.searchOrganizationRequestDtoToSearchOrganizationModel(searchOrganizationRequestDto)
+            )
+        )
+        return ResponseEntity.ok(response)
     }
 }
