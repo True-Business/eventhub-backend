@@ -11,6 +11,7 @@ import ru.truebusiness.eventhub_backend.mapper.OrganizationMapper
 import ru.truebusiness.eventhub_backend.repository.OrganizationRepository
 import ru.truebusiness.eventhub_backend.repository.UserRepository
 import ru.truebusiness.eventhub_backend.service.model.OrganizationModel
+import ru.truebusiness.eventhub_backend.service.model.SearchOrganizationModel
 import ru.truebusiness.eventhub_backend.service.model.UpdateOrganizationModel
 
 @Service
@@ -87,5 +88,13 @@ class OrganizationService(
             throw OrganizationNotFoundException.withID(id)
         }
         log.info("Organization {} deleted", id)
+    }
+
+    fun search(searchModel: SearchOrganizationModel): List<OrganizationModel> {
+        log.info("Searching for organization with \"${searchModel.search}\"...")
+        // TODO: actual logic
+        val found: List<OrganizationModel> = listOf()
+        log.info("Found entries: ${found.count()}")
+        return found
     }
 }
