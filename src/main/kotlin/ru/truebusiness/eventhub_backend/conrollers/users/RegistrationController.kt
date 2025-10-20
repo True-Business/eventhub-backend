@@ -69,7 +69,7 @@ interface RegistrationController {
         summary = "Отправка кода подтверждения на email", description = """
         Генерирует и отправляет одноразовый код подтверждения на email пользователя.
         Требуется для завершения регистрации (подтверждения email).
-    """, tags = ["Регистрация"], responses = [ApiResponse(
+    """, responses = [ApiResponse(
             responseCode = "200",
             description = "Код успешно отправлен на email",
             content = [Content(
@@ -114,7 +114,7 @@ interface RegistrationController {
         summary = "Проверка кода подтверждения регистрации", description = """
         Проверяет введенный пользователем код подтверждения. 
         При успешной проверке завершает регистрацию, помечая пользователя как подтвержденного.
-    """, tags = ["Регистрация"], responses = [ApiResponse(
+    """, responses = [ApiResponse(
             responseCode = "200",
             description = "Код верен, регистрация завершена успешно",
             content = [Content(
@@ -165,7 +165,6 @@ interface RegistrationController {
         Завершает процесс регистрации, добавляя имя пользователя и уникальный короткий идентификатор.
         После успешного выполнения пользователь считается полностью зарегистрированным.
     """,
-        tags = ["Регистрация"],
         responses = [ApiResponse(
             responseCode = "200",
             description = "Профильная информация успешно добавлена",

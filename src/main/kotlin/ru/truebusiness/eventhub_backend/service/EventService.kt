@@ -1,10 +1,11 @@
 package ru.truebusiness.eventhub_backend.service
 
 import jakarta.transaction.Transactional
+import java.util.UUID
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
-import ru.truebusiness.eventhub_backend.exceptions.events.EventNotFoundException
 import ru.truebusiness.eventhub_backend.exceptions.events.EventNotDraftException
+import ru.truebusiness.eventhub_backend.exceptions.events.EventNotFoundException
 import ru.truebusiness.eventhub_backend.exceptions.organization.WrongOrganizerException
 import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.mapper.EventMapper
@@ -12,7 +13,6 @@ import ru.truebusiness.eventhub_backend.repository.EventRepository
 import ru.truebusiness.eventhub_backend.repository.entity.Event
 import ru.truebusiness.eventhub_backend.repository.entity.EventStatus
 import ru.truebusiness.eventhub_backend.service.model.EventModel
-import java.util.UUID
 
 @Service
 class EventService(
