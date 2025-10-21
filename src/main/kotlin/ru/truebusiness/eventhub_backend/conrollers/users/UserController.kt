@@ -1,4 +1,4 @@
-package ru.truebusiness.eventhub_backend.conrollers
+package ru.truebusiness.eventhub_backend.conrollers.users
 
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PathVariable
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController
 import ru.truebusiness.eventhub_backend.conrollers.dto.UpdateUserRequestDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.UserDto
 import ru.truebusiness.eventhub_backend.mapper.UserMapper
-import ru.truebusiness.eventhub_backend.service.UserService
+import ru.truebusiness.eventhub_backend.service.users.UserService
 import java.util.UUID
 
 @RestController
