@@ -3,6 +3,8 @@ package ru.truebusiness.eventhub_backend.service.model
 import java.util.UUID
 
 class OrganizationModel (
+    var id: UUID?,
+
     var name: String = "",
     var description: String = "",
 
@@ -10,5 +12,5 @@ class OrganizationModel (
     var pictureUrl: String?,
 
     var isVerified: Boolean = false,
-    var creatorId: UUID?
+    var creatorId: UUID
 )

@@ -33,6 +33,12 @@ app:
       zone: {{ .Values.eventhubBackendDeploy.appConfig.registration.cleanupJob.zone }}
     confirmationCodeExpirationMinutes: {{ .Values.eventhubBackendDeploy.appConfig.registration.confirmationCodeExpirationMinutes }}
 
+springdoc:
+  swagger-ui:
+    path: /api/event-hub
+  api-docs:
+    path: /v3/api-docs
+
 management:
   endpoint:
     health:

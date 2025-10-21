@@ -1,6 +1,7 @@
 package ru.truebusiness.eventhub_backend.repository.entity
 
 import jakarta.persistence.CascadeType
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.OneToOne
@@ -14,11 +15,15 @@ class User(
     @Id
     var id: UUID = UUID.randomUUID(),
 
-    var username: String,
-    var shortId: String,
+    @Column(nullable = false)
+    var username: String?,
+    @Column(nullable = false)
+    var shortId: String?,
     var bio: String,
+    @Column(nullable = false)
     var registrationDate: Instant = Instant.now(),
-    var isConfirmed: Boolean,
+    @Column(nullable = false)
+    var isConfirmed: Boolean?,
 
     @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL])
     var credentials: UserCredentials?

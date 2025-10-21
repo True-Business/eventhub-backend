@@ -1,18 +1,22 @@
 package ru.truebusiness.eventhub_backend.repository.entity
 
-import jakarta.persistence.Entity
-import jakarta.persistence.Table
-import jakarta.persistence.Id
 import jakarta.persistence.Column
-import jakarta.persistence.ManyToOne
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.Table
 import java.util.UUID
 
 @Entity
 @Table(name = "organizations")
 class Organization(
     @Id
-    var id: UUID = UUID.randomUUID(),
+    @Column(nullable = false, unique = true)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    var id: UUID?,
 
     @Column(nullable = false, unique = true)
     var name: String,
@@ -23,8 +27,8 @@ class Organization(
     var pictureUrl: String?,
 
     @Column(nullable = false)
-    val isVerified: Boolean = false,
+    var isVerified: Boolean = false,
     @ManyToOne
     @JoinColumn(name = "creator_id", nullable = false)
-    val creator: User
+    var creator: User
 )
