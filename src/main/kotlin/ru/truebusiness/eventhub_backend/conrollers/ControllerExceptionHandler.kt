@@ -40,4 +40,13 @@ class ControllerExceptionHandler {
             message = ex.message ?: "User not found"
         )
     }
+
+    @ExceptionHandler(ShortIdTakenException::class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    fun handleShortIdTaken(ex: ShortIdTakenException): ErrorResponseDto {
+        return ErrorResponseDto(
+            code = HttpStatus.CONFLICT.value(),
+            message = ex.message ?: "Short id taken"
+        )
+    }
 }
