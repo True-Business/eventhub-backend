@@ -9,7 +9,7 @@ class UserAlreadyExistsException private constructor(
         }
 
         fun withEmail(email: String): UserAlreadyExistsException {
-            return UserAlreadyExistsException("user with email: $email not exists")
+            return UserAlreadyExistsException("user with email: $email already exists")
         }
     }
 }
