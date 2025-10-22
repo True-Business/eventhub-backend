@@ -1,4 +1,4 @@
-package ru.truebusiness.eventhub_backend.advices.users
+package ru.truebusiness.eventhub_backend.advices
 
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -6,11 +6,10 @@ import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import ru.truebusiness.eventhub_backend.conrollers.dto.ErrorResponseDto
 import ru.truebusiness.eventhub_backend.exceptions.users.InvalidConfirmationCode
-import ru.truebusiness.eventhub_backend.exceptions.users.ShortIdException
 import ru.truebusiness.eventhub_backend.exceptions.users.UserAlreadyExistsException
 import ru.truebusiness.eventhub_backend.exceptions.users.UserNotFoundException
 
-@RestControllerAdvice()
+@RestControllerAdvice
 class UsersExceptionHandler {
 
     @ExceptionHandler(UserNotFoundException::class)
@@ -36,15 +35,6 @@ class UsersExceptionHandler {
     fun handleInvalidConfirmationCode(ex: InvalidConfirmationCode): ErrorResponseDto {
         return ErrorResponseDto(
             code = HttpStatus.BAD_REQUEST.value(),
-            message = ex.message
-        )
-    }
-
-    @ExceptionHandler(ShortIdException::class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    fun handleShortIdTaken(ex: ShortIdException): ErrorResponseDto {
-        return ErrorResponseDto(
-            code = HttpStatus.CONFLICT.value(),
             message = ex.message
         )
     }

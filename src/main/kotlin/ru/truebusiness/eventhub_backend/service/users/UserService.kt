@@ -2,7 +2,7 @@ package ru.truebusiness.eventhub_backend.service.users
 
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
-import ru.truebusiness.eventhub_backend.exceptions.users.ShortIdException
+import ru.truebusiness.eventhub_backend.exceptions.users.UserAlreadyExistsException
 import ru.truebusiness.eventhub_backend.exceptions.users.UserNotFoundException
 import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.mapper.UserMapper
@@ -27,7 +27,7 @@ class UserService(
 
         val userWithShortId: User? = userRepository.findUserByShortId(updateUserModel.shortId)
         if (userWithShortId != null && userWithShortId.id != user.id)
-            throw ShortIdException.taken(updateUserModel.shortId)
+            throw UserAlreadyExistsException.withShortId(updateUserModel.shortId)
         
         userMapper.updateUserModelToUserEntity(updateUserModel, user)
 

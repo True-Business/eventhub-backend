@@ -51,7 +51,7 @@ class RegistrationService(
     fun preRegisterUser(
         email: String, password: String
     ): RegistrationResponseDto {
-        userCredentialsRepository.findByEmail(email) ?: {
+        if (userCredentialsRepository.findByEmail(email) != null) {
             throw UserAlreadyExistsException.withEmail(email)
         }
 
