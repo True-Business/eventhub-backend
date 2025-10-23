@@ -26,6 +26,8 @@ spring:
             enable: false
 server:
   port: {{ .Values.eventhubBackendDeploy.service.port }}
+  forward-headers-strategy: framework
+
 app:
   registration:
     cleanupJob:
