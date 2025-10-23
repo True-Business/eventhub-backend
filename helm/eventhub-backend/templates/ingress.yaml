@@ -9,7 +9,7 @@ metadata:
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
     {{- with .Values.eventhubBackendDeploy.ingress.pathDefinition }}
-    nginx.ingress.kubernetes.io/x-forwarded-prefix: {{ .path }}
+    nginx.ingress.kubernetes.io/x-forwarded-prefix: {{ .prefix }}
     {{end}}
 spec:
   ingressClassName: {{ .Values.eventhubBackendDeploy.ingress.className }}
@@ -28,7 +28,7 @@ spec:
       http:
         paths:
           {{- with .Values.eventhubBackendDeploy.ingress.pathDefinition }}
-          - path: {{ .path }}
+          - path: "{{ printf "%s(/|$)(.*)" .prefix }}"
             pathType: {{ .pathType }}
             backend:
               service:

@@ -46,7 +46,7 @@ eventhubBackendDeploy:
     className: nginx
     host: eventhub-backend.ru
     pathDefinition:
-      path: "/some(/|$)(.*)"
+      prefix: "/some"
       pathType: ImplementationSpecific
     tls: []
 
