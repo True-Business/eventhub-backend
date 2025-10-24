@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.media.ExampleObject
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.parameters.RequestBody
 import io.swagger.v3.oas.annotations.responses.ApiResponse
-import io.swagger.v3.oas.annotations.tags.Tag
 import java.util.UUID
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -17,7 +16,8 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import ru.truebusiness.eventhub_backend.conrollers.dto.ErrorResponseDto
-import ru.truebusiness.eventhub_backend.conrollers.dto.UpdateOrganizationRequestDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.organizations.SearchOrganizationRequestDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.organizations.UpdateOrganizationRequestDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.organizations.CreateOrganizationRequestDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.organizations.OrganizationDto
 
@@ -106,4 +106,9 @@ interface OrganizationController {
 
     @DeleteMapping("/{organizationID}")
     fun delete(@PathVariable organizationID: UUID): ResponseEntity<Void>
+
+    @PostMapping("/search")
+    fun search(
+        @RequestBody searchOrganizationRequestDto: SearchOrganizationRequestDto
+    ): ResponseEntity<List<OrganizationDto>>
 }

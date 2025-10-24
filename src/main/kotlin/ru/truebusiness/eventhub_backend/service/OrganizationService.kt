@@ -91,10 +91,10 @@ class OrganizationService(
     }
 
     fun search(searchModel: SearchOrganizationModel): List<OrganizationModel> {
-        log.info("Searching for organization with \"${searchModel.search}\"...")
+        log.info("Searching for organization with \"{}\"...", searchModel.search)
         // TODO: actual logic
         val found: List<OrganizationModel> = listOf()
-        log.info("Found entries: ${found.count()}")
+        log.info("Found entries: {}", found.count())
         return found
     }
 }
