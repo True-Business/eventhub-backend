@@ -97,12 +97,4 @@ class OrganizationService(
         log.info("Found entries: {}", found.count())
         return found
     }
-
-    fun search(searchModel: SearchOrganizationModel): List<OrganizationModel> {
-        log.info("Searching for organization with \"${searchModel.search}\"...")
-        // TODO: actual logic
-        val found: List<OrganizationModel> = listOf()
-        log.info("Found entries: ${found.count()}")
-        return found
-    }
 }
