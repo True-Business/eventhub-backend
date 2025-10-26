@@ -14,6 +14,7 @@ import ru.truebusiness.eventhub_backend.conrollers.dto.organizations.SearchOrgan
 import ru.truebusiness.eventhub_backend.repository.entity.Organization
 import ru.truebusiness.eventhub_backend.repository.entity.User
 import ru.truebusiness.eventhub_backend.service.model.OrganizationModel
+import ru.truebusiness.eventhub_backend.service.model.SearchOrganizationModel
 import ru.truebusiness.eventhub_backend.service.model.UpdateOrganizationModel
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
@@ -46,6 +47,9 @@ interface OrganizationMapper {
     fun organizationModelListToOrganizationDtoList(
         list: List<OrganizationModel>
     ): List<OrganizationDto>
+    fun organizationEntityListToOrganizationModelList(
+        list: List<Organization>
+    ): List<OrganizationModel>
 
     fun searchOrganizationRequestDtoToSearchOrganizationModel(
         searchModel: SearchOrganizationRequestDto
