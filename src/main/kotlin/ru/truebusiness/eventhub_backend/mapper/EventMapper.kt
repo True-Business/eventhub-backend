@@ -26,4 +26,6 @@ interface EventMapper {
     fun eventModelToEventDTO(eventModel: EventModel): EventDto
 
     fun eventToEventModel(event: Event): EventModel
+    fun eventsToEventModels(events: List<Event>): List<EventModel>
+    fun eventModelsToEventDTOs(response: List<EventModel>): List<EventDto>
 }

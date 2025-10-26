@@ -28,4 +28,13 @@ class ControllerExceptionHandler {
             message = ex.message
         )
     }
+
+    @ExceptionHandler(NotImplementedException::class)
+    @ResponseStatus(HttpStatus.NOT_IMPLEMENTED)
+    fun handleNotImplemented(ex: NotImplementedException): ErrorResponseDto {
+        return ErrorResponseDto(
+            code = HttpStatus.NOT_IMPLEMENTED.value(),
+            message = ex.message ?: "Not implemented"
+        )
+    }
 }

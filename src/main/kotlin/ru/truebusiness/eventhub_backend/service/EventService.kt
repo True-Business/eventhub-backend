@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service
 import ru.truebusiness.eventhub_backend.exceptions.events.EventNotDraftException
 import ru.truebusiness.eventhub_backend.exceptions.events.EventNotFoundException
 import ru.truebusiness.eventhub_backend.exceptions.organization.WrongOrganizerException
+import ru.truebusiness.eventhub_backend.conrollers.dto.EventSearchFilter
+import ru.truebusiness.eventhub_backend.exceptions.NotImplementedException
 import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.mapper.EventMapper
 import ru.truebusiness.eventhub_backend.repository.EventRepository
@@ -83,5 +85,17 @@ class EventService(
         eventRepository.deleteById(eventID)
 
         log.info("Event {} deleted successfully!", eventID)
+    }
+
+    fun search(eventSearchFilter: EventSearchFilter): List<EventModel> {
+        log.info("Search events")
+
+        if (eventSearchFilter.isParticipant != null) {
+            throw NotImplementedException("isParticipant not implemented", null)
+        }
+
+        val events = eventRepository.findByFilter(eventSearchFilter)
+
+        return eventMapper.eventsToEventModels(events)
     }
 }
