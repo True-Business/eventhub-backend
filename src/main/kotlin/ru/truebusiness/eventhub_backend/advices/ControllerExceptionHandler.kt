@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import ru.truebusiness.eventhub_backend.conrollers.dto.ErrorResponseDto
+import ru.truebusiness.eventhub_backend.exceptions.NotImplementedException
 import ru.truebusiness.eventhub_backend.exceptions.organization.OrganizationAlreadyExistsException
 import ru.truebusiness.eventhub_backend.exceptions.organization.OrganizationNotFoundException
 

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import ru.truebusiness.eventhub_backend.conrollers.dto.ErrorResponseDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.EventSearchFilter
 import ru.truebusiness.eventhub_backend.conrollers.dto.events.CreateEventRequestDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.events.EventDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.events.UpdateEventRequestDto
@@ -229,10 +230,11 @@ interface EventController {
     ): ResponseEntity<EventDto>
 
     @GetMapping("/{eventID}")
-    fun getById(
-        @PathVariable eventID: UUID,
-    ): ResponseEntity<EventDto>
+    fun getById(@PathVariable eventID: UUID): ResponseEntity<EventDto>
 
     @DeleteMapping("/{eventID}/draft")
     fun deleteDraft(@PathVariable eventID: UUID)
+
+    @PostMapping("/search")
+    fun search(@RequestBody eventSearchFilter: EventSearchFilter): ResponseEntity<List<EventDto>>;
 }
