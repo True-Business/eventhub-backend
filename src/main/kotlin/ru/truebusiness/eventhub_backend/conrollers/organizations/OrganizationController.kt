@@ -101,7 +101,31 @@ interface OrganizationController {
     @PatchMapping("/{organizationID}")
     fun update(
         @PathVariable organizationID: UUID,
-        @RequestBody updateOrganizationRequestDto: UpdateOrganizationRequestDto
+        @RequestBody(
+            description = "Данные для обновления организации",
+            required = true,
+            content = [Content(
+                mediaType = "application/json",
+                schema = Schema(implementation = UpdateOrganizationRequestDto::class),
+                examples = [ExampleObject(
+                    name = "Корректный запрос",
+                    value = """{
+                            "name": "Acme Corporation",
+                            "description": "Global technology company",
+                            "address": "123 Main St, New York",
+                            "pictureUrl": "https://example.com/logo.png"
+                        }""",
+                ), ExampleObject(
+                    name = "Только имя",
+                    value = """{
+                            "name": "Test Org"
+                        }""",
+                    summary = "Все поля являются необязательными",
+                )],
+            )],
+        )
+        @org.springframework.web.bind.annotation.RequestBody
+        updateOrganizationRequestDto: UpdateOrganizationRequestDto
     ): ResponseEntity<OrganizationDto>
 
     @DeleteMapping("/{organizationID}")
@@ -109,6 +133,32 @@ interface OrganizationController {
 
     @PostMapping("/search")
     fun search(
-        @RequestBody searchOrganizationRequestDto: SearchOrganizationRequestDto
+        @RequestBody(
+            description = "Данные для поиска организаций",
+            required = true,
+            content = [Content(
+                mediaType = "application/json",
+                schema = Schema(implementation = SearchOrganizationRequestDto::class),
+                examples = [ExampleObject(
+                    name = "Корректный запрос",
+                    value = """{
+                            "search": "Acme",
+                            "address": "123 Main St, New York",
+                            "creatorShortId": "SHORT ID",
+                            "onlyVerified": true,
+                            "onlySubscribed": false,
+                            "onlyAdministrated": false
+                        }""",
+                ), ExampleObject(
+                    name = "Минимальный запрос",
+                    value = """{
+                            "search": "Test"
+                        }""",
+                    summary = "Без необязательных полей",
+                )],
+            )],
+        )
+        @org.springframework.web.bind.annotation.RequestBody
+        searchOrganizationRequestDto: SearchOrganizationRequestDto
     ): ResponseEntity<List<OrganizationDto>>
 }
