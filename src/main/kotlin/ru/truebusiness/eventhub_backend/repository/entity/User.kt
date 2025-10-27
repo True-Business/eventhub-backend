@@ -19,6 +19,7 @@ class User(
     var username: String?,
     @Column(nullable = false)
     var shortId: String?,
+    var bio: String,
     @Column(nullable = false)
     var registrationDate: Instant = Instant.now(),
     @Column(nullable = false)
