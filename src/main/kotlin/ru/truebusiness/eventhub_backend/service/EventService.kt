@@ -14,6 +14,7 @@ import ru.truebusiness.eventhub_backend.mapper.EventMapper
 import ru.truebusiness.eventhub_backend.repository.EventRepository
 import ru.truebusiness.eventhub_backend.repository.entity.Event
 import ru.truebusiness.eventhub_backend.repository.entity.EventStatus
+import ru.truebusiness.eventhub_backend.service.model.CreateEventModel
 import ru.truebusiness.eventhub_backend.service.model.EventModel
 
 @Service
@@ -24,7 +25,7 @@ class EventService(
     private val log by logger()
 
     @Transactional
-    fun create(eventModel: EventModel): EventModel {
+    fun create(eventModel: CreateEventModel): EventModel {
         log.info("Creating new event: {}", eventModel.name)
 
         val event: Event = eventMapper.eventModelToEventEntity(eventModel)
@@ -94,7 +95,10 @@ class EventService(
             throw NotImplementedException("isParticipant not implemented", null)
         }
 
-        val events = eventRepository.findByFilter(eventSearchFilter)
+        val events = eventRepository.findByFilter(
+            eventSearchFilter.city, eventSearchFilter.minPrice, eventSearchFilter.maxPrice,
+            eventSearchFilter.startDateTime, eventSearchFilter.minDurationMinutes, eventSearchFilter.maxDurationMinutes,
+            eventSearchFilter.organizerId, eventSearchFilter.isOpen, eventSearchFilter.status.toString())
 
         return eventMapper.eventsToEventModels(events)
     }

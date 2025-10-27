@@ -19,7 +19,7 @@ class EventControllerImpl(
         createEventRequestDto: CreateEventRequestDto,
     ): ResponseEntity<EventDto> {
         val model = eventService.create(
-            eventMapper.eventDtoToEventModel(createEventRequestDto)
+            eventMapper.eventDtoToCreateEventModel(createEventRequestDto)
         )
         val dto = eventMapper.eventModelToEventDTO(model)
         return ResponseEntity(dto, HttpStatus.CREATED)
