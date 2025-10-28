@@ -13,27 +13,27 @@ object UserSpecs {
             } else null
         }
 
-    fun isFriendOf(userId: UUID?): Specification<User> =
+    fun isFriendOf(userIdFriend: UUID?): Specification<User> =
         Specification { root, query, criteriaBuilder ->
             null
         }
 
-    fun hasFriendRequestTo(userId: UUID?): Specification<User> =
+    fun hasFriendRequestTo(userIdRequestTo: UUID?): Specification<User> =
         Specification { root, query, criteriaBuilder ->
             null
         }
 
-    fun hasFriendRequestFrom(userId: UUID?): Specification<User> =
+    fun hasFriendRequestFrom(userIdRequestFrom: UUID?): Specification<User> =
         Specification { root, query, criteriaBuilder ->
             null
         }
 
-    fun isParticipantOf(userId: UUID?): Specification<User> =
+    fun isParticipantOf(eventIdParticipant: UUID?): Specification<User> =
         Specification { root, query, criteriaBuilder ->
             null
         }
 
-    fun isAdminOf(userId: UUID?): Specification<User> =
+    fun isAdminOf(organizationIdAdmin: UUID?): Specification<User> =
         Specification { root, query, criteriaBuilder ->
             null
         }
