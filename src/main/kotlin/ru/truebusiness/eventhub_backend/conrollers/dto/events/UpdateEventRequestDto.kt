@@ -98,7 +98,7 @@ data class UpdateEventRequestDto(
         implementation = EventStatus::class,
         nullable = true
     )
-    val eventStatus: String?,
+    val eventStatus: EventStatus?,
     @param:Schema(
         description = "Новый город проведения",
         example = "Москва",
