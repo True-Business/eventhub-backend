@@ -2,6 +2,7 @@ package ru.truebusiness.eventhub_backend.service.users
 
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
+import ru.truebusiness.eventhub_backend.exceptions.organization.OrganizationNotFoundException
 import ru.truebusiness.eventhub_backend.exceptions.users.UserAlreadyExistsException
 import ru.truebusiness.eventhub_backend.exceptions.users.UserNotFoundException
 import ru.truebusiness.eventhub_backend.logger
@@ -10,6 +11,7 @@ import ru.truebusiness.eventhub_backend.repository.UserRepository
 import ru.truebusiness.eventhub_backend.repository.entity.User
 import ru.truebusiness.eventhub_backend.service.model.UpdateUserModel
 import ru.truebusiness.eventhub_backend.service.model.UserModel
+import java.util.UUID
 
 @Service
 class UserService(
@@ -34,5 +36,16 @@ class UserService(
         val updatedUser = userRepository.save(user)
         log.info("User updated successfully!")
         return userMapper.userEntityToUserModel(updatedUser)
+    }
+
+    fun getByID(id: UUID): UserModel {
+        val user = userRepository.findById(id).orElseThrow {
+            UserNotFoundException.withId(id)
+        }
+
+        log.info("User {} found", id)
+        return userMapper.userEntityToUserModel(
+            user
+        )
     }
 }
