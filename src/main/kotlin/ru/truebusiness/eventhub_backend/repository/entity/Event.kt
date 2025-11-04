@@ -48,7 +48,7 @@ class Event(
     @Column(name = "description")
     var description: String,
 
-    @Column(name = "price", precision = 10, scale = 2)
+    @Column(name = "price")
     var price: Double,
 
     @Column(name = "is_open")

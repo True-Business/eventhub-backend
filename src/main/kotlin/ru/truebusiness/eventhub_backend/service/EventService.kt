@@ -98,7 +98,8 @@ class EventService(
         val events = eventRepository.findByFilter(
             eventSearchFilter.city, eventSearchFilter.minPrice, eventSearchFilter.maxPrice,
             eventSearchFilter.startDateTime, eventSearchFilter.minDurationMinutes, eventSearchFilter.maxDurationMinutes,
-            eventSearchFilter.organizerId, eventSearchFilter.isOpen, eventSearchFilter.status.toString())
+            eventSearchFilter.organizerId, eventSearchFilter.isOpen, eventSearchFilter.status?.toString()
+        )
 
         return eventMapper.eventsToEventModels(events)
     }
