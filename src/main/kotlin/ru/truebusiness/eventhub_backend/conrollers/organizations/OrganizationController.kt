@@ -146,7 +146,7 @@ interface OrganizationController {
                             "address": "123 Main St, New York",
                             "creatorShortId": "SHORT ID",
                             "onlyVerified": true,
-                            "onlySubscribed": false,
+                            "onlySubscribed": true,
                             "onlyAdministrated": false
                         }""",
                 ), ExampleObject(
