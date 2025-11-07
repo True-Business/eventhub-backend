@@ -10,6 +10,7 @@ import ru.truebusiness.eventhub_backend.exceptions.organization.OrganizationNotF
 import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.mapper.OrganizationMapper
 import ru.truebusiness.eventhub_backend.repository.OrganizationRepository
+import ru.truebusiness.eventhub_backend.repository.OrganizationSpecs
 import ru.truebusiness.eventhub_backend.repository.UserRepository
 import ru.truebusiness.eventhub_backend.repository.entity.Organization
 import ru.truebusiness.eventhub_backend.service.model.OrganizationModel
@@ -95,49 +96,22 @@ class OrganizationService(
     fun search(searchModel: SearchOrganizationModel): List<OrganizationModel> {
         log.info("Searching for organization with \"{}\"...", searchModel.search)
 
-        var specification = Specification.unrestricted<Organization>()
+        var specification = OrganizationSpecs.withNameOrDescription(searchModel.search)
+            .and(OrganizationSpecs.withCreatorShortId(searchModel.creatorShortId))
+            .and(OrganizationSpecs.withAddress(searchModel.address))
 
-        // название + описание
-        if (searchModel.search.isNotBlank()) {
-            specification = specification.and { root, _, criteriaBuilder ->
-                val searchPattern = "%${searchModel.search.trim().lowercase()}%"
-                criteriaBuilder.or(
-                    criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), searchPattern),
-                    criteriaBuilder.like(criteriaBuilder.lower(root.get("description")), searchPattern)
-                )
-            }
-        }
-
-        // создатель
-        searchModel.creatorShortId?.takeIf {
-            it.isNotBlank()
-        }?.let {
-            specification = specification.and { root, _, criteriaBuilder ->
-                val creatorJoin = root.join<Any, Any>("creator")
-                criteriaBuilder.equal(creatorJoin.get<String>("shortId"), it)
-            }
-        }
-
-        // адрес
-        searchModel.address?.takeIf {
-            it.isNotBlank()
-        }?.let {
-            specification = specification.and { root, _, criteriaBuilder ->
-                val addressPattern = "%${it.trim().lowercase()}%"
-                criteriaBuilder.like(criteriaBuilder.lower(root.get("address")), addressPattern)
-            }
-        }
-
-        // верифицированные
         if (searchModel.onlyVerified) {
-            specification = specification.and { root, _, criteriaBuilder ->
-                criteriaBuilder.isTrue(root.get("isVerified"))
-            }
+            log.debug("Searching only for verified organizations")
+            specification = specification.and(OrganizationSpecs.isVerified())
+        }
+        // todo: прокинуть userId через хедеры
+        if (searchModel.onlySubscribed) {
+            //specification = specification.and(OrganizationSpecs.isSubscribedBy(userId))
+        }
+        if (searchModel.onlyAdministrated) {
+            //specification = specification.and(OrganizationSpecs.isAdministratedBy(userId))
         }
 
-        // TODO: Подписки и администрирование доделать позже
-
-        log.info(specification.toString())
         val found: List<OrganizationModel> = organizationMapper.organizationEntityListToOrganizationModelList(
             organizationRepository.findAll(specification)
         )
