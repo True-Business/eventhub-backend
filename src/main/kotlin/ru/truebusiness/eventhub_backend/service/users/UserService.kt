@@ -8,8 +8,10 @@ import ru.truebusiness.eventhub_backend.exceptions.users.UserNotFoundException
 import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.mapper.UserMapper
 import ru.truebusiness.eventhub_backend.repository.UserRepository
+import ru.truebusiness.eventhub_backend.repository.UserSpecs
 import ru.truebusiness.eventhub_backend.repository.entity.User
 import ru.truebusiness.eventhub_backend.service.model.UpdateUserModel
+import ru.truebusiness.eventhub_backend.service.model.UserFiltersModel
 import ru.truebusiness.eventhub_backend.service.model.UserModel
 import java.util.UUID
 
@@ -47,5 +49,17 @@ class UserService(
         return userMapper.userEntityToUserModel(
             user
         )
+
+    fun findUsers(filter: UserFiltersModel): List<UserModel> {
+        val spec = UserSpecs.withUsername(filter.username)
+            .and(UserSpecs.isFriendOf(filter.userIdFriend))
+            .and(UserSpecs.hasFriendRequestTo(filter.userIdRequestTo))
+            .and(UserSpecs.hasFriendRequestFrom(filter.userIdRequestFrom))
+            .and(UserSpecs.isParticipantOf(filter.eventIdParticipant))
+            .and(UserSpecs.isAdminOf(filter.organizationIdAdmin))
+
+        val filteredUsers = userRepository.findAll(spec)
+        log.debug("Found ${filteredUsers.size} users")
+        return userMapper.userEntitiesToUserModels(filteredUsers)
     }
 }
