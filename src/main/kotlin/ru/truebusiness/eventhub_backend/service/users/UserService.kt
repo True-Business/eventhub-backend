@@ -49,6 +49,7 @@ class UserService(
         return userMapper.userEntityToUserModel(
             user
         )
+    }
 
     fun findUsers(filter: UserFiltersModel): List<UserModel> {
         val spec = UserSpecs.withUsername(filter.username)

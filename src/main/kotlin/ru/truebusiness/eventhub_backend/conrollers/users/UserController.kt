@@ -36,6 +36,7 @@ class UserController(
     fun get(@PathVariable("id") id: UUID): ResponseEntity<UserDto> {
         val userModel = userService.getByID(id)
         return ResponseEntity.ok(userMapper.userModelToUserDto(userModel))
+    }
 
     @PostMapping("/search")
     fun findUsers(
