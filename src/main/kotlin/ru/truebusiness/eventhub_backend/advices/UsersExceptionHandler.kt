@@ -1,4 +1,4 @@
-package ru.truebusiness.eventhub_backend.advices.users
+package ru.truebusiness.eventhub_backend.advices
 
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ExceptionHandler

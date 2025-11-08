@@ -51,20 +51,13 @@ class RegistrationService(
     fun preRegisterUser(
         email: String, password: String
     ): RegistrationResponseDto {
-        userCredentialsRepository.findByEmail(email) ?: {
+        if (userCredentialsRepository.findByEmail(email) != null) {
             throw UserAlreadyExistsException.withEmail(email)
         }
 
         log.debug("Started registration of new user {}", email)
-
-        val newUser = userRepository.save(
-            User(
-                username = "",
-                shortId = "",
-                isConfirmed = false,
-                credentials = null
-            )
-        )
+        val newUser = userRepository.save(User(username = "", shortId = "",
+            bio = "", isConfirmed = false, credentials = null))
 
         log.debug("New user registered! User {}:{}", email, newUser.id)
 
