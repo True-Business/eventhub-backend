@@ -14,7 +14,7 @@ class BaseControllerExceptionHandler {
     @ExceptionHandler(Exception::class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     fun handleAllUncaughtException(ex: Exception): ErrorResponseDto {
-        log.error("Unexpected error", ex)
+        log.error(ex.message)
         return ErrorResponseDto(
             code = HttpStatus.INTERNAL_SERVER_ERROR.value(),
             message = "An unexpected error occurred"

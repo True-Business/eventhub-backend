@@ -7,11 +7,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import ru.truebusiness.eventhub_backend.conrollers.dto.ErrorResponseDto
 import ru.truebusiness.eventhub_backend.exceptions.organization.OrganizationAlreadyExistsException
 import ru.truebusiness.eventhub_backend.exceptions.organization.OrganizationNotFoundException
-import ru.truebusiness.eventhub_backend.logger
 
 @RestControllerAdvice
 class ControllerExceptionHandler {
-    private val log by logger()
 
     @ExceptionHandler(OrganizationAlreadyExistsException::class)
     @ResponseStatus(HttpStatus.CONFLICT)
