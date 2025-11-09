@@ -1,6 +1,7 @@
 package ru.truebusiness.eventhub_backend.conrollers.users
 
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController
 import ru.truebusiness.eventhub_backend.conrollers.dto.FindUsersRequestDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.UpdateUserRequestDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.UserDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.organizations.OrganizationDto
 import ru.truebusiness.eventhub_backend.mapper.UserMapper
 import ru.truebusiness.eventhub_backend.service.users.UserService
 import java.util.UUID
@@ -27,6 +29,12 @@ class UserController(
     ): ResponseEntity<UserDto> {
         val userModel = userService.update(
             userMapper.updateUserRequestDtoToUpdateUserModel(id, updateUserRequestDto))
+        return ResponseEntity.ok(userMapper.userModelToUserDto(userModel))
+    }
+
+    @GetMapping("/{id}")
+    fun get(@PathVariable("id") id: UUID): ResponseEntity<UserDto> {
+        val userModel = userService.getByID(id)
         return ResponseEntity.ok(userMapper.userModelToUserDto(userModel))
     }
 
