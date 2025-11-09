@@ -4,7 +4,8 @@ import java.util.UUID
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
-import ru.truebusiness.eventhub_backend.conrollers.dto.UpdateOrganizationRequestDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.organizations.SearchOrganizationRequestDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.organizations.UpdateOrganizationRequestDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.organizations.CreateOrganizationRequestDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.organizations.OrganizationDto
 import ru.truebusiness.eventhub_backend.mapper.OrganizationMapper
@@ -50,5 +51,18 @@ class OrganizationControllerImpl(
     override fun delete( organizationID: UUID): ResponseEntity<Void> {
         organizationService.deleteById(organizationID)
         return ResponseEntity.noContent().build()
+    }
+
+    override fun search(
+        searchOrganizationRequestDto: SearchOrganizationRequestDto
+    ): ResponseEntity<List<OrganizationDto>> {
+        val response = organizationMapper.organizationModelListToOrganizationDtoList(
+            organizationService.search(
+                organizationMapper.searchOrganizationRequestDtoToSearchOrganizationModel(
+                    searchOrganizationRequestDto
+                )
+            )
+        )
+        return ResponseEntity.ok(response)
     }
 }

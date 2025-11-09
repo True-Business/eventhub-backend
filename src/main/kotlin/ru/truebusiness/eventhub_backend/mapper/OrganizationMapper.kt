@@ -7,12 +7,14 @@ import org.mapstruct.Mapping
 import org.mapstruct.MappingConstants
 import org.mapstruct.MappingTarget
 import org.mapstruct.NullValuePropertyMappingStrategy
-import ru.truebusiness.eventhub_backend.conrollers.dto.UpdateOrganizationRequestDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.organizations.UpdateOrganizationRequestDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.organizations.CreateOrganizationRequestDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.organizations.OrganizationDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.organizations.SearchOrganizationRequestDto
 import ru.truebusiness.eventhub_backend.repository.entity.Organization
 import ru.truebusiness.eventhub_backend.repository.entity.User
 import ru.truebusiness.eventhub_backend.service.model.OrganizationModel
+import ru.truebusiness.eventhub_backend.service.model.SearchOrganizationModel
 import ru.truebusiness.eventhub_backend.service.model.UpdateOrganizationModel
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
@@ -41,4 +43,15 @@ interface OrganizationMapper {
 
     @Mapping(target = "creatorId", source = "creator.id")
     fun organizationEntityToOrganizationDTO(entity: Organization): OrganizationDto
+
+    fun organizationModelListToOrganizationDtoList(
+        list: List<OrganizationModel>
+    ): List<OrganizationDto>
+    fun organizationEntityListToOrganizationModelList(
+        list: List<Organization>
+    ): List<OrganizationModel>
+
+    fun searchOrganizationRequestDtoToSearchOrganizationModel(
+        searchModel: SearchOrganizationRequestDto
+    ): SearchOrganizationModel
 }
