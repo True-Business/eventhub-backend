@@ -31,6 +31,8 @@ interface EventMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     fun eventModelToEventEntity(eventModel: EventModel, @MappingTarget event: Event)
 
+    @Mapping(source = "open", target = "isOpen")
+    @Mapping(source = "withRegister", target = "isWithRegister")
     fun eventModelToEventDTO(eventModel: EventModel): EventDto
 
     fun eventToEventModel(event: Event): EventModel

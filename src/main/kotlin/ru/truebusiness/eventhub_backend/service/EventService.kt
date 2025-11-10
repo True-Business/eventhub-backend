@@ -90,6 +90,7 @@ class EventService(
 
     fun search(eventSearchFilter: EventSearchFilter): List<EventModel> {
         log.info("Search events")
+        log.info("isopen: {}", eventSearchFilter.isOpen);
 
         if (eventSearchFilter.isParticipant != null) {
             throw NotImplementedException("isParticipant not implemented", null)

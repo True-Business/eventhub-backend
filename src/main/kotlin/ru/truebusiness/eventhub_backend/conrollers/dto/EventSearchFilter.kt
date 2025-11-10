@@ -16,14 +16,3 @@ data class EventSearchFilter(
     val status: EventStatusModel?,
     val isOpen: Boolean?,
 )
-/*
-  "city": null,
-  "minPrice": int,
-  "maxPrice": int,
-  "startDateTime": now,
-  "duration": null,
-  "organizerId": null,
-  "isParticipant": null,
-  "status": "PLANNED",
-  "isOpen": null
- */
