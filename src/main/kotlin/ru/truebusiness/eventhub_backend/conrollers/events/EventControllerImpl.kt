@@ -4,6 +4,7 @@ import java.util.UUID
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
+import ru.truebusiness.eventhub_backend.conrollers.dto.EventSearchFilter
 import ru.truebusiness.eventhub_backend.conrollers.dto.events.CreateEventRequestDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.events.EventDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.events.UpdateEventRequestDto
@@ -18,7 +19,7 @@ class EventControllerImpl(
         createEventRequestDto: CreateEventRequestDto,
     ): ResponseEntity<EventDto> {
         val model = eventService.create(
-            eventMapper.eventDtoToEventModel(createEventRequestDto)
+            eventMapper.eventDtoToCreateEventModel(createEventRequestDto)
         )
         val dto = eventMapper.eventModelToEventDTO(model)
         return ResponseEntity(dto, HttpStatus.CREATED)
@@ -43,5 +44,10 @@ class EventControllerImpl(
 
     override fun deleteDraft(eventID: UUID) {
         eventService.deleteDraft(eventID)
+    }
+
+    override fun search(eventSearchFilter: EventSearchFilter): ResponseEntity<List<EventDto>> {
+        val response = eventService.search(eventSearchFilter)
+        return ResponseEntity.ok(eventMapper.eventModelsToEventDTOs(response))
     }
 }

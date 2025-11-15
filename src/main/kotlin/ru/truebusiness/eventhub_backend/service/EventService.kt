@@ -7,11 +7,14 @@ import org.springframework.stereotype.Service
 import ru.truebusiness.eventhub_backend.exceptions.events.EventNotDraftException
 import ru.truebusiness.eventhub_backend.exceptions.events.EventNotFoundException
 import ru.truebusiness.eventhub_backend.exceptions.organization.WrongOrganizerException
+import ru.truebusiness.eventhub_backend.conrollers.dto.EventSearchFilter
+import ru.truebusiness.eventhub_backend.exceptions.NotImplementedException
 import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.mapper.EventMapper
 import ru.truebusiness.eventhub_backend.repository.EventRepository
 import ru.truebusiness.eventhub_backend.repository.entity.Event
 import ru.truebusiness.eventhub_backend.repository.entity.EventStatus
+import ru.truebusiness.eventhub_backend.service.model.CreateEventModel
 import ru.truebusiness.eventhub_backend.service.model.EventModel
 
 @Service
@@ -22,7 +25,7 @@ class EventService(
     private val log by logger()
 
     @Transactional
-    fun create(eventModel: EventModel): EventModel {
+    fun create(eventModel: CreateEventModel): EventModel {
         log.info("Creating new event: {}", eventModel.name)
 
         val event: Event = eventMapper.eventModelToEventEntity(eventModel)
@@ -83,5 +86,22 @@ class EventService(
         eventRepository.deleteById(eventID)
 
         log.info("Event {} deleted successfully!", eventID)
+    }
+
+    fun search(eventSearchFilter: EventSearchFilter): List<EventModel> {
+        log.info("Search events")
+        log.info("isopen: {}", eventSearchFilter.isOpen);
+
+        if (eventSearchFilter.isParticipant != null) {
+            throw NotImplementedException("isParticipant not implemented", null)
+        }
+
+        val events = eventRepository.findByFilter(
+            eventSearchFilter.city, eventSearchFilter.minPrice, eventSearchFilter.maxPrice,
+            eventSearchFilter.startDateTime, eventSearchFilter.minDurationMinutes, eventSearchFilter.maxDurationMinutes,
+            eventSearchFilter.organizerId, eventSearchFilter.isOpen, eventSearchFilter.status?.toString()
+        )
+
+        return eventMapper.eventsToEventModels(events)
     }
 }

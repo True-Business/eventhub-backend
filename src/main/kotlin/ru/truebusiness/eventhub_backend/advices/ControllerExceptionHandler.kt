@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import ru.truebusiness.eventhub_backend.conrollers.dto.ErrorResponseDto
+import ru.truebusiness.eventhub_backend.exceptions.NotImplementedException
 import ru.truebusiness.eventhub_backend.exceptions.organization.OrganizationAlreadyExistsException
 import ru.truebusiness.eventhub_backend.exceptions.organization.OrganizationNotFoundException
 
@@ -26,6 +27,15 @@ class ControllerExceptionHandler {
         return ErrorResponseDto(
             code = HttpStatus.NOT_FOUND.value(),
             message = ex.message
+        )
+    }
+
+    @ExceptionHandler(NotImplementedException::class)
+    @ResponseStatus(HttpStatus.NOT_IMPLEMENTED)
+    fun handleNotImplemented(ex: NotImplementedException): ErrorResponseDto {
+        return ErrorResponseDto(
+            code = HttpStatus.NOT_IMPLEMENTED.value(),
+            message = ex.message ?: "Not implemented"
         )
     }
 }

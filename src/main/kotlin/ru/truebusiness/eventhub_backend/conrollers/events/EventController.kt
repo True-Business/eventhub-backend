@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import ru.truebusiness.eventhub_backend.conrollers.dto.ErrorResponseDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.EventSearchFilter
 import ru.truebusiness.eventhub_backend.conrollers.dto.events.CreateEventRequestDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.events.EventDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.events.UpdateEventRequestDto
@@ -50,7 +51,7 @@ interface EventController {
                                 "updatedAt": "2023-10-05T12:34:56.789Z",
                                 "organizerId": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
                                 "organizationId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-                                "category": "TECHNOLOGY",
+                                "category": "PLACEHOLDER",
                                 "address": "ул. Ленина, д. 15, Москва",
                                 "route": "Вход со двора, подъезд 3",
                                 "description": "Ежегодная конференция разработчиков на Kotlin",
@@ -83,7 +84,7 @@ interface EventController {
                             "endDateTime": "2025-04-05T17:00:00",
                             "organizerId": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
                             "organizationId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-                            "category": "TECHNOLOGY",
+                            "category": "PLACEHOLDER",
                             "address": "ул. Ленина, д. 15, Москва",
                             "route": "Вход со двора, подъезд 3",
                             "description": "Ежегодная конференция разработчиков на Kotlin",
@@ -157,12 +158,12 @@ interface EventController {
                             value = """{
                                 "id": "550e8400-e29b-41d4-a716-446655440000",
                                 "name": "Конференция по Kotlin 2025",
-                                "startDateTime": "2025-04-05T10:00:00",
-                                "endDateTime": "2025-04-05T18:00:00",
+                                "startDateTime": "2025-04-05T10:00:00Z",
+                                "endDateTime": "2025-04-05T18:00:00Z",
                                 "updatedAt": "2023-10-06T09:15:00Z",
                                 "organizerId": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
                                 "organizationId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-                                "category": "TECHNOLOGY",
+                                "category": "PLACEHOLDER",
                                 "address": "ул. Тверская, д. 10, Москва",
                                 "route": "Метро Охотный ряд, выход 3",
                                 "description": "Обновленное описание конференции",
@@ -229,10 +230,11 @@ interface EventController {
     ): ResponseEntity<EventDto>
 
     @GetMapping("/{eventID}")
-    fun getById(
-        @PathVariable eventID: UUID,
-    ): ResponseEntity<EventDto>
+    fun getById(@PathVariable eventID: UUID): ResponseEntity<EventDto>
 
     @DeleteMapping("/{eventID}/draft")
     fun deleteDraft(@PathVariable eventID: UUID)
+
+    @PostMapping("/search")
+    fun search(@RequestBody eventSearchFilter: EventSearchFilter): ResponseEntity<List<EventDto>>;
 }

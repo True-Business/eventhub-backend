@@ -44,7 +44,7 @@ data class CreateEventRequestDto(
     @param:Schema(
         description = "Категория события",
         implementation = EventCategory::class,
-        example = "TECHNOLOGY",
+        example = "PLACEHOLDER",
     )
     val category: EventCategory,
 
