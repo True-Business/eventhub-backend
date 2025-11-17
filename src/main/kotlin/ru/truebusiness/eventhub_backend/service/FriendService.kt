@@ -22,9 +22,10 @@ class FriendService (
 
     @Transactional
     fun create(createFriendRequestModel: CreateFriendRequestModel): FriendRequestModel {
-        if (friendRepository.existsBySenderAndReceiver(
-            createFriendRequestModel.sender, createFriendRequestModel.receiver
-        )) {
+        val sender = userRepository.getReferenceById(createFriendRequestModel.sender)
+        val receiver = userRepository.getReferenceById(createFriendRequestModel.receiver)
+
+        if (friendRepository.existsBySenderAndReceiver(sender, receiver)) {
             log.error(
                 "Failed to create friend request from {} to {}, already exists",
                 createFriendRequestModel.sender, createFriendRequestModel.receiver
@@ -34,8 +35,6 @@ class FriendService (
             )
         }
 
-        val sender = userRepository.getReferenceById(createFriendRequestModel.sender)
-        val receiver = userRepository.getReferenceById(createFriendRequestModel.receiver)
         val createdFriendRequest = friendRepository.save(
             FriendRequest(
                 sender = sender,
