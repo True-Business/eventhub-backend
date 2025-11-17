@@ -16,10 +16,10 @@
             <column name="id" type="UUID">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="sender" type="UUID">
+            <column name="sender_id" type="UUID">
                 <constraints nullable="false"/>
             </column>
-            <column name="receiver" type="UUID">
+            <column name="receiver_id" type="UUID">
                 <constraints nullable="false"/>
             </column>
             <column name="status" type="TINYINT">
@@ -32,13 +32,13 @@
             </column>
         </createTable>
         <addForeignKeyConstraint baseTableName="friend_requests"
-                                 baseColumnNames="sender"
+                                 baseColumnNames="sender_id"
                                  constraintName="fk_friend_request_sender_user"
                                  referencedTableName="users"
                                  referencedColumnNames="id"
                                  onDelete="CASCADE"/>
         <addForeignKeyConstraint baseTableName="friend_requests"
-                                 baseColumnNames="receiver"
+                                 baseColumnNames="receiver_id"
                                  constraintName="fk_friend_request_receiver_user"
                                  referencedTableName="users"
                                  referencedColumnNames="id"

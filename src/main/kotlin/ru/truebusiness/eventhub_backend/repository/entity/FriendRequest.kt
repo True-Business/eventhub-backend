@@ -13,9 +13,11 @@ class FriendRequest (
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID = UUID.randomUUID(),
 
-    @JoinColumn(nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "sender_id", nullable = false)
     var sender: User,
-    @JoinColumn(nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "receiver_id", nullable = false)
     var receiver: User,
 
     @Enumerated(EnumType.ORDINAL)
