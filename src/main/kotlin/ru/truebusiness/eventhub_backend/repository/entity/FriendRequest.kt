@@ -10,7 +10,6 @@ import java.util.UUID
 class FriendRequest (
     @Id
     @Column(nullable = false, unique = true)
-    @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID = UUID.randomUUID(),
 
     @ManyToOne
