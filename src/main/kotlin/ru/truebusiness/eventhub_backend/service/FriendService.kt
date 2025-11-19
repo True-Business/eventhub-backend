@@ -29,14 +29,16 @@ class FriendService (
         val receiver = userRepository.findById(createFriendRequestModel.receiver)
             .orElseThrow { UserNotFoundException.withId(createFriendRequestModel.receiver) }
 
-        if (friendRepository.existsBySenderAndReceiver(sender, receiver)) {
-            log.error(
-                "Failed to create friend request from {} to {}, already exists",
-                createFriendRequestModel.sender, createFriendRequestModel.receiver
-            )
-            throw FriendRequestAlreadyExistsException.withSenderAndReceiver(
-                createFriendRequestModel.sender, createFriendRequestModel.receiver
-            )
+        friendRepository.findBySenderAndReceiver(sender, receiver).forEach {
+            if (it.status == FriendRequestStatus.PENDING) {
+                log.error(
+                    "Failed to create friend request from {} to {}, one is already pending",
+                    createFriendRequestModel.sender, createFriendRequestModel.receiver
+                )
+                throw FriendRequestAlreadyExistsException.withSenderAndReceiver(
+                    createFriendRequestModel.sender, createFriendRequestModel.receiver
+                )
+            }
         }
 
         val createdFriendRequest = friendRepository.save(

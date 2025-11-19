@@ -9,5 +9,5 @@ import java.util.UUID
 
 @Repository
 interface FriendRepository : JpaRepository<FriendRequest, UUID>, JpaSpecificationExecutor<FriendRequest> {
-    fun existsBySenderAndReceiver(sender: User, receiver: User): Boolean
+    fun findBySenderAndReceiver(sender: User, receiver: User): List<FriendRequest>
 }
