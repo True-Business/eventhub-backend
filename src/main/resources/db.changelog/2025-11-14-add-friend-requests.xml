@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.30.xsd">
+
+    <changeSet id="add-friend-requests" author="s.rozhkov">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="friend_requests"/>
+            </not>
+        </preConditions>
+        <comment>Created table for friend requests.</comment>
+        <createTable tableName="friend_requests">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="sender_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="receiver_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="TINYINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMPTZ">
+                <constraints nullable="false"/>
+            </column>
+            <column name="accepted_at" type="TIMESTAMPTZ">
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="friend_requests"
+                                 baseColumnNames="sender_id"
+                                 constraintName="fk_friend_request_sender_user"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+        <addForeignKeyConstraint baseTableName="friend_requests"
+                                 baseColumnNames="receiver_id"
+                                 constraintName="fk_friend_request_receiver_user"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+</databaseChangeLog>
