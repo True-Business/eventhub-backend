@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import ru.truebusiness.eventhub_backend.conrollers.dto.friends.FriendRequestStatus
 import ru.truebusiness.eventhub_backend.exceptions.friends.FriendRequestAlreadyExistsException
+import ru.truebusiness.eventhub_backend.exceptions.friends.SelfFriendRequestException
 import ru.truebusiness.eventhub_backend.exceptions.users.UserNotFoundException
 import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.mapper.FriendMapper
@@ -23,6 +24,14 @@ class FriendService (
 
     @Transactional
     fun create(createFriendRequestModel: CreateFriendRequestModel): FriendRequestModel {
+
+        if (createFriendRequestModel.sender == createFriendRequestModel.receiver) {
+            log.error(
+                "Failed to create friend request from {} to {}, same user",
+                createFriendRequestModel.sender, createFriendRequestModel.receiver
+            )
+            throw SelfFriendRequestException.withId(createFriendRequestModel.sender);
+        }
 
         val sender = userRepository.findById(createFriendRequestModel.sender)
             .orElseThrow { UserNotFoundException.withId(createFriendRequestModel.sender) }
