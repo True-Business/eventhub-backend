@@ -90,6 +90,7 @@ class FriendService (
         )
 
         request.status = FriendRequestStatus.ACCEPTED
+        request.acceptedAt = createdFriendship.since
         friendRequestRepository.save(request)
 
         return friendMapper.friendshipEntityToFriendshipModel(
