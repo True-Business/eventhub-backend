@@ -3,11 +3,10 @@ package ru.truebusiness.eventhub_backend.conrollers.events
 import java.util.UUID
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RestController
 import ru.truebusiness.eventhub_backend.conrollers.dto.EventSearchFilter
-import ru.truebusiness.eventhub_backend.conrollers.dto.events.CreateEventRequestDto
-import ru.truebusiness.eventhub_backend.conrollers.dto.events.EventDto
-import ru.truebusiness.eventhub_backend.conrollers.dto.events.UpdateEventRequestDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.events.*
 import ru.truebusiness.eventhub_backend.mapper.EventMapper
 import ru.truebusiness.eventhub_backend.service.EventService
 
@@ -49,5 +48,11 @@ class EventControllerImpl(
     override fun search(eventSearchFilter: EventSearchFilter): ResponseEntity<List<EventDto>> {
         val response = eventService.search(eventSearchFilter)
         return ResponseEntity.ok(eventMapper.eventModelsToEventDTOs(response))
+    }
+
+    override fun registerToEvent(@PathVariable eventID: UUID): ResponseEntity<EventParticipantDto> {
+        val response = eventService.registerToEvent(eventID)
+        return ResponseEntity.ok(
+            eventMapper.eventParticipantModelToEventParticipantDto(response))
     }
 }

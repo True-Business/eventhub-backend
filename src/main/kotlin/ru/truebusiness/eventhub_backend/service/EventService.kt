@@ -9,18 +9,22 @@ import ru.truebusiness.eventhub_backend.exceptions.events.EventNotFoundException
 import ru.truebusiness.eventhub_backend.exceptions.organization.WrongOrganizerException
 import ru.truebusiness.eventhub_backend.conrollers.dto.EventSearchFilter
 import ru.truebusiness.eventhub_backend.exceptions.NotImplementedException
+import ru.truebusiness.eventhub_backend.exceptions.events.RegistrationException
 import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.mapper.EventMapper
+import ru.truebusiness.eventhub_backend.repository.EventParticipantRepository
 import ru.truebusiness.eventhub_backend.repository.EventRepository
+import ru.truebusiness.eventhub_backend.repository.UserCredentialsRepository
 import ru.truebusiness.eventhub_backend.repository.entity.Event
+import ru.truebusiness.eventhub_backend.repository.entity.EventParticipant
 import ru.truebusiness.eventhub_backend.repository.entity.EventStatus
-import ru.truebusiness.eventhub_backend.service.model.CreateEventModel
-import ru.truebusiness.eventhub_backend.service.model.EventModel
+import ru.truebusiness.eventhub_backend.service.model.*
 
 @Service
 class EventService(
     private val eventRepository: EventRepository,
-    private val eventMapper: EventMapper,
+    private val eventParticipantRepository: EventParticipantRepository,
+    private val eventMapper: EventMapper, private val userCredentialsRepository: UserCredentialsRepository,
 ) {
     private val log by logger()
 
@@ -103,5 +107,24 @@ class EventService(
         )
 
         return eventMapper.eventsToEventModels(events)
+    }
+
+    @Transactional
+    fun registerToEvent(eventId: UUID): EventParticipantModel {
+        val event = get(eventId)
+        if (event.status != EventStatusModel.PLANNED) {
+            throw RegistrationException.eventIsUnavailable(eventId)
+        }
+
+        val userId = userCredentialsRepository.getReferenceById(
+            SecurityContextHolder.getContext().authentication.principal as UUID).user.id
+        if (eventParticipantRepository.existsByUserIdAndEventId(userId, eventId)) {
+            throw RegistrationException.alreadyRegistered(userId, eventId)
+        }
+
+        val eventParticipant = eventParticipantRepository.save(
+            EventParticipant(userId = userId, eventId = eventId)
+        )
+        return eventMapper.eventParticipantToEventParticipantModel(eventParticipant)
     }
 }
