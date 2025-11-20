@@ -9,7 +9,7 @@ class FriendRequestAlreadyExistsException private constructor(
     companion object {
         fun withSenderAndReceiver(senderId: UUID, receiverId: UUID): FriendRequestAlreadyExistsException {
             return FriendRequestAlreadyExistsException(
-                "Friend request from '${senderId}' to '${receiverId}' already exists"
+                "Failed to create friend request between $senderId and $receiverId, one is already pending"
             )
         }
     }
