@@ -4,26 +4,33 @@ import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import ru.truebusiness.eventhub_backend.conrollers.dto.friends.FriendRequestStatus
 import ru.truebusiness.eventhub_backend.exceptions.friends.FriendRequestAlreadyExistsException
+import ru.truebusiness.eventhub_backend.exceptions.friends.FriendRequestNotFoundException
+import ru.truebusiness.eventhub_backend.exceptions.friends.FriendRequestWrongStatusException
 import ru.truebusiness.eventhub_backend.exceptions.friends.SelfFriendRequestException
 import ru.truebusiness.eventhub_backend.exceptions.users.UserNotFoundException
 import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.mapper.FriendMapper
-import ru.truebusiness.eventhub_backend.repository.FriendRepository
+import ru.truebusiness.eventhub_backend.repository.FriendRequestRepository
+import ru.truebusiness.eventhub_backend.repository.FriendshipRepository
 import ru.truebusiness.eventhub_backend.repository.UserRepository
 import ru.truebusiness.eventhub_backend.repository.entity.FriendRequest
+import ru.truebusiness.eventhub_backend.repository.entity.Friendship
+import ru.truebusiness.eventhub_backend.service.model.AcceptFriendRequestModel
 import ru.truebusiness.eventhub_backend.service.model.CreateFriendRequestModel
 import ru.truebusiness.eventhub_backend.service.model.FriendRequestModel
+import ru.truebusiness.eventhub_backend.service.model.FriendshipModel
 
 @Service
 class FriendService (
-    private val friendRepository: FriendRepository,
+    private val friendRequestRepository: FriendRequestRepository,
+    private val friendshipRepository: FriendshipRepository,
     private val userRepository: UserRepository,
     private val friendMapper: FriendMapper,
 ) {
     private val log by logger()
 
     @Transactional
-    fun create(createFriendRequestModel: CreateFriendRequestModel): FriendRequestModel {
+    fun createFriendRequest(createFriendRequestModel: CreateFriendRequestModel): FriendRequestModel {
 
         if (createFriendRequestModel.sender == createFriendRequestModel.receiver) {
             log.error(
@@ -38,7 +45,7 @@ class FriendService (
         val receiver = userRepository.findById(createFriendRequestModel.receiver)
             .orElseThrow { UserNotFoundException.withId(createFriendRequestModel.receiver) }
 
-        friendRepository.findBySenderAndReceiver(sender, receiver).forEach {
+        friendRequestRepository.findBySenderAndReceiver(sender, receiver).forEach {
             if (it.status == FriendRequestStatus.PENDING) {
                 log.error(
                     "Failed to create friend request from {} to {}, one is already pending",
@@ -50,7 +57,7 @@ class FriendService (
             }
         }
 
-        val createdFriendRequest = friendRepository.save(
+        val createdFriendRequest = friendRequestRepository.save(
             FriendRequest(
                 sender = sender,
                 receiver = receiver,
@@ -61,6 +68,32 @@ class FriendService (
         log.info("Create new friend request {}", createdFriendRequest.id)
         return friendMapper.friendRequestEntityToFriendRequestModel(
             createdFriendRequest
+        )
+    }
+
+    @Transactional
+    fun acceptFriendRequest(
+        acceptFriendRequestModel: AcceptFriendRequestModel
+    ): FriendshipModel {
+        val request = friendRequestRepository.findById(acceptFriendRequestModel.requestId)
+            .orElseThrow { FriendRequestNotFoundException.withId(acceptFriendRequestModel.requestId) }
+        if (request.status != FriendRequestStatus.PENDING) {
+            log.error("Trying to accept request ${request.id} which already has ${request.status.name} status.")
+            throw FriendRequestWrongStatusException.withStatus(request.status)
+        }
+
+        val createdFriendship = friendshipRepository.save(
+            Friendship(
+                user1 = request.sender,
+                user2 = request.receiver
+            )
+        )
+
+        request.status = FriendRequestStatus.ACCEPTED
+        friendRequestRepository.save(request)
+
+        return friendMapper.friendshipEntityToFriendshipModel(
+            createdFriendship
         )
     }
 }
