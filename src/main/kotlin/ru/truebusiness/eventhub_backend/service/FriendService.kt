@@ -47,7 +47,10 @@ class FriendService (
         val receiver = userRepository.findById(createFriendRequestModel.receiver)
             .orElseThrow { UserNotFoundException.withId(createFriendRequestModel.receiver) }
 
-        friendRequestRepository.findBySenderAndReceiver(sender, receiver).forEach {
+        val allRequestsBetweenSpecifiedUsers = friendRequestRepository
+            .findBySenderAndReceiver(sender, receiver) + friendRequestRepository
+                .findBySenderAndReceiver(receiver, sender)
+        allRequestsBetweenSpecifiedUsers.forEach {
             if (it.status == FriendRequestStatus.PENDING) {
                 log.error(
                     "Failed to create friend request from {} to {}, one is already pending",
