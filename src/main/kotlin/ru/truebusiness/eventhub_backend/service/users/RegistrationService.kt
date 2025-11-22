@@ -177,4 +177,15 @@ class RegistrationService(
     private fun calculateConfirmationCodeExpirationTime() = Instant.now().plus(
         Duration.ofMinutes(confirmationCodeExpirationMinutes)
     )
+
+    fun forgotPassword(email: String) {
+        val userCredentials = userCredentialsRepository.findByEmail(email)
+        if (userCredentials == null) {
+            throw UserNotFoundException.withEmail(email)
+        }
+
+        val res = createConfirmationCode(userCredentials.user.id)
+
+        emailService.sendConfirmationCode(res.first, res.second)
+    }
 }

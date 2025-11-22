@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import ru.truebusiness.eventhub_backend.conrollers.dto.ErrorResponseDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.users.ForgotPasswordRequest
 import ru.truebusiness.eventhub_backend.conrollers.dto.users.RegistrationResponseDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.users.UserCredentialsRegistrationDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.users.UserInfoRegistrationDto
@@ -236,4 +237,27 @@ interface RegistrationController {
         @org.springframework.web.bind.annotation.RequestBody
         registrationDto: UserInfoRegistrationDto
     ): ResponseEntity<RegistrationResponseDto>
+
+    @Operation(summary = "Восстановлени пароля по email")
+    @PostMapping("/forgot-password/send-code")
+    fun forgotPassword(
+        @RequestBody(
+            description = "Данные для восстановления пароля",
+            required = true,
+            content = [Content(
+                mediaType = "application/json",
+                schema = Schema(implementation = ForgotPasswordRequest::class),
+                examples = [
+                    ExampleObject(
+                        name = "Пример запроса",
+                        value = """{
+                        "email": "user@example.com"
+                    }""",
+                    ),
+                ],
+            )]
+        )
+        @org.springframework.web.bind.annotation.RequestBody
+        forgotPasswordRequest: ForgotPasswordRequest
+    ): ResponseEntity<Void>
 }

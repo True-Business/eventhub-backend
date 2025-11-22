@@ -75,3 +75,10 @@ data class RegistrationResponseDto(
         }
     }
 }
+
+data class ForgotPasswordRequest(
+    @field:Schema(
+        description = "Электронная почта", example = "user@example.com"
+    )
+    val email: String
+)
