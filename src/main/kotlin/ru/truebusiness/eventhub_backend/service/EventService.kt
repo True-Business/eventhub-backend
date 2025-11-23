@@ -24,7 +24,7 @@ import ru.truebusiness.eventhub_backend.service.model.*
 class EventService(
     private val eventRepository: EventRepository,
     private val eventParticipantRepository: EventParticipantRepository,
-    private val eventMapper: EventMapper, private val userCredentialsRepository: UserCredentialsRepository,
+    private val eventMapper: EventMapper,
 ) {
     private val log by logger()
 
@@ -94,7 +94,7 @@ class EventService(
 
     fun search(eventSearchFilter: EventSearchFilter): List<EventModel> {
         log.info("Search events")
-        log.info("isopen: {}", eventSearchFilter.isOpen);
+        log.info("isopen: {}", eventSearchFilter.isOpen)
 
         if (eventSearchFilter.isParticipant != null) {
             throw NotImplementedException("isParticipant not implemented", null)
