@@ -21,5 +21,9 @@ class RegistrationException private constructor(
         fun alreadyRegistered(userId: UUID, eventId: UUID): RegistrationException {
             return RegistrationException("User $userId is already registered to event $eventId")
         }
+
+        fun isNotRegistered(userId: UUID, eventId: UUID): RegistrationException {
+            return RegistrationException("User $userId is not registered to event $eventId")
+        }
     }
 }

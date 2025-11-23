@@ -54,4 +54,9 @@ class EventControllerImpl(
         return ResponseEntity.ok(
             eventMapper.eventParticipantModelToEventParticipantDto(response))
     }
+
+    override fun unregisterFromEvent(eventID: UUID): ResponseEntity<Void> {
+        eventService.unregisterFromEvent(eventID)
+        return ResponseEntity.noContent().build()
+    }
 }

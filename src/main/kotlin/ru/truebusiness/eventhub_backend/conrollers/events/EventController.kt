@@ -351,4 +351,71 @@ interface EventController {
     )
     fun registerToEvent(@PathVariable eventID: UUID, @RequestParam userID: UUID):
             ResponseEntity<EventParticipantDto>
+
+    @DeleteMapping("/{eventID}/register")
+    @Operation(
+        summary = "Отписка от участия в мероприятии",
+        description = "ID пользователя определяется через аутентификационный токен.",
+        parameters = [
+            Parameter(
+                name = "eventID",
+                description = "UUID мероприятия для отписки",
+                required = true,
+                example = "550e8400-e29b-41d4-a716-446655440000",
+                schema = Schema(
+                    type = "string",
+                    format = "uuid",
+                    example = "550e8400-e29b-41d4-a716-446655440000"
+                )
+            )
+        ],
+        responses = [
+            ApiResponse(
+                responseCode = "204",
+                description = "Пользователь успешно отписался",
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Мероприятие недоступно или пользователь не был зарегистрирван на это мероприятие",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = ErrorResponseDto::class),
+                    examples = [
+                        ExampleObject(
+                            name = "Мероприятие недоступно",
+                            value = """{
+                                "code": 400,
+                                "message": "Event '550e8400-e29b-41d4-a716-446655440000' is not available"
+                            }"""
+                        ),
+                        ExampleObject(
+                            name = "Пользователь не был зарегистрирван на это мероприятие",
+                            value = """{
+                                "code": 400,
+                                "message": "User 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11' is not registered to event '550e8400-e29b-41d4-a716-446655440000'"
+                            }"""
+                        )
+                    ]
+                )]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Мероприятие не найдено",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = ErrorResponseDto::class),
+                    examples = [
+                        ExampleObject(
+                            name = "Мероприятие не найдено",
+                            value = """{
+                                "code": 404,
+                                "message": "Event with id '550e8400-e29b-41d4-a716-446655440000' doesn't exist!"
+                            }"""
+                        )
+                    ]
+                )]
+            )
+        ]
+    )
+    fun unregisterFromEvent(@PathVariable eventID: UUID): ResponseEntity<Void>
 }
