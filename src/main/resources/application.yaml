@@ -40,6 +40,15 @@ app:
       cron: 0 0 * * * *
       zone: Europe/Moscow
     confirmationCodeExpirationMinutes: 5
+  storage:
+    cleanupJob:
+      delayMinutes: 60
+    bucket:
+      name: eventhub
+      nonConfirmedExpiryMinutes: 15
+    user: miniouser
+    password: miniopassword
+    hostPort: "minio:9000"
 
 management:
   endpoint:

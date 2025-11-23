@@ -11,6 +11,7 @@ import jakarta.transaction.Transactional
 import java.time.Duration
 import java.time.Instant
 import java.util.UUID
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import ru.truebusiness.eventhub_backend.conrollers.dto.storage.ObjectConfirm
 import ru.truebusiness.eventhub_backend.conrollers.dto.storage.ObjectDownload
@@ -24,11 +25,13 @@ private val initialFileStatus = FileStatus.PENDING
 
 @Service
 class MinioStorageService(
-    val minioClient: MinioClient,
-    val s3ObjectMetadataRepository: S3objectMetadataRepository,
-    val objectMetadataMapper: ObjectMetadataMapper,
-    val bucket: String,
-    val expiry: Int,
+    private val minioClient: MinioClient,
+    private val s3ObjectMetadataRepository: S3objectMetadataRepository,
+    private val objectMetadataMapper: ObjectMetadataMapper,
+    @param:Value("\${app.storage.bucket.name}")
+    private val bucket: String,
+    @param:Value("\${app.storage.bucket.nonConfirmedExpiryMinutes}")
+    private val expiry: Int,
 ) {
     private val ttl = Duration.ofMinutes(expiry.toLong())
 
@@ -37,6 +40,7 @@ class MinioStorageService(
         StorageUtils.validateOrigin(request.originNames)
 
         val (ownerId, ownerType, fileNames) = request
+        val expiry = Instant.now().plus(ttl)
         return fileNames.map {
             val objectPath = StorageUtils.getFilePath(
                 initialFileStatus, getObjectName(it)
@@ -55,7 +59,7 @@ class MinioStorageService(
                 ownerId = ownerId,
                 ownerType = ownerType,
                 status = initialFileStatus,
-                expiry = Instant.now().plus(ttl),
+                expiry = expiry,
             )
         }.let(
             s3ObjectMetadataRepository::saveAll
@@ -127,6 +131,43 @@ class MinioStorageService(
             )
         }
         return ObjectDownload.Response(urls)
+    }
+
+    @Transactional
+    fun deleteMetadata(idx: List<UUID>) {
+        val metasById = s3ObjectMetadataRepository.findAllById(idx)
+        metasById.forEach { it.status = FileStatus.DELETED }
+        s3ObjectMetadataRepository.saveAll(metasById)
+    }
+
+    @Transactional
+    fun deleteExpiredMetadata() {
+        val metasById = s3ObjectMetadataRepository.findAllByExpiryBefore(
+            Instant.now()
+        )
+        metasById.forEach { it.status = FileStatus.DELETED }
+        s3ObjectMetadataRepository.saveAll(metasById)
+    }
+
+    @Transactional
+    fun cleanupDeletedObjects() {
+        val metas = s3ObjectMetadataRepository.findAllByStatusIs(
+            FileStatus.DELETED
+        )
+        metas.forEach {
+            val objPath = StorageUtils.getFilePath(
+                FileStatus.CONFIRMED, it.`object`
+            )
+
+            minioClient.removeObject(
+                RemoveObjectArgs.builder()
+                    .bucket(bucket)
+                    .`object`(objPath)
+                    .build()
+            )
+        }
+
+        s3ObjectMetadataRepository.deleteAllById(metas.map { it.id })
     }
 
     private fun moveFileToPermanent(
