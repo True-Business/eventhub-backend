@@ -7,7 +7,7 @@ import ru.truebusiness.eventhub_backend.repository.storage.FileStatus
 import ru.truebusiness.eventhub_backend.repository.storage.S3ObjectMetadata
 
 object StorageUtils {
-    val fileNamePattern = Regex(
+    val fileNamePattern: Regex = Regex(
         "^(?!.*\\.\\.)[\\p{L}0-9._\\- ]{1,255}$"
     )
 
