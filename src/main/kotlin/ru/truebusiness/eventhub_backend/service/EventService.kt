@@ -116,8 +116,7 @@ class EventService(
             throw RegistrationException.eventIsUnavailable(eventId)
         }
 
-        val userId = userCredentialsRepository.getReferenceById(
-            SecurityContextHolder.getContext().authentication.principal as UUID).user.id
+        val userId = SecurityContextHolder.getContext().authentication.principal as UUID
         if (eventParticipantRepository.existsByUserIdAndEventId(userId, eventId)) {
             throw RegistrationException.alreadyRegistered(userId, eventId)
         }
