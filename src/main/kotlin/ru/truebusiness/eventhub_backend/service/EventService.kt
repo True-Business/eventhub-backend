@@ -14,7 +14,6 @@ import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.mapper.EventMapper
 import ru.truebusiness.eventhub_backend.repository.EventParticipantRepository
 import ru.truebusiness.eventhub_backend.repository.EventRepository
-import ru.truebusiness.eventhub_backend.repository.UserCredentialsRepository
 import ru.truebusiness.eventhub_backend.repository.entity.Event
 import ru.truebusiness.eventhub_backend.repository.entity.EventParticipant
 import ru.truebusiness.eventhub_backend.repository.entity.EventStatus
