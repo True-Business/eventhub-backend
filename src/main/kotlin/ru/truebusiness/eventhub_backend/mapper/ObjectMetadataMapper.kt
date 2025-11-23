@@ -7,7 +7,7 @@ import ru.truebusiness.eventhub_backend.repository.storage.S3ObjectMetadata
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 interface ObjectMetadataMapper {
-    fun s3ObjectMetadata2ObjectUploadResponse(
+    fun s3ObjectMetadata2UrlInfo(
         `object`: S3ObjectMetadata
-    ): ObjectUpload.Response
+    ): ObjectUpload.UrlInfo
 }

@@ -6,6 +6,7 @@ import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import java.time.Instant
 import java.util.UUID
 
 @Entity
@@ -22,7 +23,8 @@ class S3ObjectMetadata(
     @Column(nullable = false)
     var ownerId: UUID,
     @Column(nullable = false)
-    var ownerType: UUID,
+    var ownerType: String,
     @Enumerated(EnumType.STRING)
     var status: FileStatus = FileStatus.PENDING,
+    var expiry: Instant,
 )

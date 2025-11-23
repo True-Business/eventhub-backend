@@ -17,8 +17,9 @@ class StorageController(
     fun genPresignedUrls(
         @RequestBody
         request: ObjectUpload.Request
-    ): List<ObjectUpload.Response> {
-        return minioStorageService.genPresignedUrls(request)
+    ): ObjectUpload.Response {
+        val urls = minioStorageService.genUploadUrls(request)
+        return ObjectUpload.Response(urls)
     }
 
     @PostMapping("/confirm-upload")

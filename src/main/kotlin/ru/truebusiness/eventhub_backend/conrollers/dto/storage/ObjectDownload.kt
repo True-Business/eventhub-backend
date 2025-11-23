@@ -4,11 +4,15 @@ import java.util.UUID
 
 object ObjectDownload {
     data class Request(
-        var fileId: UUID
+        var ids: List<UUID>
     )
 
     data class Response(
-        var fileId: UUID,
-        var downloadUrl: String,
+        var urls: List<UrlInfo>
+    )
+
+    data class UrlInfo(
+        var id: UUID,
+        var downloadUrl: String?,
     )
 }
