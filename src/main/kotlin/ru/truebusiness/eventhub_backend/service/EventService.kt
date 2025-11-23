@@ -18,6 +18,7 @@ import ru.truebusiness.eventhub_backend.repository.entity.Event
 import ru.truebusiness.eventhub_backend.repository.entity.EventParticipant
 import ru.truebusiness.eventhub_backend.repository.entity.EventStatus
 import ru.truebusiness.eventhub_backend.service.model.*
+import java.time.Instant
 
 @Service
 class EventService(
@@ -111,18 +112,32 @@ class EventService(
     @Transactional
     fun registerToEvent(eventId: UUID): EventParticipantModel {
         val event = get(eventId)
-        if (event.status != EventStatusModel.PLANNED) {
-            throw RegistrationException.eventIsUnavailable(eventId)
-        }
-
         val userId = SecurityContextHolder.getContext().authentication.principal as UUID
         if (eventParticipantRepository.existsByUserIdAndEventId(userId, eventId)) {
             throw RegistrationException.alreadyRegistered(userId, eventId)
         }
 
+        if (event.status != EventStatusModel.PLANNED) {
+            throw RegistrationException.eventIsUnavailable(eventId)
+        }
+
+        event.registerEndDateTime?.let {
+            if (it < Instant.now()) {
+                throw RegistrationException.registrationEnded(eventId)
+            }
+        }
+
+        val numParticipants = eventParticipantRepository.countByEventId(eventId)
+        event.peopleLimit?.let {
+            if (it <= numParticipants) {
+                throw RegistrationException.participantsLimitReached(eventId)
+            }
+        }
+
         val eventParticipant = eventParticipantRepository.save(
             EventParticipant(userId = userId, eventId = eventId)
         )
+        log.info("User $userId registered to event $eventId")
         return eventMapper.eventParticipantToEventParticipantModel(eventParticipant)
     }
 }

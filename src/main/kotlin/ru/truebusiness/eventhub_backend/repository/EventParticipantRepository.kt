@@ -8,4 +8,5 @@ import java.util.UUID
 @Repository
 interface EventParticipantRepository : JpaRepository<EventParticipant, UUID> {
     fun existsByUserIdAndEventId(userId: UUID, eventId: UUID): Boolean
+    fun countByEventId(eventId: UUID): Int
 }

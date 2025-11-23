@@ -275,7 +275,7 @@ interface EventController {
             ),
             ApiResponse(
                 responseCode = "400",
-                description = "Мероприятие недоступно или пользователь уже зарегистрирван",
+                description = "Регистрация недоступна или пользователь уже зарегистрирван",
                 content = [Content(
                     mediaType = "application/json",
                     schema = Schema(implementation = ErrorResponseDto::class),
@@ -285,6 +285,20 @@ interface EventController {
                             value = """{
                                 "code": 400,
                                 "message": "Event '550e8400-e29b-41d4-a716-446655440000' is not available"
+                            }"""
+                        ),
+                        ExampleObject(
+                            name = "Регистрация на мероприятие завершилась",
+                            value = """{
+                                "code": 400,
+                                "message": "Registration to event '550e8400-e29b-41d4-a716-446655440000' ended"
+                            }"""
+                        ),
+                        ExampleObject(
+                            name = "Нет мест для регистрации",
+                            value = """{
+                                "code": 400,
+                                "message": "Reached participants limit on event '550e8400-e29b-41d4-a716-446655440000'"
                             }"""
                         ),
                         ExampleObject(
