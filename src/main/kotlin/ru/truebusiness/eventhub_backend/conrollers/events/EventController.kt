@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import ru.truebusiness.eventhub_backend.conrollers.dto.ErrorResponseDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.EventSearchFilter
@@ -251,6 +252,17 @@ interface EventController {
                     format = "uuid",
                     example = "550e8400-e29b-41d4-a716-446655440000"
                 )
+            ),
+            Parameter(
+                name = "userID",
+                description = "UUID пользователя",
+                required = true,
+                example = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+                schema = Schema(
+                    type = "string",
+                    format = "uuid",
+                    example = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+                )
             )
         ],
         responses = [
@@ -313,7 +325,7 @@ interface EventController {
             ),
             ApiResponse(
                 responseCode = "404",
-                description = "Мероприятие не найдено",
+                description = "Мероприятие или пользователь не найдены",
                 content = [Content(
                     mediaType = "application/json",
                     schema = Schema(implementation = ErrorResponseDto::class),
@@ -324,11 +336,19 @@ interface EventController {
                                 "code": 404,
                                 "message": "Event with id '550e8400-e29b-41d4-a716-446655440000' doesn't exist!"
                             }"""
+                        ),
+                        ExampleObject(
+                            name = "Пользователь не найден",
+                            value = """{
+                                "code": 404,
+                                "message": "User with id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11' not found"
+                            }"""
                         )
                     ]
                 )]
             )
         ]
     )
-    fun registerToEvent(@PathVariable eventID: UUID): ResponseEntity<EventParticipantDto>
+    fun registerToEvent(@PathVariable eventID: UUID, @RequestParam userID: UUID):
+            ResponseEntity<EventParticipantDto>
 }

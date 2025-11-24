@@ -10,10 +10,12 @@ import ru.truebusiness.eventhub_backend.exceptions.organization.WrongOrganizerEx
 import ru.truebusiness.eventhub_backend.conrollers.dto.EventSearchFilter
 import ru.truebusiness.eventhub_backend.exceptions.NotImplementedException
 import ru.truebusiness.eventhub_backend.exceptions.events.RegistrationException
+import ru.truebusiness.eventhub_backend.exceptions.users.UserNotFoundException
 import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.mapper.EventMapper
 import ru.truebusiness.eventhub_backend.repository.EventParticipantRepository
 import ru.truebusiness.eventhub_backend.repository.EventRepository
+import ru.truebusiness.eventhub_backend.repository.UserRepository
 import ru.truebusiness.eventhub_backend.repository.entity.Event
 import ru.truebusiness.eventhub_backend.repository.entity.EventParticipant
 import ru.truebusiness.eventhub_backend.repository.entity.EventStatus
@@ -24,7 +26,7 @@ import java.time.Instant
 class EventService(
     private val eventRepository: EventRepository,
     private val eventParticipantRepository: EventParticipantRepository,
-    private val eventMapper: EventMapper,
+    private val eventMapper: EventMapper, private val userRepository: UserRepository,
 ) {
     private val log by logger()
 
@@ -110,9 +112,11 @@ class EventService(
     }
 
     @Transactional
-    fun registerToEvent(eventId: UUID): EventParticipantModel {
+    fun registerToEvent(eventId: UUID, userId: UUID): EventParticipantModel {
         val event = get(eventId)
-        val userId = SecurityContextHolder.getContext().authentication.principal as UUID
+        if (!userRepository.existsById(userId)) {
+            throw UserNotFoundException.withId(userId)
+        }
         if (eventParticipantRepository.existsByUserIdAndEventId(userId, eventId)) {
             throw RegistrationException.alreadyRegistered(userId, eventId)
         }

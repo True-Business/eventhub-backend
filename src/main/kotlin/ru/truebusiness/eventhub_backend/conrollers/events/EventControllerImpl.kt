@@ -49,8 +49,8 @@ class EventControllerImpl(
         return ResponseEntity.ok(eventMapper.eventModelsToEventDTOs(response))
     }
 
-    override fun registerToEvent(eventID: UUID): ResponseEntity<EventParticipantDto> {
-        val response = eventService.registerToEvent(eventID)
+    override fun registerToEvent(eventID: UUID, userID: UUID): ResponseEntity<EventParticipantDto> {
+        val response = eventService.registerToEvent(eventID, userID)
         return ResponseEntity.ok(
             eventMapper.eventParticipantModelToEventParticipantDto(response))
     }
