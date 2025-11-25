@@ -10,14 +10,14 @@ object FriendRequestSpecs {
     fun withSender(sender: User?): Specification<FriendRequest> =
         Specification { root, _, criteriaBuilder ->
             if (sender != null) {
-                criteriaBuilder.equal(root.get<UUID>("sender_id"), sender.id)
+                criteriaBuilder.equal(root.get<User>("sender"), sender)
             } else null
         }
 
     fun withoutStatus(status: FriendRequestStatus?): Specification<FriendRequest> =
         Specification { root, _, criteriaBuilder ->
             if (status != null) {
-                criteriaBuilder.notEqual(root.get<Int>("status"), status.ordinal)
+                criteriaBuilder.notEqual(root.get<FriendRequestStatus>("status"), status)
             } else null
         }
 }
