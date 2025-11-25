@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import ru.truebusiness.eventhub_backend.conrollers.dto.friends.AcceptFriendRequestDto
@@ -63,4 +64,7 @@ interface FriendController {
 
     @PostMapping("/request/{friendRequestId}/decline")
     fun rejectFriendRequest(@PathVariable friendRequestId: UUID): ResponseEntity<Void>
+
+    @GetMapping("/request/outgoing/{userId}")
+    fun getOutgoingRequests(@PathVariable userId: UUID): ResponseEntity<List<FriendRequestDto>>
 }
