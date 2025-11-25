@@ -8,6 +8,6 @@ import ru.truebusiness.eventhub_backend.repository.entity.User
 import java.util.UUID
 
 @Repository
-interface FriendRepository : JpaRepository<FriendRequest, UUID>, JpaSpecificationExecutor<FriendRequest> {
+interface FriendRequestRepository : JpaRepository<FriendRequest, UUID>, JpaSpecificationExecutor<FriendRequest> {
     fun findBySenderAndReceiver(sender: User, receiver: User): List<FriendRequest>
 }
