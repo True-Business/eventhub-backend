@@ -5,9 +5,11 @@ import org.mapstruct.Mapping
 import org.mapstruct.MappingConstants
 import ru.truebusiness.eventhub_backend.conrollers.dto.friends.CreateFriendRequestDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.friends.FriendRequestDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.organizations.OrganizationDto
 import ru.truebusiness.eventhub_backend.repository.entity.FriendRequest
 import ru.truebusiness.eventhub_backend.service.model.CreateFriendRequestModel
 import ru.truebusiness.eventhub_backend.service.model.FriendRequestModel
+import ru.truebusiness.eventhub_backend.service.model.OrganizationModel
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 interface FriendMapper {
@@ -26,4 +28,11 @@ interface FriendMapper {
     fun friendRequestEntityToFriendRequestModel(
         friendRequest: FriendRequest
     ): FriendRequestModel
+
+    fun friendRequestModelListToFriendRequestDtoList(
+        list: List<FriendRequestModel>
+    ): List<FriendRequestDto>
+    fun friendRequestEntityListToFriendRequestModelList(
+        list: List<FriendRequest>
+    ): List<FriendRequestModel>
 }

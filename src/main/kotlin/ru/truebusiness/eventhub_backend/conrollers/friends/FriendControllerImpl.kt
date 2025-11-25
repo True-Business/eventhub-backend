@@ -7,6 +7,7 @@ import ru.truebusiness.eventhub_backend.conrollers.dto.friends.CreateFriendReque
 import ru.truebusiness.eventhub_backend.conrollers.dto.friends.FriendRequestDto
 import ru.truebusiness.eventhub_backend.mapper.FriendMapper
 import ru.truebusiness.eventhub_backend.service.FriendService
+import java.util.UUID
 
 @RestController
 class FriendControllerImpl(
@@ -25,6 +26,14 @@ class FriendControllerImpl(
         return ResponseEntity(
             friendMapper.friendRequestModelToFriendRequestDto(model),
             HttpStatus.CREATED
+        )
+    }
+
+    override fun getOutgoingRequests(userId: UUID): ResponseEntity<List<FriendRequestDto>> {
+        val models = friendService.getOutgoingRequests(userId)
+
+        return ResponseEntity.ok(
+            friendMapper.friendRequestModelListToFriendRequestDtoList(models)
         )
     }
 }
