@@ -5,10 +5,13 @@ import io.swagger.v3.oas.annotations.media.ExampleObject
 import io.swagger.v3.oas.annotations.parameters.RequestBody
 import io.swagger.v3.oas.annotations.media.Schema
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import ru.truebusiness.eventhub_backend.conrollers.dto.friends.CreateFriendRequestDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.friends.FriendRequestDto
+import java.util.UUID
 
 @RequestMapping("/api/v1/friend")
 interface FriendController {
@@ -32,4 +35,7 @@ interface FriendController {
         @org.springframework.web.bind.annotation.RequestBody
         createFriendRequestDto: CreateFriendRequestDto
     ): ResponseEntity<FriendRequestDto>
+
+    @DeleteMapping("/{friendRequestId}")
+    fun removeFriendship(@PathVariable friendRequestId: UUID): ResponseEntity<Void>
 }

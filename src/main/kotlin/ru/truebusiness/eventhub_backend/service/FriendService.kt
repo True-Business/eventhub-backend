@@ -13,6 +13,7 @@ import ru.truebusiness.eventhub_backend.repository.UserRepository
 import ru.truebusiness.eventhub_backend.repository.entity.FriendRequest
 import ru.truebusiness.eventhub_backend.service.model.CreateFriendRequestModel
 import ru.truebusiness.eventhub_backend.service.model.FriendRequestModel
+import java.util.UUID
 
 @Service
 class FriendService (
@@ -62,5 +63,9 @@ class FriendService (
         return friendMapper.friendRequestEntityToFriendRequestModel(
             createdFriendRequest
         )
+    }
+
+    fun removeFriendship(friendRequestId: UUID) {
+        friendRepository.deleteById(friendRequestId)
     }
 }
