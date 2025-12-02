@@ -10,7 +10,6 @@ import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.mapper.FriendMapper
 import ru.truebusiness.eventhub_backend.repository.FriendRepository
 import ru.truebusiness.eventhub_backend.repository.FriendRequestSpecs
-import ru.truebusiness.eventhub_backend.repository.OrganizationSpecs
 import ru.truebusiness.eventhub_backend.repository.UserRepository
 import ru.truebusiness.eventhub_backend.repository.entity.FriendRequest
 import ru.truebusiness.eventhub_backend.service.model.CreateFriendRequestModel
@@ -74,7 +73,22 @@ class FriendService (
 
         val specification = FriendRequestSpecs
             .withSender(sender)
-            .and(FriendRequestSpecs.withoutStatus(FriendRequestStatus.ACCEPTED))
+            .and(FriendRequestSpecs.withStatus(FriendRequestStatus.ACCEPTED, invert = true))
+
+        val requests = friendRepository.findAll(specification)
+        return friendMapper.friendRequestEntityListToFriendRequestModelList(
+            requests
+        )
+    }
+
+    @Transactional
+    fun getIncomingRequests(userId: UUID): List<FriendRequestModel> {
+        val receiver = userRepository.findById(userId)
+            .orElseThrow { UserNotFoundException.withId(userId) }
+
+        val specification = FriendRequestSpecs
+            .withReceiver(receiver)
+            .and(FriendRequestSpecs.withStatus(FriendRequestStatus.PENDING))
 
         val requests = friendRepository.findAll(specification)
         return friendMapper.friendRequestEntityListToFriendRequestModelList(

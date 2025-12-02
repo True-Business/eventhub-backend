@@ -4,9 +4,15 @@ import org.springframework.data.jpa.domain.Specification
 import ru.truebusiness.eventhub_backend.conrollers.dto.friends.FriendRequestStatus
 import ru.truebusiness.eventhub_backend.repository.entity.FriendRequest
 import ru.truebusiness.eventhub_backend.repository.entity.User
-import java.util.UUID
 
 object FriendRequestSpecs {
+    fun withReceiver(receiver: User?): Specification<FriendRequest> =
+        Specification { root, _, criteriaBuilder ->
+            if (receiver != null) {
+                criteriaBuilder.equal(root.get<User>("receiver"), receiver)
+            } else null
+        }
+
     fun withSender(sender: User?): Specification<FriendRequest> =
         Specification { root, _, criteriaBuilder ->
             if (sender != null) {
@@ -14,10 +20,11 @@ object FriendRequestSpecs {
             } else null
         }
 
-    fun withoutStatus(status: FriendRequestStatus?): Specification<FriendRequest> =
+    fun withStatus(status: FriendRequestStatus?, invert: Boolean = false): Specification<FriendRequest> =
         Specification { root, _, criteriaBuilder ->
             if (status != null) {
-                criteriaBuilder.notEqual(root.get<FriendRequestStatus>("status"), status)
+                val predicate = criteriaBuilder.equal(root.get<FriendRequestStatus>("status"), status)
+                if (invert) criteriaBuilder.not(predicate) else predicate
             } else null
         }
 }
