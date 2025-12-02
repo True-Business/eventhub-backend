@@ -67,4 +67,7 @@ interface FriendController {
 
     @GetMapping("/request/outgoing/{userId}")
     fun getOutgoingRequests(@PathVariable userId: UUID): ResponseEntity<List<FriendRequestDto>>
+
+    @GetMapping("/request/incoming/{userId}")
+    fun getIncomingRequests(@PathVariable userId: UUID): ResponseEntity<List<FriendRequestDto>>
 }

@@ -63,4 +63,12 @@ class FriendControllerImpl(
             friendMapper.friendRequestModelListToFriendRequestDtoList(models)
         )
     }
+
+    override fun getIncomingRequests(userId: UUID): ResponseEntity<List<FriendRequestDto>> {
+        val models = friendService.getIncomingRequests(userId)
+
+        return ResponseEntity.ok(
+            friendMapper.friendRequestModelListToFriendRequestDtoList(models)
+        )
+    }
 }
