@@ -1,6 +1,9 @@
 package ru.truebusiness.eventhub_backend.conrollers.users
 
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -45,5 +48,10 @@ class UserController(
         val users = userService.findUsers(
             userMapper.findUsersRequestDtoToUserFiltersModel(findUsersRequestDto))
         return ResponseEntity.ok(userMapper.userModelsToUserDtos(users))
+    }
+
+    @DeleteMapping
+    fun deleteById() {
+        userService.deleteById()
     }
 }

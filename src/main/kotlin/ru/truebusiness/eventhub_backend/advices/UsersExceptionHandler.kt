@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import ru.truebusiness.eventhub_backend.conrollers.dto.ErrorResponseDto
 import ru.truebusiness.eventhub_backend.exceptions.users.InvalidConfirmationCode
+import ru.truebusiness.eventhub_backend.exceptions.users.OrganizationCreatorException
 import ru.truebusiness.eventhub_backend.exceptions.users.UserAlreadyExistsException
 import ru.truebusiness.eventhub_backend.exceptions.users.UserNotFoundException
 
@@ -35,6 +36,15 @@ class UsersExceptionHandler {
     fun handleInvalidConfirmationCode(ex: InvalidConfirmationCode): ErrorResponseDto {
         return ErrorResponseDto(
             code = HttpStatus.BAD_REQUEST.value(),
+            message = ex.message
+        )
+    }
+
+    @ExceptionHandler(OrganizationCreatorException::class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    fun handleOrganizationCreatorError(ex: OrganizationCreatorException): ErrorResponseDto {
+        return ErrorResponseDto(
+            code = HttpStatus.CONFLICT.value(),
             message = ex.message
         )
     }
