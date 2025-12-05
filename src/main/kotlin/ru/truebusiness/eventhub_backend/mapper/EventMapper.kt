@@ -6,12 +6,12 @@ import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 import org.mapstruct.MappingTarget
 import org.mapstruct.NullValuePropertyMappingStrategy
-import ru.truebusiness.eventhub_backend.conrollers.dto.events.CreateEventRequestDto
-import ru.truebusiness.eventhub_backend.conrollers.dto.events.EventDto
-import ru.truebusiness.eventhub_backend.conrollers.dto.events.UpdateEventRequestDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.events.*
 import ru.truebusiness.eventhub_backend.repository.entity.Event
+import ru.truebusiness.eventhub_backend.repository.entity.EventParticipant
 import ru.truebusiness.eventhub_backend.service.model.CreateEventModel
 import ru.truebusiness.eventhub_backend.service.model.EventModel
+import ru.truebusiness.eventhub_backend.service.model.EventParticipantModel
 
 @Mapper(componentModel = "spring")
 interface EventMapper {
@@ -38,4 +38,9 @@ interface EventMapper {
     fun eventToEventModel(event: Event): EventModel
     fun eventsToEventModels(events: List<Event>): List<EventModel>
     fun eventModelsToEventDTOs(response: List<EventModel>): List<EventDto>
+
+    fun eventParticipantToEventParticipantModel(
+        eventParticipant: EventParticipant): EventParticipantModel
+    fun eventParticipantModelToEventParticipantDto(
+        eventParticipantModel: EventParticipantModel): EventParticipantDto
 }
