@@ -144,4 +144,20 @@ class EventService(
         log.info("User $userId registered to event $eventId")
         return eventMapper.eventParticipantToEventParticipantModel(eventParticipant)
     }
+
+    @Transactional
+    fun unregisterFromEvent(eventId: UUID) {
+        val event = get(eventId)
+        if (event.status != EventStatusModel.PLANNED) {
+            throw RegistrationException.eventIsUnavailable(eventId)
+        }
+
+        val userId = SecurityContextHolder.getContext().authentication.principal as UUID
+        if (!eventParticipantRepository.existsByUserIdAndEventId(userId, eventId)) {
+            throw RegistrationException.isNotRegistered(userId, eventId)
+        }
+
+        eventParticipantRepository.deleteByUserIdAndEventId(userId, eventId)
+        log.info("User $userId unsubscribed from event $eventId")
+    }
 }
