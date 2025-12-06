@@ -13,9 +13,6 @@
             <column name="origin" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="object" type="varchar(255)">
-                <constraints nullable="false"/>
-            </column>
             <column name="bucket" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
@@ -29,7 +26,12 @@
                 <constraints nullable="false"/>
             </column>
             <column name="expiry" type="TIMESTAMPTZ"/>
+            <column name="confirmed_at" type="TIMESTAMPTZ"/>
         </createTable>
+        <addUniqueConstraint
+                tableName="object_meta"
+                columnNames="origin, bucket, owner_id, owner_type"
+                constraintName="uk_object_meta_origin_bucket_owner"/>
     </changeSet>
 
 </databaseChangeLog>

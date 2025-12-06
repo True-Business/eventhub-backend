@@ -13,10 +13,15 @@ import java.time.Instant
 import java.util.UUID
 import kotlin.getValue
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import ru.truebusiness.eventhub_backend.conrollers.dto.Page
 import ru.truebusiness.eventhub_backend.conrollers.dto.storage.ObjectConfirm
 import ru.truebusiness.eventhub_backend.conrollers.dto.storage.ObjectDownload
 import ru.truebusiness.eventhub_backend.conrollers.dto.storage.ObjectUpload
+import ru.truebusiness.eventhub_backend.conrollers.dto.storage.ObjectsList
 import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.mapper.ObjectMetadataMapper
 import ru.truebusiness.eventhub_backend.repository.storage.FileStatus
@@ -24,7 +29,8 @@ import ru.truebusiness.eventhub_backend.repository.storage.S3ObjectMetadata
 import ru.truebusiness.eventhub_backend.repository.storage.S3objectMetadataRepository
 
 private val initialFileStatus = FileStatus.PENDING
-
+private val sort = Sort.by("confirmedAt").descending()
+private val defaultPage = PageRequest.of(0, 20, sort)
 @Service
 class MinioStorageService(
     private val minioClient: MinioClient,
@@ -81,6 +87,7 @@ class MinioStorageService(
         }
 
         val metasById = metas.associateBy { it.id }
+        val confirmedAt = Instant.now();
         val confInfo = ids.map {
             metasById[it]?.let { meta ->
                 when (meta.status) {
@@ -89,6 +96,7 @@ class MinioStorageService(
                             if (moveInfo.status == ObjectConfirm.FileConfirm.UPLOADED) {
                                 meta.status = FileStatus.CONFIRMED
                                 meta.expiry = null
+                                meta.confirmedAt = confirmedAt
                             }
                         }
                     }
@@ -137,6 +145,16 @@ class MinioStorageService(
             )
         }
         return ObjectDownload.Response(urls)
+    }
+
+    fun listObjects(request: ObjectsList.Request): ObjectsList.Response {
+        val page = getObjectsListPage(request.page)
+        val objects = s3ObjectMetadataRepository.findAllByOwnerIdAndOwnerType(
+            ownerId = request.ownerId,
+            ownerType = request.ownerType,
+            pageable = page,
+        ).let(objectMetadataMapper::s3ObjectMetadata2ObjectListObject)
+        return ObjectsList.Response(objects)
     }
 
     @Transactional
@@ -247,6 +265,13 @@ class MinioStorageService(
                 .expiry(expiry.toSeconds().toInt())
                 .build()
         )
+    }
+
+    private fun getObjectsListPage(page: Page?): Pageable {
+        if (page == null) {
+            return defaultPage
+        }
+        return PageRequest.of(page.current, page.size, sort)
     }
 
     private data class PresignedUrlInfo(

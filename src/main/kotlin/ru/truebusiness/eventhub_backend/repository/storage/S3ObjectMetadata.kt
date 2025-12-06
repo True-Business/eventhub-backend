@@ -28,6 +28,8 @@ class S3ObjectMetadata(
     var status: FileStatus = FileStatus.PENDING,
     @Column
     var expiry: Instant?,
+    @Column
+    var confirmedAt: Instant? = null,
 
     @Transient
     var url: String? = null,

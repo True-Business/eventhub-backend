@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController
 import ru.truebusiness.eventhub_backend.conrollers.dto.storage.ObjectConfirm
 import ru.truebusiness.eventhub_backend.conrollers.dto.storage.ObjectDownload
 import ru.truebusiness.eventhub_backend.conrollers.dto.storage.ObjectUpload
+import ru.truebusiness.eventhub_backend.conrollers.dto.storage.ObjectsList
 import ru.truebusiness.eventhub_backend.service.storage.MinioStorageService
 
 @RestController
@@ -30,6 +31,14 @@ class StorageController(
         request: ObjectConfirm.Request
     ): ObjectConfirm.Response {
         return minioStorageService.confirmUpload(request)
+    }
+
+    @PostMapping("/confirmed/list")
+    fun listConfirmed(
+        @RequestBody
+        request: ObjectsList.Request
+    ): ObjectsList.Response {
+        return minioStorageService.listObjects(request);
     }
 
     @GetMapping
