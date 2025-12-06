@@ -75,3 +75,11 @@ data class RegistrationResponseDto(
         }
     }
 }
+
+data class ConfirmForgotPasswordRequest(
+    @field:Schema(description = "Код подтверждения", example = "1234")
+    val code: String,
+
+    @field:Schema(description = "Новый пароль", example = "securePass123!")
+    val password: String
+)
