@@ -2,6 +2,7 @@ package ru.truebusiness.eventhub_backend.conrollers.events
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.ExampleObject
 import io.swagger.v3.oas.annotations.media.Schema
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import ru.truebusiness.eventhub_backend.conrollers.dto.ErrorResponseDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.EventSearchFilter
+import ru.truebusiness.eventhub_backend.conrollers.dto.UserDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.events.*
 
 @RestController
@@ -418,4 +420,50 @@ interface EventController {
         ]
     )
     fun unregisterFromEvent(@PathVariable eventID: UUID): ResponseEntity<Void>
+
+    @GetMapping("/{eventID}/participants")
+    @Operation(
+        summary = "Получение участников мероприятия",
+        parameters = [
+            Parameter(
+                name = "eventID",
+                description = "UUID мероприятия",
+                required = true,
+                example = "550e8400-e29b-41d4-a716-446655440000",
+                schema = Schema(
+                    type = "string",
+                    format = "uuid",
+                    example = "550e8400-e29b-41d4-a716-446655440000"
+                )
+            )
+        ],
+        responses = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Успешно",
+                content = [Content(
+                    mediaType = "application/json",
+                    array = ArraySchema(schema = Schema(implementation = UserDto::class))
+                )]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Мероприятие не найдено",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = ErrorResponseDto::class),
+                    examples = [
+                        ExampleObject(
+                            name = "Мероприятие не найдено",
+                            value = """{
+                                "code": 404,
+                                "message": "Event with id '550e8400-e29b-41d4-a716-446655440000' doesn't exist!"
+                            }"""
+                        )
+                    ]
+                )]
+            )
+        ]
+    )
+    fun getParticipants(@PathVariable eventID: UUID): ResponseEntity<List<UserDto>>
 }

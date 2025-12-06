@@ -5,13 +5,16 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import ru.truebusiness.eventhub_backend.conrollers.dto.EventSearchFilter
+import ru.truebusiness.eventhub_backend.conrollers.dto.UserDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.events.*
 import ru.truebusiness.eventhub_backend.mapper.EventMapper
+import ru.truebusiness.eventhub_backend.mapper.UserMapper
 import ru.truebusiness.eventhub_backend.service.EventService
 
 @RestController
 class EventControllerImpl(
-    private val eventService: EventService, private val eventMapper: EventMapper
+    private val eventService: EventService, private val eventMapper: EventMapper,
+    private val userMapper: UserMapper,
 ) : EventController {
     override fun create(
         createEventRequestDto: CreateEventRequestDto,
@@ -58,5 +61,10 @@ class EventControllerImpl(
     override fun unregisterFromEvent(eventID: UUID): ResponseEntity<Void> {
         eventService.unregisterFromEvent(eventID)
         return ResponseEntity.noContent().build()
+    }
+
+    override fun getParticipants(eventID: UUID): ResponseEntity<List<UserDto>> {
+        val users = userMapper.userModelsToUserDtos(eventService.getEventParticipants(eventID))
+        return ResponseEntity.ok(users)
     }
 }
