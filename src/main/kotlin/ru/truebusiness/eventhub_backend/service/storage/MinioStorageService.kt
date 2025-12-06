@@ -11,11 +11,13 @@ import jakarta.transaction.Transactional
 import java.time.Duration
 import java.time.Instant
 import java.util.UUID
+import kotlin.getValue
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import ru.truebusiness.eventhub_backend.conrollers.dto.storage.ObjectConfirm
 import ru.truebusiness.eventhub_backend.conrollers.dto.storage.ObjectDownload
 import ru.truebusiness.eventhub_backend.conrollers.dto.storage.ObjectUpload
+import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.mapper.ObjectMetadataMapper
 import ru.truebusiness.eventhub_backend.repository.storage.FileStatus
 import ru.truebusiness.eventhub_backend.repository.storage.S3ObjectMetadata
@@ -30,38 +32,41 @@ class MinioStorageService(
     private val objectMetadataMapper: ObjectMetadataMapper,
     @param:Value("\${app.storage.bucket.name}")
     private val bucket: String,
-    @param:Value("\${app.storage.bucket.nonConfirmedExpiryMinutes}")
-    private val expiry: Int,
+    @param:Value("\${app.storage.bucket.nonConfirmedExpiry}")
+    private val expiry: Duration,
 ) {
-    private val ttl = Duration.ofMinutes(expiry.toLong())
+    private val log by logger()
 
     @Transactional
     fun genUploadUrls(request: ObjectUpload.Request): List<ObjectUpload.UrlInfo> {
         StorageUtils.validateOrigin(request.originNames)
 
         val (ownerId, ownerType, fileNames) = request
-        val expiry = Instant.now().plus(ttl)
+        val expiry = Instant.now().plus(expiry)
         return fileNames.map {
+            val id = UUID.randomUUID();
             val objectPath = StorageUtils.getFilePath(
-                initialFileStatus, getObjectName(it)
+                initialFileStatus, getObjectName(it, id)
             )
             PresignedUrlInfo(
+                id,
                 it,
                 objectPath,
                 bucket,
-                getUploadUrl(it),
+                getUploadUrl(objectPath),
             )
-        }.map { (origin, `object`, bucket) ->
+        }.map { urlInfo ->
             S3ObjectMetadata(
-                origin = origin,
-                `object` = `object`,
-                bucket = bucket,
+                id = urlInfo.id,
+                origin = urlInfo.origin,
+                bucket = urlInfo.bucket,
                 ownerId = ownerId,
                 ownerType = ownerType,
                 status = initialFileStatus,
                 expiry = expiry,
+                url = urlInfo.url
             )
-        }.let(
+        }.also(
             s3ObjectMetadataRepository::saveAll
         ).map(
             objectMetadataMapper::s3ObjectMetadata2UrlInfo
@@ -83,6 +88,7 @@ class MinioStorageService(
                         moveFileToPermanent(meta).also { moveInfo ->
                             if (moveInfo.status == ObjectConfirm.FileConfirm.UPLOADED) {
                                 meta.status = FileStatus.CONFIRMED
+                                meta.expiry = null
                             }
                         }
                     }
@@ -117,9 +123,9 @@ class MinioStorageService(
                 when (meta.status) {
                     FileStatus.CONFIRMED -> {
                         val objPath = StorageUtils.getFilePath(
-                            it.status, it.`object`
+                            it.status, getObjectName(it.origin, it.id)
                         )
-                        ObjectDownload.UrlInfo(it.id, objPath)
+                        ObjectDownload.UrlInfo(it.id, getDownloadUrl(objPath))
                     }
 
                     else                 -> ObjectDownload.UrlInfo(
@@ -142,10 +148,13 @@ class MinioStorageService(
 
     @Transactional
     fun deleteExpiredMetadata() {
-        val metasById = s3ObjectMetadataRepository.findAllByExpiryBefore(
-            Instant.now()
-        )
-        metasById.forEach { it.status = FileStatus.DELETED }
+        val metasById =
+            s3ObjectMetadataRepository.findAllByExpiryBeforeAndStatus(
+                Instant.now(), FileStatus.PENDING
+            )
+        metasById.forEach {
+            it.status = FileStatus.DELETED
+        }
         s3ObjectMetadataRepository.saveAll(metasById)
     }
 
@@ -156,7 +165,7 @@ class MinioStorageService(
         )
         metas.forEach {
             val objPath = StorageUtils.getFilePath(
-                FileStatus.CONFIRMED, it.`object`
+                FileStatus.CONFIRMED, getObjectName(it.origin, it.id)
             )
 
             minioClient.removeObject(
@@ -168,16 +177,19 @@ class MinioStorageService(
         }
 
         s3ObjectMetadataRepository.deleteAllById(metas.map { it.id })
+        log.info("cleanup deleted objects ${metas.size}")
     }
 
     private fun moveFileToPermanent(
         meta: S3ObjectMetadata
     ): ObjectConfirm.ConfirmInfo {
-        val tmpObject = StorageUtils.getFilePath(
-            meta.status, meta.`object`,
-        )
+        val tmpObject = meta.let {
+            StorageUtils.getFilePath(
+                it.status, getObjectName(it.origin, it.id)
+            )
+        }
         val permObject = StorageUtils.getFilePath(
-            FileStatus.CONFIRMED, meta.`object`,
+            FileStatus.CONFIRMED, getObjectName(meta.origin, meta.id),
         )
         return try {
             val source =
@@ -185,9 +197,7 @@ class MinioStorageService(
 
             val args =
                 CopyObjectArgs.builder().source(source).bucket(bucket).`object`(
-                    StorageUtils.getFilePath(
-                        FileStatus.CONFIRMED, permObject,
-                    )
+                    permObject
                 ).build()
 
             minioClient.copyObject(args)
@@ -208,8 +218,11 @@ class MinioStorageService(
         }
     }
 
+    private fun getObjectName(objectName: String, uuid: UUID): String {
+        return "${uuid}_${objectName}"
+    }
     private fun getObjectName(objectName: String): String {
-        return "${objectName}_${UUID.randomUUID()}"
+        return getObjectName(objectName, UUID.randomUUID())
     }
 
     private fun getDownloadUrl(`object`: String): String {
@@ -218,7 +231,7 @@ class MinioStorageService(
                 .method(Method.GET)
                 .bucket(bucket)
                 .`object`(`object`)
-                .expiry(expiry)
+                .expiry(expiry.toSeconds().toInt())
                 .build()
         )
     }
@@ -231,12 +244,13 @@ class MinioStorageService(
                 .method(Method.PUT)
                 .bucket(bucket)
                 .`object`(`object`)
-                .expiry(expiry)
+                .expiry(expiry.toSeconds().toInt())
                 .build()
         )
     }
 
     private data class PresignedUrlInfo(
+        val id: UUID,
         val origin: String,
         val `object`: String,
         val bucket: String,

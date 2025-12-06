@@ -10,8 +10,7 @@ class CleanupJob(
     private val minioStorageService: MinioStorageService
 ) {
     @Scheduled(
-        fixedRateString = "\${app.storage.cleanupJob.delayMinutes}",
-        timeUnit = TimeUnit.MINUTES
+        fixedRateString = "\${app.storage.cleanupJob.delay}",
     )
     fun cleanupExpiredMetadata() {
         minioStorageService.deleteExpiredMetadata()

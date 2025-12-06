@@ -8,5 +8,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface S3objectMetadataRepository : JpaRepository<S3ObjectMetadata, UUID> {
     fun findAllByStatusIs(status: FileStatus): List<S3ObjectMetadata>
-    fun findAllByExpiryBefore(now: Instant): List<S3ObjectMetadata>
+    fun findAllByExpiryBeforeAndStatus(
+        expiry: Instant, status: FileStatus
+    ): List<S3ObjectMetadata>
 }

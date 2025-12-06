@@ -28,7 +28,7 @@ object StorageUtils {
     }
 
     fun validateOrigin(origin: String) {
-        if (isValidFileNameStrict(origin)) {
+        if (!isValidFileNameStrict(origin)) {
             throw InvalidFileName.byTargetPattern(fileNamePattern.pattern)
         }
     }
