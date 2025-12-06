@@ -178,6 +178,17 @@ class RegistrationService(
         Duration.ofMinutes(confirmationCodeExpirationMinutes)
     )
 
+    fun forgotPassword(email: String) {
+        val userCredentials = userCredentialsRepository.findByEmail(email)
+        if (userCredentials == null) {
+            throw UserNotFoundException.withEmail(email)
+        }
+
+        val res = createConfirmationCode(userCredentials.user.id)
+
+        emailService.sendConfirmationCode(res.first, res.second)
+    }
+    
     @Transactional
     fun confirmForgotPassword(code: String, password: String) {
         val savedCode = confirmationCodeRepository.findByCode(code) ?: run {

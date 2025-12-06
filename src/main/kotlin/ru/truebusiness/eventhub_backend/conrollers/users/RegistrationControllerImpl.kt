@@ -4,6 +4,7 @@ import java.util.UUID
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
+import ru.truebusiness.eventhub_backend.conrollers.dto.users.ForgotPasswordRequest
 import ru.truebusiness.eventhub_backend.conrollers.dto.users.ConfirmForgotPasswordRequest
 import ru.truebusiness.eventhub_backend.conrollers.dto.users.RegistrationResponseDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.users.UserCredentialsRegistrationDto
@@ -49,6 +50,11 @@ class RegistrationControllerImpl(
         return ResponseEntity(response, HttpStatus.OK)
     }
 
+    override fun forgotPassword(forgotPasswordRequest: ForgotPasswordRequest): ResponseEntity<Void> {
+        registrationService.forgotPassword(forgotPasswordRequest.email)
+        return ResponseEntity(HttpStatus.OK)
+    }
+    
     override fun confirmForgotPassword(request: ConfirmForgotPasswordRequest): ResponseEntity<Void> {
         registrationService.confirmForgotPassword(request.code, request.password)
         return ResponseEntity(HttpStatus.OK)
