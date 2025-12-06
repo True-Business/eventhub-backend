@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject
 import io.swagger.v3.oas.annotations.parameters.RequestBody
 import io.swagger.v3.oas.annotations.media.Schema
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -35,6 +36,9 @@ interface FriendController {
         createFriendRequestDto: CreateFriendRequestDto
     ): ResponseEntity<FriendRequestDto>
 
+    @DeleteMapping("/{friendRequestId}")
+    fun removeFriendship(@PathVariable friendRequestId: UUID): ResponseEntity<Void>
+  
     @PostMapping("/request/{friendRequestId}/decline")
     fun rejectFriendRequest(@PathVariable friendRequestId: UUID): ResponseEntity<Void>
 }
