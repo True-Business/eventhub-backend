@@ -7,6 +7,7 @@ import ru.truebusiness.eventhub_backend.conrollers.dto.friends.CreateFriendReque
 import ru.truebusiness.eventhub_backend.conrollers.dto.friends.FriendRequestDto
 import ru.truebusiness.eventhub_backend.mapper.FriendMapper
 import ru.truebusiness.eventhub_backend.service.FriendService
+import java.util.UUID
 
 @RestController
 class FriendControllerImpl(
@@ -26,5 +27,10 @@ class FriendControllerImpl(
             friendMapper.friendRequestModelToFriendRequestDto(model),
             HttpStatus.CREATED
         )
+    }
+
+    override fun rejectFriendRequest(friendRequestId: UUID): ResponseEntity<Void> {
+        friendService.rejectFriendRequest(friendRequestId)
+        return ResponseEntity(HttpStatus.OK)
     }
 }

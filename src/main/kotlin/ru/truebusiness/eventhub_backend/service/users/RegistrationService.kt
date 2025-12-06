@@ -188,4 +188,26 @@ class RegistrationService(
 
         emailService.sendConfirmationCode(res.first, res.second)
     }
+    
+    @Transactional
+    fun confirmForgotPassword(code: String, password: String) {
+        val savedCode = confirmationCodeRepository.findByCode(code) ?: run {
+            throw InvalidConfirmationCode.invalid(code)
+        }
+        if (Instant.now().isAfter(savedCode.expiresAt)) {
+            throw InvalidConfirmationCode.expired(code)
+        }
+
+        log.debug("Confirmation code {} found", savedCode)
+        confirmationCodeRepository.delete(savedCode)
+
+        val userCredentials = savedCode.user.credentials
+        if (userCredentials == null) {
+            throw RuntimeException("failed to fetch user credentials")
+        }
+
+        userCredentials.password = passwordEncoder.encode(password)
+
+        userCredentialsRepository.save<UserCredentials>(userCredentials)
+    }
 }
