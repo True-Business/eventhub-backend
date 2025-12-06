@@ -38,4 +38,7 @@ interface FriendController {
 
     @DeleteMapping("/{friendRequestId}")
     fun removeFriendship(@PathVariable friendRequestId: UUID): ResponseEntity<Void>
+  
+    @PostMapping("/request/{friendRequestId}/decline")
+    fun rejectFriendRequest(@PathVariable friendRequestId: UUID): ResponseEntity<Void>
 }

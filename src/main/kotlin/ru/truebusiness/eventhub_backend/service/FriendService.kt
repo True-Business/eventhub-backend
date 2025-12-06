@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import ru.truebusiness.eventhub_backend.conrollers.dto.friends.FriendRequestStatus
 import ru.truebusiness.eventhub_backend.exceptions.friends.FriendRequestAlreadyExistsException
+import ru.truebusiness.eventhub_backend.exceptions.friends.FriendRequestException
 import ru.truebusiness.eventhub_backend.exceptions.friends.SelfFriendRequestException
 import ru.truebusiness.eventhub_backend.exceptions.users.UserNotFoundException
 import ru.truebusiness.eventhub_backend.logger
@@ -16,7 +17,7 @@ import ru.truebusiness.eventhub_backend.service.model.FriendRequestModel
 import java.util.UUID
 
 @Service
-class FriendService (
+class FriendService(
     private val friendRepository: FriendRepository,
     private val userRepository: UserRepository,
     private val friendMapper: FriendMapper,
@@ -67,5 +68,12 @@ class FriendService (
 
     fun removeFriendship(friendRequestId: UUID) {
         friendRepository.deleteById(friendRequestId)
+    }
+
+    fun rejectFriendRequest(friendRequestId: UUID) {
+        val friendRequest = friendRepository.findById(friendRequestId)
+            .orElseThrow { FriendRequestException("friend request with id: $friendRequestId does not exists") }
+        friendRequest.status = FriendRequestStatus.REJECTED;
+        friendRepository.save(friendRequest)
     }
 }
