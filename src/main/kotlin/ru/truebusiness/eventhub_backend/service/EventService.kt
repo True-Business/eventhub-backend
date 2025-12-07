@@ -13,6 +13,7 @@ import ru.truebusiness.eventhub_backend.exceptions.events.RegistrationException
 import ru.truebusiness.eventhub_backend.exceptions.users.UserNotFoundException
 import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.mapper.EventMapper
+import ru.truebusiness.eventhub_backend.mapper.UserMapper
 import ru.truebusiness.eventhub_backend.repository.EventParticipantRepository
 import ru.truebusiness.eventhub_backend.repository.EventRepository
 import ru.truebusiness.eventhub_backend.repository.UserRepository
@@ -20,7 +21,6 @@ import ru.truebusiness.eventhub_backend.repository.entity.Event
 import ru.truebusiness.eventhub_backend.repository.entity.EventParticipant
 import ru.truebusiness.eventhub_backend.repository.entity.EventStatus
 import ru.truebusiness.eventhub_backend.service.model.*
-import ru.truebusiness.eventhub_backend.service.users.UserService
 import java.time.Instant
 
 @Service
@@ -28,8 +28,8 @@ class EventService(
     private val eventRepository: EventRepository,
     private val eventParticipantRepository: EventParticipantRepository,
     private val userRepository: UserRepository,
-    private val userService: UserService,
     private val eventMapper: EventMapper,
+    private val userMapper: UserMapper,
 ) {
     private val log by logger()
 
@@ -165,12 +165,9 @@ class EventService(
     }
 
     fun getEventParticipants(eventId: UUID): List<UserModel> {
-        if (!eventRepository.existsById(eventId)) {
-            throw EventNotFoundException.byId(eventId)
-        }
-
-        val participantIds = eventParticipantRepository
-            .findByEventId(eventId).map { p -> p.userId }
-        return userService.getAllByID(participantIds)
+        val participants = eventRepository.findById(eventId)
+            .orElseThrow{EventNotFoundException.byId(eventId)}.participants
+        val userModels = userMapper.userEntitiesToUserModels(participants)
+        return userModels
     }
 }

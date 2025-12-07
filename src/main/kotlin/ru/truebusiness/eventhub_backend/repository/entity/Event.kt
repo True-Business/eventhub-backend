@@ -1,10 +1,14 @@
 package ru.truebusiness.eventhub_backend.repository.entity
 
+import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
 import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.JoinTable
+import jakarta.persistence.ManyToMany
 import jakarta.persistence.Table
 import java.time.Instant
 import java.util.UUID
@@ -68,5 +72,13 @@ class Event(
     var peopleLimit: Int?,
 
     @Column(name = "register_end_datetime")
-    var registerEndDateTime: Instant?
+    var registerEndDateTime: Instant?,
+
+    @ManyToMany
+    @JoinTable(
+        name = "event_participants",
+        joinColumns = [JoinColumn(name = "event_id", referencedColumnName = "id")],
+        inverseJoinColumns = [JoinColumn(name = "user_id", referencedColumnName = "id")]
+    )
+    var participants: MutableList<User> = mutableListOf()
 )

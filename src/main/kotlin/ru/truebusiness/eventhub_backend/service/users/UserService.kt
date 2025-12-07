@@ -57,10 +57,6 @@ class UserService(
         )
     }
 
-    fun getAllByID(ids: Iterable<UUID>): List<UserModel> {
-        return userMapper.userEntitiesToUserModels(userRepository.findAllById(ids))
-    }
-
     fun findUsers(filter: UserFiltersModel): List<UserModel> {
         val spec = UserSpecs.withUsername(filter.username)
             .and(UserSpecs.isFriendOf(filter.userIdFriend))
