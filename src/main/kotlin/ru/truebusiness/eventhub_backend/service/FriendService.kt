@@ -66,9 +66,13 @@ class FriendService(
         )
     }
 
+    fun removeFriendship(friendRequestId: UUID) {
+        friendRepository.deleteById(friendRequestId)
+    }
+
     fun rejectFriendRequest(friendRequestId: UUID) {
         val friendRequest = friendRepository.findById(friendRequestId)
-            .orElseThrow{FriendRequestException("friend request with id: $friendRequestId does not exists")}
+            .orElseThrow { FriendRequestException("friend request with id: $friendRequestId does not exists") }
         friendRequest.status = FriendRequestStatus.REJECTED;
         friendRepository.save(friendRequest)
     }
