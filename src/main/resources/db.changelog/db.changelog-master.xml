@@ -10,4 +10,5 @@
     <include file="/db.changelog/2025-10-09-add-bio-to-users.xml"/>
     <include file="/db.changelog/2025-11-14-add-friend-requests.xml"/>
     <include file="/db.changelog/2025-11-17-create-event-participants-table.xml"/>
+    <include file="/db.changelog/2025-12-07-create-organization-admin-table.xml"/>
 </databaseChangeLog>
