@@ -146,7 +146,7 @@ class FriendService (
         val user = userRepository.findById(userId)
             .orElseThrow { UserNotFoundException.withId(userId) }
 
-        val specification = UserSpecs.isFriendOf(user)
+        val specification = UserSpecs.isFriendOf(user.id)
 
         val friends = userRepository.findAll(specification)
         return userMapper.userEntitiesToUserModels(
