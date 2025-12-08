@@ -122,7 +122,22 @@ class FriendService (
 
         val specification = FriendRequestSpecs
             .withSender(sender)
-            .and(FriendRequestSpecs.withoutStatus(FriendRequestStatus.ACCEPTED))
+            .and(FriendRequestSpecs.withStatus(FriendRequestStatus.ACCEPTED, invert = true))
+
+        val requests = friendRequestRepository.findAll(specification)
+        return friendMapper.friendRequestEntityListToFriendRequestModelList(
+            requests
+        )
+    }
+
+    @Transactional
+    fun getIncomingRequests(userId: UUID): List<FriendRequestModel> {
+        val receiver = userRepository.findById(userId)
+            .orElseThrow { UserNotFoundException.withId(userId) }
+
+        val specification = FriendRequestSpecs
+            .withReceiver(receiver)
+            .and(FriendRequestSpecs.withStatus(FriendRequestStatus.PENDING))
 
         val requests = friendRequestRepository.findAll(specification)
         return friendMapper.friendRequestEntityListToFriendRequestModelList(
