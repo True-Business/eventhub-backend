@@ -13,6 +13,7 @@ import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.mapper.FriendMapper
 import ru.truebusiness.eventhub_backend.repository.FriendRequestRepository
 import ru.truebusiness.eventhub_backend.repository.FriendshipRepository
+import ru.truebusiness.eventhub_backend.repository.FriendRequestSpecs
 import ru.truebusiness.eventhub_backend.repository.UserRepository
 import ru.truebusiness.eventhub_backend.repository.entity.FriendRequest
 import ru.truebusiness.eventhub_backend.repository.entity.Friendship
@@ -112,5 +113,20 @@ class FriendService (
             .orElseThrow { FriendRequestException("friend request with id: $friendRequestId does not exists") }
         friendRequest.status = FriendRequestStatus.REJECTED;
         friendRequestRepository.save(friendRequest)
+    }
+
+    @Transactional
+    fun getOutgoingRequests(userId: UUID): List<FriendRequestModel> {
+        val sender = userRepository.findById(userId)
+            .orElseThrow { UserNotFoundException.withId(userId) }
+
+        val specification = FriendRequestSpecs
+            .withSender(sender)
+            .and(FriendRequestSpecs.withoutStatus(FriendRequestStatus.ACCEPTED))
+
+        val requests = friendRequestRepository.findAll(specification)
+        return friendMapper.friendRequestEntityListToFriendRequestModelList(
+            requests
+        )
     }
 }

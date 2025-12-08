@@ -47,4 +47,11 @@ interface FriendMapper {
     fun acceptFriendRequestDtoToAcceptFriendRequestModel(
         acceptFriendRequestDto: AcceptFriendRequestDto
     ): AcceptFriendRequestModel
+
+    fun friendRequestModelListToFriendRequestDtoList(
+        list: List<FriendRequestModel>
+    ): List<FriendRequestDto>
+    fun friendRequestEntityListToFriendRequestModelList(
+        list: List<FriendRequest>
+    ): List<FriendRequestModel>
 }
