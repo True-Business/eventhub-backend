@@ -124,7 +124,7 @@ class FriendService (
             .withSender(sender)
             .and(FriendRequestSpecs.withStatus(FriendRequestStatus.ACCEPTED, invert = true))
 
-        val requests = friendRepository.findAll(specification)
+        val requests = friendRequestRepository.findAll(specification)
         return friendMapper.friendRequestEntityListToFriendRequestModelList(
             requests
         )
