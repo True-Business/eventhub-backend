@@ -14,8 +14,11 @@ import org.springframework.web.bind.annotation.RestController
 import ru.truebusiness.eventhub_backend.conrollers.dto.FindUsersRequestDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.UpdateUserRequestDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.UserDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.events.EventDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.organizations.OrganizationDto
+import ru.truebusiness.eventhub_backend.mapper.EventMapper
 import ru.truebusiness.eventhub_backend.mapper.UserMapper
+import ru.truebusiness.eventhub_backend.repository.entity.Event
 import ru.truebusiness.eventhub_backend.service.users.UserService
 import java.util.UUID
 
@@ -23,7 +26,8 @@ import java.util.UUID
 @RequestMapping("/api/v1/user")
 class UserController(
     private val userService: UserService,
-    private val userMapper: UserMapper
+    private val userMapper: UserMapper,
+    private val eventMapper: EventMapper
 ) {
     @PutMapping("/{id}")
     fun updateById(
@@ -53,5 +57,11 @@ class UserController(
     @DeleteMapping
     fun deleteById() {
         userService.deleteById()
+    }
+
+    @GetMapping("/{id}/events")
+    fun getEvents(@PathVariable("id") userId: UUID): ResponseEntity<List<EventDto>> {
+        val events = eventMapper.eventModelsToEventDTOs(userService.getEvents(userId))
+        return ResponseEntity.ok(events)
     }
 }
