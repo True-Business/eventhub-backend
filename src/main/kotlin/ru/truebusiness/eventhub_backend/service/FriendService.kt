@@ -11,16 +11,11 @@ import ru.truebusiness.eventhub_backend.exceptions.friends.SelfFriendRequestExce
 import ru.truebusiness.eventhub_backend.exceptions.users.UserNotFoundException
 import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.mapper.FriendMapper
-import ru.truebusiness.eventhub_backend.repository.FriendRequestRepository
-import ru.truebusiness.eventhub_backend.repository.FriendshipRepository
-import ru.truebusiness.eventhub_backend.repository.FriendRequestSpecs
-import ru.truebusiness.eventhub_backend.repository.UserRepository
+import ru.truebusiness.eventhub_backend.mapper.UserMapper
+import ru.truebusiness.eventhub_backend.repository.*
 import ru.truebusiness.eventhub_backend.repository.entity.FriendRequest
 import ru.truebusiness.eventhub_backend.repository.entity.Friendship
-import ru.truebusiness.eventhub_backend.service.model.AcceptFriendRequestModel
-import ru.truebusiness.eventhub_backend.service.model.CreateFriendRequestModel
-import ru.truebusiness.eventhub_backend.service.model.FriendRequestModel
-import ru.truebusiness.eventhub_backend.service.model.FriendshipModel
+import ru.truebusiness.eventhub_backend.service.model.*
 import java.util.UUID
 
 @Service
@@ -28,6 +23,7 @@ class FriendService (
     private val friendRequestRepository: FriendRequestRepository,
     private val friendshipRepository: FriendshipRepository,
     private val userRepository: UserRepository,
+    private val userMapper: UserMapper,
     private val friendMapper: FriendMapper,
 ) {
     private val log by logger()
@@ -142,6 +138,19 @@ class FriendService (
         val requests = friendRequestRepository.findAll(specification)
         return friendMapper.friendRequestEntityListToFriendRequestModelList(
             requests
+        )
+    }
+
+    @Transactional
+    fun getFriends(userId: UUID): List<UserModel> {
+        val user = userRepository.findById(userId)
+            .orElseThrow { UserNotFoundException.withId(userId) }
+
+        val specification = UserSpecs.isFriendOf(user.id)
+
+        val friends = userRepository.findAll(specification)
+        return userMapper.userEntitiesToUserModels(
+            friends
         )
     }
 }

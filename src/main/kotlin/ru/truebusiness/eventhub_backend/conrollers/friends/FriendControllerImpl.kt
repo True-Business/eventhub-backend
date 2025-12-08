@@ -3,18 +3,21 @@ package ru.truebusiness.eventhub_backend.conrollers.friends
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
+import ru.truebusiness.eventhub_backend.conrollers.dto.UserDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.friends.AcceptFriendRequestDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.friends.CreateFriendRequestDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.friends.FriendRequestDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.friends.FriendshipDto
 import ru.truebusiness.eventhub_backend.mapper.FriendMapper
+import ru.truebusiness.eventhub_backend.mapper.UserMapper
 import ru.truebusiness.eventhub_backend.service.FriendService
 import java.util.UUID
 
 @RestController
 class FriendControllerImpl(
     private val friendService: FriendService,
-    private val friendMapper: FriendMapper
+    private val friendMapper: FriendMapper,
+    private val userMapper: UserMapper
 ) : FriendController {
     override fun sendRequest(
         createFriendRequestDto: CreateFriendRequestDto
@@ -69,6 +72,14 @@ class FriendControllerImpl(
 
         return ResponseEntity.ok(
             friendMapper.friendRequestModelListToFriendRequestDtoList(models)
+        )
+    }
+
+    override fun getFriends(userId: UUID): ResponseEntity<List<UserDto>> {
+        val models = friendService.getFriends(userId)
+
+        return ResponseEntity.ok(
+            userMapper.userModelsToUserDtos(models)
         )
     }
 }

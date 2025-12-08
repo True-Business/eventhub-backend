@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import ru.truebusiness.eventhub_backend.conrollers.dto.UserDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.friends.AcceptFriendRequestDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.friends.CreateFriendRequestDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.friends.FriendRequestDto
@@ -70,4 +71,7 @@ interface FriendController {
 
     @GetMapping("/request/incoming/{userId}")
     fun getIncomingRequests(@PathVariable userId: UUID): ResponseEntity<List<FriendRequestDto>>
+
+    @GetMapping("/list/{userId}")
+    fun getFriends(@PathVariable userId: UUID): ResponseEntity<List<UserDto>>
 }
