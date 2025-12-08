@@ -14,21 +14,23 @@ object UserSpecs {
             } else null
         }
 
-    fun isFriendOf(userFriend: User?): Specification<User> =
+    fun isFriendOf(userFriendId: UUID?): Specification<User> =
         Specification { root, query, criteriaBuilder ->
-            if (userFriend != null) {
+            if (userFriendId != null) {
                 val subquery = query!!.subquery(Long::class.javaObjectType)
                 val friendshipRoot = subquery.from(Friendship::class.java)
 
-                // Условие проверки дружбы в обе стороны
+                val user1Root = friendshipRoot.get<User>("user1")
+                val user2Root = friendshipRoot.get<User>("user2")
+
                 val friendshipCondition = criteriaBuilder.or(
                     criteriaBuilder.and(
-                        criteriaBuilder.equal(friendshipRoot.get<User>("user1"), userFriend),
-                        criteriaBuilder.equal(friendshipRoot.get<User>("user2"), root)
+                        criteriaBuilder.equal(user1Root.get<UUID>("id"), userFriendId),
+                        criteriaBuilder.equal(user2Root.get<UUID>("id"), root.get<UUID>("id"))
                     ),
                     criteriaBuilder.and(
-                        criteriaBuilder.equal(friendshipRoot.get<User>("user1"), root),
-                        criteriaBuilder.equal(friendshipRoot.get<User>("user2"), userFriend)
+                        criteriaBuilder.equal(user1Root.get<UUID>("id"), root.get<UUID>("id")),
+                        criteriaBuilder.equal(user2Root.get<UUID>("id"), userFriendId)
                     )
                 )
 
