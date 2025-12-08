@@ -37,6 +37,11 @@ eventhubBackendDeploy:
       password: "miniopassword"
       hostPort: "example-minio.com:9000"
       bucket: "eventhub"
+    storage:
+      cleanupJob:
+        delay: 60m
+      bucket:
+        nonConfirmedExpiry: 15m
 
   service:
     type: LoadBalancer

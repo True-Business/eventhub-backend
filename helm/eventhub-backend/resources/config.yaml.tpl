@@ -34,6 +34,15 @@ app:
       cron: {{ .Values.eventhubBackendDeploy.appConfig.registration.cleanupJob.cron }}
       zone: {{ .Values.eventhubBackendDeploy.appConfig.registration.cleanupJob.zone }}
     confirmationCodeExpirationMinutes: {{ .Values.eventhubBackendDeploy.appConfig.registration.confirmationCodeExpirationMinutes }}
+  storage:
+    cleanupJob:
+      delay: {{ .Values.eventhubBackendDeploy.appConfig.storage.cleanupJob.delay }}
+    bucket:
+      name: {{ .Values.eventhubBackendDeploy.appConfig.minio.bucket }}
+      nonConfirmedExpiry: {{ .Values.eventhubBackendDeploy.appConfig.storage.bucket.nonConfirmedExpiry }}
+    user: {{ .Values.eventhubBackendDeploy.appConfig.minio.user }}
+    password: {{ .Values.eventhubBackendDeploy.appConfig.minio.password }}
+    hostPort: "http://localhost:9000"
 
 springdoc:
   swagger-ui:
