@@ -43,8 +43,19 @@ class MinioStorageService(
 ) {
     private val log by logger()
 
+    /**
+     * Первый этап загрузки файлов. клиент шлет названия файлов(origin) и
+     * получает в соответствие к каждому файлу ссылку на его загружку в s3. К
+     * каждому origin - id метадаты и ссылку на загрузку в s3.
+     *
+     * Метадата если не будет подтверждена, сотрется gc.
+     *
+     * Неподтвержденные файлы сохраняются с префиксом <code>FileStatus
+     * .PENDING</code>, должны быть стерты политикой жизненного цикла бакета
+     * по истечении определенного времени.
+     */
     @Transactional
-    fun genUploadUrls(request: ObjectUpload.Request): List<ObjectUpload.UrlInfo> {
+    fun genUploadUrls(request: ObjectUpload.Request): ObjectUpload.Response {
         StorageUtils.validateOrigin(request.originNames)
 
         val (ownerId, ownerType, fileNames) = request
@@ -76,9 +87,28 @@ class MinioStorageService(
             s3ObjectMetadataRepository::saveAll
         ).map(
             objectMetadataMapper::s3ObjectMetadata2UrlInfo
-        )
+        ).let{
+            ObjectUpload.Response(it)
+        }
     }
 
+    /**
+     * Второй этпа загрузки объектов в s3 шлем подтверждение. Смотрим на
+     * статус метадаты
+     *
+     * <code>FileStatus.PENDING</code> - пробуем поменять префикс на
+     * <code>FileStatus.CONFIRMED</code>, убираем срок истечения и ставим
+     * дату подтверждения.
+     *
+     * Если не получилось поменять префикс, файл считается не подтвержденным,
+     * ждем пока метадату удалит gc.
+     *
+     * <code>FileStatus.CONFIRMED</code> - просто сообщаем что загрузка
+     * подтверждена
+     *
+     * <code>FileStatus.DELETED</code> - сообщаем что файл не найдет,
+     * метадату начал удалять gc
+     */
     @Transactional
     fun confirmUpload(request: ObjectConfirm.Request): ObjectConfirm.Response {
         val (ownerId, ownerType, ids) = request
@@ -122,6 +152,10 @@ class MinioStorageService(
         return ObjectConfirm.Response(confInfo)
     }
 
+    /**
+     * Находим метадату файлов, если статус
+     * <code>FileStatus.CONFIRMED</code>, генерируем ссылку для загрузки, иначе null
+     */
     @Transactional
     fun genDownloadUrls(req: ObjectDownload.Request): ObjectDownload.Response {
         val metas = s3ObjectMetadataRepository.findAllById(req.ids)
@@ -147,6 +181,9 @@ class MinioStorageService(
         return ObjectDownload.Response(urls)
     }
 
+    /**
+     * Получение всех подтржденных файлов для владельца заданного типа
+     */
     fun listObjects(request: ObjectsList.Request): ObjectsList.Response {
         val page = getObjectsListPage(request.page)
         val objects = s3ObjectMetadataRepository.findAllByOwnerIdAndOwnerType(
@@ -164,6 +201,10 @@ class MinioStorageService(
         s3ObjectMetadataRepository.saveAll(metasById)
     }
 
+    /**
+     * Маркируем метадату как <code>FileStatus.DELETED</code>, удаление
+     * произойдет в отдельном методе
+     * */
     @Transactional
     fun deleteExpiredMetadata() {
         val metasById =
@@ -176,6 +217,10 @@ class MinioStorageService(
         s3ObjectMetadataRepository.saveAll(metasById)
     }
 
+    /**
+     * Находим все файлы с статусом <code>FileStatus.DELETED</code>? удаляем
+     * объект с постоянного хранения в s3, удаляем метадату.
+     */
     @Transactional
     fun cleanupDeletedObjects() {
         val metas = s3ObjectMetadataRepository.findAllByStatusIs(

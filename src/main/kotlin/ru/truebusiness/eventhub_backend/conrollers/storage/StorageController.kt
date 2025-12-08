@@ -1,6 +1,5 @@
 package ru.truebusiness.eventhub_backend.conrollers.storage
 
-import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -16,16 +15,15 @@ import ru.truebusiness.eventhub_backend.service.storage.MinioStorageService
 class StorageController(
     private val minioStorageService: MinioStorageService
 ) {
-    @PostMapping("/presigned-urls")
+    @PostMapping("/urls")
     fun genUploadUrls(
         @RequestBody
         request: ObjectUpload.Request
     ): ObjectUpload.Response {
-        val urls = minioStorageService.genUploadUrls(request)
-        return ObjectUpload.Response(urls)
+        return minioStorageService.genUploadUrls(request)
     }
 
-    @PostMapping("/confirmed")
+    @PostMapping("/confirm")
     fun confirmUpload(
         @RequestBody
         request: ObjectConfirm.Request
@@ -33,7 +31,7 @@ class StorageController(
         return minioStorageService.confirmUpload(request)
     }
 
-    @PostMapping("/confirmed/list")
+    @PostMapping("/confirm/list")
     fun listConfirmed(
         @RequestBody
         request: ObjectsList.Request
@@ -41,12 +39,11 @@ class StorageController(
         return minioStorageService.listObjects(request);
     }
 
-    @GetMapping
+    @PostMapping("/confirm/urls")
     fun getDownloadUrls(
         @RequestBody
         request: ObjectDownload.Request
     ): ObjectDownload.Response {
         return minioStorageService.genDownloadUrls(request)
     }
-
 }
