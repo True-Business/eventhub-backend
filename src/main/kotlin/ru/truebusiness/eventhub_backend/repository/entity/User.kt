@@ -29,6 +29,9 @@ class User(
     @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL])
     var credentials: UserCredentials?,
 
+    @ManyToMany(mappedBy = "admins")
+    var administratedOrganizations: List<Organization> = ArrayList(),
+    
     @ManyToMany(mappedBy = "participants")
     var events: MutableList<Event> = mutableListOf()
 )
