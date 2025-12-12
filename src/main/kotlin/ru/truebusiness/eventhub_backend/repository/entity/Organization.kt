@@ -43,5 +43,5 @@ class Organization(
         joinColumns = [JoinColumn(name = "organization_id")],
         inverseJoinColumns = [JoinColumn(name = "admin_id")]
     )
-    var admins: List<User> = ArrayList()
+    var admins: MutableList<User> = mutableListOf()
 )

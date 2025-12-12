@@ -13,8 +13,11 @@ import ru.truebusiness.eventhub_backend.repository.EventRepository
 import ru.truebusiness.eventhub_backend.repository.OrganizationRepository
 import ru.truebusiness.eventhub_backend.repository.UserRepository
 import ru.truebusiness.eventhub_backend.repository.UserSpecs
+import ru.truebusiness.eventhub_backend.repository.entity.Event
 import ru.truebusiness.eventhub_backend.repository.entity.EventStatus
+import ru.truebusiness.eventhub_backend.repository.entity.Organization
 import ru.truebusiness.eventhub_backend.repository.entity.User
+import ru.truebusiness.eventhub_backend.service.EmailService
 import ru.truebusiness.eventhub_backend.service.model.EventModel
 import ru.truebusiness.eventhub_backend.service.model.UpdateUserModel
 import ru.truebusiness.eventhub_backend.service.model.UserFiltersModel
@@ -23,6 +26,7 @@ import java.util.UUID
 
 @Service
 class UserService(
+    private val emailService: EmailService,
     private val eventRepository: EventRepository,
     private val organizationRepository: OrganizationRepository,
     private val userRepository: UserRepository,
@@ -41,7 +45,7 @@ class UserService(
         val userWithShortId: User? = userRepository.findUserByShortId(updateUserModel.shortId)
         if (userWithShortId != null && userWithShortId.id != user.id)
             throw UserAlreadyExistsException.withShortId(updateUserModel.shortId)
-        
+
         userMapper.updateUserModelToUserEntity(updateUserModel, user)
 
         val updatedUser = userRepository.save(user)
@@ -82,19 +86,40 @@ class UserService(
             throw OrganizationCreatorException.withId(userId)
         }
 
+        val user = userRepository.findById(userId).orElseThrow()
+        val organizationIds = user.administratedOrganizations.stream()
+            .map(Organization::id)
+            .toList()
+
+        val canceledEvents: MutableList<Event> = mutableListOf()
+
         val events = eventRepository.findPersonalEvents(userId, EventStatus.PLANNED)
         events.stream()
-            .forEach { event -> event.status = EventStatus.CANCELED }
-        eventRepository.saveAll(events)
+            .forEach { event ->
+                if (!organizationIds.contains(event.organizationId)) {
+                    event.status = EventStatus.CANCELED
+                    canceledEvents.add(event)
+                }
+            }
 
-        // TODO Участники удалённого мероприятия должны получить уведомление о том, что мероприятие было удалено
+        eventRepository.saveAll(canceledEvents)
 
-        userRepository.deleteById(userId);
+        userRepository.deleteById(userId)
+
+        canceledEvents.forEach { event ->
+            event.participants.forEach { user ->
+                val eventModel: EventModel = eventMapper.eventToEventModel(event)
+                val email = user.credentials?.email
+                if (email != null) {
+                    emailService.sendEventCancellation(email, eventModel)
+                }
+            }
+        }
     }
 
     fun getEvents(userId: UUID): List<EventModel> {
         val events = userRepository.findById(userId)
-            .orElseThrow{UserNotFoundException.withId(userId)}.events
+            .orElseThrow { UserNotFoundException.withId(userId) }.events
         return eventMapper.eventsToEventModels(events)
     }
 }
