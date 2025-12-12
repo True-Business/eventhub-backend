@@ -49,8 +49,8 @@ class FriendControllerImpl(
         )
     }
 
-    override fun removeFriendship(friendRequestId: UUID): ResponseEntity<Void> {
-        friendService.removeFriendship(friendRequestId)
+    override fun removeFriendship(friendshipId: UUID): ResponseEntity<Void> {
+        friendService.removeFriendship(friendshipId)
         return ResponseEntity(HttpStatus.OK)
     }
 
