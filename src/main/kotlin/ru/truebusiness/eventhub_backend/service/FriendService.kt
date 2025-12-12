@@ -100,8 +100,8 @@ class FriendService (
         )
     }
 
-    fun removeFriendship(friendRequestId: UUID) {
-        friendRequestRepository.deleteById(friendRequestId)
+    fun removeFriendship(friendshipId: UUID) {
+        friendshipRepository.deleteById(friendshipId)
     }
 
     fun rejectFriendRequest(friendRequestId: UUID) {
