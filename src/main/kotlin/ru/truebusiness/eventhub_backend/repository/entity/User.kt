@@ -30,7 +30,7 @@ class User(
     var credentials: UserCredentials?,
 
     @ManyToMany(mappedBy = "admins")
-    var administratedOrganizations: List<Organization> = ArrayList(),
+    var administratedOrganizations: MutableList<Organization> = mutableListOf(),
     
     @ManyToMany(mappedBy = "participants")
     var events: MutableList<Event> = mutableListOf()
