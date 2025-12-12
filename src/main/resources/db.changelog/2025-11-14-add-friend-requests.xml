@@ -44,4 +44,38 @@
                                  referencedColumnNames="id"
                                  onDelete="CASCADE"/>
     </changeSet>
+    <changeSet id="add-friendship" author="s.rozhkov">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="friendship"/>
+            </not>
+        </preConditions>
+        <comment>Created table for friendships.</comment>
+        <createTable tableName="friendship">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="user1_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user2_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="since" type="TIMESTAMPTZ">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="friendship"
+                                 baseColumnNames="user1_id"
+                                 constraintName="fk_friendship_user1_user"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+        <addForeignKeyConstraint baseTableName="friendship"
+                                 baseColumnNames="user2_id"
+                                 constraintName="fk_friendship_user2_user"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
 </databaseChangeLog>

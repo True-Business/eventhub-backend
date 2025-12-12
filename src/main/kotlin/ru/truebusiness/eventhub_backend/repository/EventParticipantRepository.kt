@@ -10,4 +10,5 @@ interface EventParticipantRepository : JpaRepository<EventParticipant, UUID> {
     fun existsByUserIdAndEventId(userId: UUID, eventId: UUID): Boolean
     fun countByEventId(eventId: UUID): Int
     fun deleteByUserIdAndEventId(userId: UUID, eventId: UUID)
+    fun findByEventId(eventId: UUID): List<EventParticipant>
 }

@@ -13,6 +13,7 @@ import ru.truebusiness.eventhub_backend.exceptions.events.RegistrationException
 import ru.truebusiness.eventhub_backend.exceptions.users.UserNotFoundException
 import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.mapper.EventMapper
+import ru.truebusiness.eventhub_backend.mapper.UserMapper
 import ru.truebusiness.eventhub_backend.repository.EventParticipantRepository
 import ru.truebusiness.eventhub_backend.repository.EventRepository
 import ru.truebusiness.eventhub_backend.repository.UserRepository
@@ -26,7 +27,9 @@ import java.time.Instant
 class EventService(
     private val eventRepository: EventRepository,
     private val eventParticipantRepository: EventParticipantRepository,
-    private val eventMapper: EventMapper, private val userRepository: UserRepository,
+    private val userRepository: UserRepository,
+    private val eventMapper: EventMapper,
+    private val userMapper: UserMapper,
 ) {
     private val log by logger()
 
@@ -159,5 +162,12 @@ class EventService(
 
         eventParticipantRepository.deleteByUserIdAndEventId(userId, eventId)
         log.info("User $userId unsubscribed from event $eventId")
+    }
+
+    fun getEventParticipants(eventId: UUID): List<UserModel> {
+        val participants = eventRepository.findById(eventId)
+            .orElseThrow{EventNotFoundException.byId(eventId)}.participants
+        val userModels = userMapper.userEntitiesToUserModels(participants)
+        return userModels
     }
 }

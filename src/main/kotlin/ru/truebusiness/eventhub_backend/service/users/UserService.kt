@@ -7,6 +7,7 @@ import ru.truebusiness.eventhub_backend.exceptions.users.OrganizationCreatorExce
 import ru.truebusiness.eventhub_backend.exceptions.users.UserAlreadyExistsException
 import ru.truebusiness.eventhub_backend.exceptions.users.UserNotFoundException
 import ru.truebusiness.eventhub_backend.logger
+import ru.truebusiness.eventhub_backend.mapper.EventMapper
 import ru.truebusiness.eventhub_backend.mapper.UserMapper
 import ru.truebusiness.eventhub_backend.repository.EventRepository
 import ru.truebusiness.eventhub_backend.repository.OrganizationRepository
@@ -14,6 +15,7 @@ import ru.truebusiness.eventhub_backend.repository.UserRepository
 import ru.truebusiness.eventhub_backend.repository.UserSpecs
 import ru.truebusiness.eventhub_backend.repository.entity.EventStatus
 import ru.truebusiness.eventhub_backend.repository.entity.User
+import ru.truebusiness.eventhub_backend.service.model.EventModel
 import ru.truebusiness.eventhub_backend.service.model.UpdateUserModel
 import ru.truebusiness.eventhub_backend.service.model.UserFiltersModel
 import ru.truebusiness.eventhub_backend.service.model.UserModel
@@ -24,7 +26,8 @@ class UserService(
     private val eventRepository: EventRepository,
     private val organizationRepository: OrganizationRepository,
     private val userRepository: UserRepository,
-    private val userMapper: UserMapper
+    private val userMapper: UserMapper,
+    private val eventMapper: EventMapper
 ) {
     private val log by logger()
 
@@ -87,5 +90,11 @@ class UserService(
         // TODO Участники удалённого мероприятия должны получить уведомление о том, что мероприятие было удалено
 
         userRepository.deleteById(userId);
+    }
+
+    fun getEvents(userId: UUID): List<EventModel> {
+        val events = userRepository.findById(userId)
+            .orElseThrow{UserNotFoundException.withId(userId)}.events
+        return eventMapper.eventsToEventModels(events)
     }
 }

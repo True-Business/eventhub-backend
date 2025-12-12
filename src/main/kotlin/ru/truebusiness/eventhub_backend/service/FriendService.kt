@@ -4,28 +4,32 @@ import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import ru.truebusiness.eventhub_backend.conrollers.dto.friends.FriendRequestStatus
 import ru.truebusiness.eventhub_backend.exceptions.friends.FriendRequestAlreadyExistsException
+import ru.truebusiness.eventhub_backend.exceptions.friends.FriendRequestNotFoundException
+import ru.truebusiness.eventhub_backend.exceptions.friends.FriendRequestWrongStatusException
 import ru.truebusiness.eventhub_backend.exceptions.friends.FriendRequestException
 import ru.truebusiness.eventhub_backend.exceptions.friends.SelfFriendRequestException
 import ru.truebusiness.eventhub_backend.exceptions.users.UserNotFoundException
 import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.mapper.FriendMapper
-import ru.truebusiness.eventhub_backend.repository.FriendRepository
-import ru.truebusiness.eventhub_backend.repository.UserRepository
+import ru.truebusiness.eventhub_backend.mapper.UserMapper
+import ru.truebusiness.eventhub_backend.repository.*
 import ru.truebusiness.eventhub_backend.repository.entity.FriendRequest
-import ru.truebusiness.eventhub_backend.service.model.CreateFriendRequestModel
-import ru.truebusiness.eventhub_backend.service.model.FriendRequestModel
+import ru.truebusiness.eventhub_backend.repository.entity.Friendship
+import ru.truebusiness.eventhub_backend.service.model.*
 import java.util.UUID
 
 @Service
-class FriendService(
-    private val friendRepository: FriendRepository,
+class FriendService (
+    private val friendRequestRepository: FriendRequestRepository,
+    private val friendshipRepository: FriendshipRepository,
     private val userRepository: UserRepository,
+    private val userMapper: UserMapper,
     private val friendMapper: FriendMapper,
 ) {
     private val log by logger()
 
     @Transactional
-    fun create(createFriendRequestModel: CreateFriendRequestModel): FriendRequestModel {
+    fun createFriendRequest(createFriendRequestModel: CreateFriendRequestModel): FriendRequestModel {
 
         if (createFriendRequestModel.sender == createFriendRequestModel.receiver) {
             log.error(
@@ -40,7 +44,10 @@ class FriendService(
         val receiver = userRepository.findById(createFriendRequestModel.receiver)
             .orElseThrow { UserNotFoundException.withId(createFriendRequestModel.receiver) }
 
-        friendRepository.findBySenderAndReceiver(sender, receiver).forEach {
+        val allRequestsBetweenSpecifiedUsers = friendRequestRepository
+            .findBySenderAndReceiver(sender, receiver) + friendRequestRepository
+                .findBySenderAndReceiver(receiver, sender)
+        allRequestsBetweenSpecifiedUsers.forEach {
             if (it.status == FriendRequestStatus.PENDING) {
                 log.error(
                     "Failed to create friend request from {} to {}, one is already pending",
@@ -52,7 +59,7 @@ class FriendService(
             }
         }
 
-        val createdFriendRequest = friendRepository.save(
+        val createdFriendRequest = friendRequestRepository.save(
             FriendRequest(
                 sender = sender,
                 receiver = receiver,
@@ -66,14 +73,84 @@ class FriendService(
         )
     }
 
+    @Transactional
+    fun acceptFriendRequest(
+        acceptFriendRequestModel: AcceptFriendRequestModel
+    ): FriendshipModel {
+        val request = friendRequestRepository.findById(acceptFriendRequestModel.requestId)
+            .orElseThrow { FriendRequestNotFoundException.withId(acceptFriendRequestModel.requestId) }
+        if (request.status != FriendRequestStatus.PENDING) {
+            log.error("Trying to accept request ${request.id} which already has ${request.status.name} status.")
+            throw FriendRequestWrongStatusException.withStatus(request.status)
+        }
+
+        val createdFriendship = friendshipRepository.save(
+            Friendship(
+                user1 = request.sender,
+                user2 = request.receiver
+            )
+        )
+
+        request.status = FriendRequestStatus.ACCEPTED
+        request.acceptedAt = createdFriendship.since
+        friendRequestRepository.save(request)
+
+        return friendMapper.friendshipEntityToFriendshipModel(
+            createdFriendship
+        )
+    }
+
     fun removeFriendship(friendRequestId: UUID) {
-        friendRepository.deleteById(friendRequestId)
+        friendRequestRepository.deleteById(friendRequestId)
     }
 
     fun rejectFriendRequest(friendRequestId: UUID) {
-        val friendRequest = friendRepository.findById(friendRequestId)
+        val friendRequest = friendRequestRepository.findById(friendRequestId)
             .orElseThrow { FriendRequestException("friend request with id: $friendRequestId does not exists") }
         friendRequest.status = FriendRequestStatus.REJECTED;
-        friendRepository.save(friendRequest)
+        friendRequestRepository.save(friendRequest)
+    }
+
+    @Transactional
+    fun getOutgoingRequests(userId: UUID): List<FriendRequestModel> {
+        val sender = userRepository.findById(userId)
+            .orElseThrow { UserNotFoundException.withId(userId) }
+
+        val specification = FriendRequestSpecs
+            .withSender(sender)
+            .and(FriendRequestSpecs.withStatus(FriendRequestStatus.ACCEPTED, invert = true))
+
+        val requests = friendRequestRepository.findAll(specification)
+        return friendMapper.friendRequestEntityListToFriendRequestModelList(
+            requests
+        )
+    }
+
+    @Transactional
+    fun getIncomingRequests(userId: UUID): List<FriendRequestModel> {
+        val receiver = userRepository.findById(userId)
+            .orElseThrow { UserNotFoundException.withId(userId) }
+
+        val specification = FriendRequestSpecs
+            .withReceiver(receiver)
+            .and(FriendRequestSpecs.withStatus(FriendRequestStatus.PENDING))
+
+        val requests = friendRequestRepository.findAll(specification)
+        return friendMapper.friendRequestEntityListToFriendRequestModelList(
+            requests
+        )
+    }
+
+    @Transactional
+    fun getFriends(userId: UUID): List<UserModel> {
+        val user = userRepository.findById(userId)
+            .orElseThrow { UserNotFoundException.withId(userId) }
+
+        val specification = UserSpecs.isFriendOf(user.id)
+
+        val friends = userRepository.findAll(specification)
+        return userMapper.userEntitiesToUserModels(
+            friends
+        )
     }
 }

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog 
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.30.xsd">
+    
+    <changeSet id="add_posts_table" author="m.potapov">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="posts"/>
+            </not>
+        </preConditions>
+        <comment>Created the posts table.</comment>
+        <createTable tableName="posts">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="event_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMPTZ">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_at" type="TIMESTAMPTZ"/>
+            <column name="text" type="VARCHAR(1024)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="posts"
+                                 baseColumnNames="event_id"
+                                 constraintName="fk_posts_events"
+                                 referencedTableName="events"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+    
+</databaseChangeLog>
