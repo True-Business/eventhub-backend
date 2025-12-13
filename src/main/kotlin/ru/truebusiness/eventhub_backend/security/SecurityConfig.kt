@@ -45,7 +45,7 @@ class SecurityConfig(
                         "/swagger-resources/**",
                         "/webjars/**",
                     ).permitAll()
-                    .anyRequest().permitAll()/*.authenticated()*/
+                    .anyRequest().authenticated()
             }
             .httpBasic { }
             .addFilterAfter(authContextFilter, BasicAuthenticationFilter::class.java)
