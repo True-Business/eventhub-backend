@@ -42,7 +42,7 @@ app:
       nonConfirmedExpiry: {{ .Values.eventhubBackendDeploy.appConfig.storage.bucket.nonConfirmedExpiry }}
     user: {{ .Values.eventhubBackendDeploy.appConfig.minio.user }}
     password: {{ .Values.eventhubBackendDeploy.appConfig.minio.password }}
-    hostPort: "http://localhost:9000"
+    hostPort: {{ .Values.eventhubBackendDeploy.appConfig.minio.hostPort }}
 
 springdoc:
   swagger-ui:
