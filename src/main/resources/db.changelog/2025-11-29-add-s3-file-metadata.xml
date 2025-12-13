@@ -6,6 +6,11 @@
                         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <changeSet id="create-object-meta-table" author="Denis Zhdanov">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="object_meta"/>
+            </not>
+        </preConditions>
         <createTable tableName="object_meta">
             <column name="id" type="uuid">
                 <constraints primaryKey="true" nullable="false"/>
