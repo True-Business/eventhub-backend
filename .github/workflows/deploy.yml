@@ -22,10 +22,12 @@ on:
                 required: true
             minioPassword:
                 required: true
-            minioBucket:
+            minioBucketName:
                 required: true
-            minioHostPort:
+            minioURLInternal:
                 required: true
+            minioURLExternal:
+              required: true
 
 jobs:
     deploy:
