@@ -16,7 +16,7 @@ jobs:
 
         - name: Write minio.crt from secret
           run: |
-            printf '%s' "${{ secrets.MINIO_PUBLIC_CERT }}" > minio.crt
+            printf '%s' "${{ secrets.minioCrt }}" > minio.crt
 
         - name: Debug minio.crt content
           run: |

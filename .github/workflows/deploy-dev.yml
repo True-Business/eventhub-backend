@@ -7,7 +7,9 @@ jobs:
         permissions:
             contents: read
             packages: write
-        uses: ./.github/workflows/build-and-push-docker-image.yml 
+        uses: ./.github/workflows/build-and-push-docker-image.yml
+        secrets:
+          minioCrt: ${{ secrets.MINIO_PUBLIC_CERT }}
 
     deploy-to-dev:
         needs: build-docker-image-for-dev
