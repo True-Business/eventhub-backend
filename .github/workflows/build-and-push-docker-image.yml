@@ -17,10 +17,6 @@ jobs:
         - name: Checkout
           uses: actions/checkout@v4
 
-        - name: Write minio.crt from secret
-          run: |
-            printf '%s' "${{ secrets.minioCrt }}" > minio.crt
-
         - name: Debug minio.crt content
           run: |
             echo "=== BEGIN minio.crt ==="
