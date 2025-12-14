@@ -18,6 +18,13 @@ jobs:
           run: |
             printf '%s' "${{ secrets.MINIO_PUBLIC_CERT }}" > minio.crt
 
+        - name: Debug minio.crt content
+          run: |
+            echo "=== BEGIN minio.crt ==="
+            cat minio.crt
+            echo "=== END minio.crt ==="
+            echo "File size: $(wc -c < minio.crt) bytes"
+
         - name: Prepare docker meta
           id: meta
           uses: docker/metadata-action@v5
