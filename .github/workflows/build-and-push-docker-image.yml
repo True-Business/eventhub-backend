@@ -14,22 +14,6 @@ jobs:
         - name: Checkout
           uses: actions/checkout@v4
 
-        - name: Write minio.crt from secret
-          run: |
-            printf '%b' "${{ secrets.MINIO_PUBLIC_CERT }}" > minio.crt
-
-        - name: list files and show minio.crt
-          run: |
-            pwd
-            ls -la
-            echo "minio.crt content:"
-            cat minio.crt
-
-        - name: Debug minio.crt
-          run: |
-            ls -l minio.crt
-            head -n 3 minio.crt
-
         - name: Prepare docker meta
           id: meta
           uses: docker/metadata-action@v5
@@ -60,6 +44,8 @@ jobs:
             push: true
             tags: ${{ steps.meta.outputs.tags }}
             labels: ${{ steps.meta.outputs.labels }}
+            build-args: |
+              MINIO_PUBLIC_CERT=${{ secrets.MINIO_PUBLIC_CERT }}
 
         - name: Save image version to file
           run: echo ${{ steps.meta.outputs.version }} > image-version.txt
