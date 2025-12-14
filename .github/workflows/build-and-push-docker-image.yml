@@ -16,7 +16,12 @@ jobs:
 
         - name: Write minio.crt from secret
           run: |
-            echo "${{ secrets.MINIO_PUBLIC_CERT }}" > minio.crt
+            printf '%b' "${{ secrets.MINIO_PUBLIC_CERT }}" > minio.crt
+
+        - name: Debug minio.crt
+          run: |
+            ls -l minio.crt
+            head -n 3 minio.crt
 
         - name: Prepare docker meta
           id: meta
