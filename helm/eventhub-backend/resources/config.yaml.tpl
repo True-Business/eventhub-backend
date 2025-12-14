@@ -37,12 +37,15 @@ app:
   storage:
     cleanupJob:
       delay: {{ .Values.eventhubBackendDeploy.appConfig.storage.cleanupJob.delay }}
-    bucket:
-      name: {{ .Values.eventhubBackendDeploy.appConfig.minio.bucket }}
-      nonConfirmedExpiry: {{ .Values.eventhubBackendDeploy.appConfig.storage.bucket.nonConfirmedExpiry }}
-    user: {{ .Values.eventhubBackendDeploy.appConfig.minio.user }}
-    password: {{ .Values.eventhubBackendDeploy.appConfig.minio.password }}
-    hostPort: {{ .Values.eventhubBackendDeploy.appConfig.minio.hostPort }}
+    minio:
+      bucket:
+        name: {{ .Values.eventhubBackendDeploy.appConfig.storage.minio.bucket.name }}
+        nonConfirmedExpiry: {{ .Values.eventhubBackendDeploy.appConfig.storage.minio.bucket.nonConfirmedExpiry }}
+      user: {{ .Values.eventhubBackendDeploy.appConfig.storage.minio.user }}
+      password: {{ .Values.eventhubBackendDeploy.appConfig.storage.minio.password }}
+      url:
+        internal: {{ .Values.eventhubBackendDeploy.appConfig.storage.minio.url.internal }}
+        external: {{ .Values.eventhubBackendDeploy.appConfig.storage.minio.url.external }}
 
 springdoc:
   swagger-ui:

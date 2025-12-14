@@ -34,12 +34,9 @@ private val defaultPage = PageRequest.of(0, 20, sort)
 @Service
 class MinioStorageService(
     private val minioClient: MinioClient,
+    private val minioConfig: MinioConfig,
     private val s3ObjectMetadataRepository: S3objectMetadataRepository,
     private val objectMetadataMapper: ObjectMetadataMapper,
-    @param:Value("\${app.storage.bucket.name}")
-    private val bucket: String,
-    @param:Value("\${app.storage.bucket.nonConfirmedExpiry}")
-    private val expiry: Duration,
 ) {
     private val log by logger()
 
@@ -59,7 +56,7 @@ class MinioStorageService(
         StorageUtils.validateOrigin(request.originNames)
 
         val (ownerId, ownerType, fileNames) = request
-        val expiry = Instant.now().plus(expiry)
+        val expiry = Instant.now().plus(minioConfig.bucket.nonConfirmedExpiry)
         return fileNames.map {
             val id = UUID.randomUUID();
             val objectPath = StorageUtils.getFilePath(
@@ -69,7 +66,7 @@ class MinioStorageService(
                 id,
                 it,
                 objectPath,
-                bucket,
+                minioConfig.bucket.name,
                 getUploadUrl(objectPath),
             )
         }.map { urlInfo ->
@@ -233,7 +230,7 @@ class MinioStorageService(
 
             minioClient.removeObject(
                 RemoveObjectArgs.builder()
-                    .bucket(bucket)
+                    .bucket(minioConfig.bucket.name)
                     .`object`(objPath)
                     .build()
             )
@@ -255,13 +252,18 @@ class MinioStorageService(
             FileStatus.CONFIRMED, getObjectName(meta.origin, meta.id),
         )
         return try {
-            val source =
-                CopySource.builder().bucket(bucket).`object`(tmpObject).build()
+            val source = CopySource.builder()
+                .bucket(minioConfig.bucket.name)
+                .`object`(tmpObject)
+                .build()
 
-            val args =
-                CopyObjectArgs.builder().source(source).bucket(bucket).`object`(
+            val args = CopyObjectArgs.builder()
+                .source(source)
+                .bucket(minioConfig.bucket.name)
+                .`object`(
                     permObject
-                ).build()
+                )
+                .build()
 
             minioClient.copyObject(args)
             ObjectConfirm.ConfirmInfo(
@@ -274,7 +276,7 @@ class MinioStorageService(
         } finally {
             minioClient.removeObject(
                 RemoveObjectArgs.builder()
-                    .bucket(bucket)
+                    .bucket(minioConfig.bucket.name)
                     .`object`(tmpObject)
                     .build()
             )
@@ -292,9 +294,11 @@ class MinioStorageService(
         return minioClient.getPresignedObjectUrl(
             GetPresignedObjectUrlArgs.builder()
                 .method(Method.GET)
-                .bucket(bucket)
+                .bucket(minioConfig.bucket.name)
                 .`object`(`object`)
-                .expiry(expiry.toSeconds().toInt())
+                .expiry(
+                    minioConfig.bucket.nonConfirmedExpiry.toSeconds().toInt()
+                )
                 .build()
         )
     }
@@ -305,11 +309,13 @@ class MinioStorageService(
         return minioClient.getPresignedObjectUrl(
             GetPresignedObjectUrlArgs.builder()
                 .method(Method.PUT)
-                .bucket(bucket)
+                .bucket(minioConfig.bucket.name)
                 .`object`(`object`)
-                .expiry(expiry.toSeconds().toInt())
+                .expiry(
+                    minioConfig.bucket.nonConfirmedExpiry.toSeconds().toInt()
+                )
                 .build()
-        )
+        ).replaceFirst(minioConfig.url.internal, minioConfig.url.external)
     }
 
     private fun getObjectsListPage(page: Page?): Pageable {

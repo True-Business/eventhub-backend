@@ -1,24 +1,24 @@
 package ru.truebusiness.eventhub_backend.service.storage
 
-import io.minio.MinioClient
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
+import java.time.Duration
+import org.springframework.boot.context.properties.ConfigurationProperties
 
-@Configuration
-class MinioConfig {
-    @Bean
-    fun minioClient(
-        @Value("\${app.storage.user}")
-        user: String,
-        @Value("\${app.storage.password}")
-        password: String,
-        @Value("\${app.storage.hostPort}")
-        connectionUrl: String,
-    ): MinioClient {
-        return MinioClient.builder()
-            .endpoint(connectionUrl)
-            .credentials(user, password)
-            .build()
-    }
+@ConfigurationProperties(prefix = "app.storage.minio")
+data class MinioConfig(
+    val user: String,
+    val password: String,
+    val url: MinioUrl,
+    val bucket: Bucket,
+) {
+    data class MinioUrl(
+        val internal: String,
+        val external: String,
+    )
+
+    data class Bucket(
+        val name: String,
+        val nonConfirmedExpiry: Duration,
+    )
 }
+
+

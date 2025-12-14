@@ -43,12 +43,15 @@ app:
   storage:
     cleanupJob:
       delay: 60m
-    bucket:
-      name: eventhub
-      nonConfirmedExpiry: 15m
-    user: miniouser
-    password: miniopassword
-    hostPort: "http://localhost:9000"
+    minio:
+      bucket:
+        name: eventhub
+        nonConfirmedExpiry: 15m
+      user: miniouser
+      password: miniopassword
+      url:
+        internal: "http://localhost:9000"
+        external: "http://localhost:9000"
 
 management:
   endpoint:

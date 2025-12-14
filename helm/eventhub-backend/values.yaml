@@ -31,17 +31,18 @@ eventhubBackendDeploy:
         cron: "0 0 0 * * *"
         zone: "Europe/Moscow"
       confirmationCodeExpirationMinutes: 5
-    minio:
-      # This values must be set up in ci
-      user: "miniouser"
-      password: "miniopassword"
-      hostPort: "example-minio.com:9000"
-      bucket: "eventhub"
     storage:
       cleanupJob:
         delay: 60m
-      bucket:
-        nonConfirmedExpiry: 15m
+      minio:
+        bucket:
+          name: "eventhub" # This value must be set up in ci
+          nonConfirmedExpiry: 15m
+        user: "miniouser" # This value must be set up in ci
+        password: "miniopassword" # This value must be set up in ci
+        url:
+          internal: "internal"
+          external: "external"
 
   service:
     type: LoadBalancer

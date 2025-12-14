@@ -34,13 +34,15 @@ spec:
           - name: MAIL_APPLICATION_PASSWORD
             value: {{ .Values.eventhubBackendDeploy.appConfig.mail.password | quote }}
           - name: MINIO_USER
-            value: {{ .Values.eventhubBackendDeploy.appConfig.minio.user | quote }} 
+            value: {{ .Values.eventhubBackendDeploy.appConfig.storage.minio.user | quote }}
           - name: MINIO_PASSWORD
-            value: {{ .Values.eventhubBackendDeploy.appConfig.minio.password | quote }}
-          - name: MINIO_HOST_PORT
-            value: {{ .Values.eventhubBackendDeploy.appConfig.minio.hostPort | quote }}
+            value: {{ .Values.eventhubBackendDeploy.appConfig.storage.minio.password | quote }}
+          - name: MINIO_URL_INTERNAL
+            value: {{ .Values.eventhubBackendDeploy.appConfig.storage.minio.url.internal | quote }}
+          - name: MINIO_URL_EXTERNAL
+            value: {{ .Values.eventhubBackendDeploy.appConfig.storage.minio.url.external | quote }}
           - name: MINIO_BUCKET
-            value: {{ .Values.eventhubBackendDeploy.appConfig.minio.bucket | quote }}
+            value: {{ .Values.eventhubBackendDeploy.appConfig.storage.minio.bucket | quote }}
           imagePullPolicy: IfNotPresent
           ports:
             - name: http

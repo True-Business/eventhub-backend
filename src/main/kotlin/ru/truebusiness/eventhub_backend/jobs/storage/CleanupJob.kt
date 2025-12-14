@@ -1,6 +1,5 @@
 package ru.truebusiness.eventhub_backend.jobs.storage
 
-import java.util.concurrent.TimeUnit
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import ru.truebusiness.eventhub_backend.service.storage.MinioStorageService
