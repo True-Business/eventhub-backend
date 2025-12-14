@@ -25,5 +25,5 @@ interface UserCredentialsRepository : JpaRepository<UserCredentials, UUID> {
 @Repository
 interface ConfirmationCodeRepository : JpaRepository<ConfirmationCode, UUID> {
     fun findByCode(code: String): ConfirmationCode?
-    fun deleteByExpiresAtBefore(expiresAt: Instant): Int
+    fun deleteByExpiresAtBefore(expiresAt: Instant): Long
 }
