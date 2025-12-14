@@ -45,7 +45,7 @@ jobs:
             tags: ${{ steps.meta.outputs.tags }}
             labels: ${{ steps.meta.outputs.labels }}
             secrets: |
-              "minio_cert=${{ secrets.MINIO_PUBLIC_CERT }}"
+              minio_cert=${{ secrets.MINIO_PUBLIC_CERT }}
 
         - name: Save image version to file
           run: echo ${{ steps.meta.outputs.version }} > image-version.txt
