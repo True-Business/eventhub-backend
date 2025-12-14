@@ -18,6 +18,13 @@ jobs:
           run: |
             printf '%b' "${{ secrets.MINIO_PUBLIC_CERT }}" > minio.crt
 
+        - name: list files and show minio.crt
+          run: |
+            pwd
+            ls -la
+            echo "minio.crt content:"
+            cat minio.crt
+
         - name: Debug minio.crt
           run: |
             ls -l minio.crt
