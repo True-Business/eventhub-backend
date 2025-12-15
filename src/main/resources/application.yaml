@@ -46,7 +46,8 @@ app:
     minio:
       bucket:
         name: eventhub
-        nonConfirmedExpiry: 15m
+        uploadUrlConfirmExpiry: 15m
+        downloadUrlExpiry: 5m
       user: miniouser
       password: miniopassword
       url:

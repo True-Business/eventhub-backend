@@ -35,7 +35,25 @@
         </createTable>
         <addUniqueConstraint
                 tableName="object_meta"
-                columnNames="origin, bucket, owner_id, owner_type"
+                columnNames="owner_id, owner_type, origin"
+                constraintName="uk_object_meta_origin_bucket_owner"/>
+    </changeSet>
+
+    <changeSet id="add-uk-object-meta-owner-origin" author="Denis Zhdanov">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="object_meta"/>
+                <not>
+                    <uniqueConstraintExists
+                            tableName="object_meta"
+                            constraintName="uk_object_meta_origin_bucket_owner"/>
+                </not>
+            </and>
+        </preConditions>
+
+        <addUniqueConstraint
+                tableName="object_meta"
+                columnNames="owner_id, owner_type, origin"
                 constraintName="uk_object_meta_origin_bucket_owner"/>
     </changeSet>
 

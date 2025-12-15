@@ -12,7 +12,6 @@ import java.time.Duration
 import java.time.Instant
 import java.util.UUID
 import kotlin.getValue
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -33,7 +32,8 @@ private val sort = Sort.by("confirmedAt").descending()
 private val defaultPage = PageRequest.of(0, 20, sort)
 @Service
 class MinioStorageService(
-    private val minioClient: MinioClient,
+    private val minioExternalClient: MinioClient,
+    private val minioInternalClient: MinioClient,
     private val minioConfig: MinioConfig,
     private val s3ObjectMetadataRepository: S3objectMetadataRepository,
     private val objectMetadataMapper: ObjectMetadataMapper,
@@ -55,36 +55,38 @@ class MinioStorageService(
     fun genUploadUrls(request: ObjectUpload.Request): ObjectUpload.Response {
         StorageUtils.validateOrigin(request.originNames)
 
-        val (ownerId, ownerType, fileNames) = request
-        val expiry = Instant.now().plus(minioConfig.bucket.nonConfirmedExpiry)
-        return fileNames.map {
-            val id = UUID.randomUUID();
-            val objectPath = StorageUtils.getFilePath(
-                initialFileStatus, getObjectName(it, id)
-            )
-            PresignedUrlInfo(
-                id,
-                it,
-                objectPath,
-                minioConfig.bucket.name,
-                getUploadUrl(objectPath),
-            )
-        }.map { urlInfo ->
-            S3ObjectMetadata(
-                id = urlInfo.id,
-                origin = urlInfo.origin,
-                bucket = urlInfo.bucket,
-                ownerId = ownerId,
-                ownerType = ownerType,
-                status = initialFileStatus,
-                expiry = expiry,
-                url = urlInfo.url
-            )
+        val (ownerId, ownerType, origins) = request
+        val existed = s3ObjectMetadataRepository.findAllByOwnerIdAndOwnerType(
+            request.ownerId, request.ownerType, Pageable.unpaged()
+        ).associateBy { it.origin }
+        val commonExpiry =
+            Instant.now().plus(minioConfig.bucket.uploadUrlConfirmExpiry)
+
+        return origins.map { origin ->
+            val existed = existed[origin]
+            val id = existed?.id ?: UUID.randomUUID()
+            if (existed?.status == FileStatus.CONFIRMED) {
+                Triple(FileStatus.CONFIRMED, null, null)
+            } else {
+                StorageUtils.getFilePath(
+                    initialFileStatus, getObjectName(origin, id)
+                ).let {
+                    getUploadUrl(it, minioConfig.bucket.uploadUrlConfirmExpiry)
+                }.let {
+                    Triple(FileStatus.PENDING, commonExpiry, it)
+                }
+            }.let { (status, expiry, url) ->
+                S3ObjectMetadata(
+                    id = id, origin = origin, bucket = minioConfig.bucket.name,
+                    ownerId = ownerId, ownerType = ownerType, status = status,
+                    expiry = expiry, url = url
+                )
+            }
         }.also(
             s3ObjectMetadataRepository::saveAll
         ).map(
             objectMetadataMapper::s3ObjectMetadata2UrlInfo
-        ).let{
+        ).let {
             ObjectUpload.Response(it)
         }
     }
@@ -157,22 +159,32 @@ class MinioStorageService(
     fun genDownloadUrls(req: ObjectDownload.Request): ObjectDownload.Response {
         val metas = s3ObjectMetadataRepository.findAllById(req.ids)
         val metasById = metas.associateBy { it.id }
-        val urls = metas.map {
-            metasById[it.id]?.let { meta ->
-                when (meta.status) {
+        val urls = metas.map { meta ->
+            metasById[meta.id]?.let { existedMeta ->
+                when (existedMeta.status) {
                     FileStatus.CONFIRMED -> {
                         val objPath = StorageUtils.getFilePath(
-                            it.status, getObjectName(it.origin, it.id)
+                            existedMeta.status,
+                            getObjectName(meta.origin, meta.id)
                         )
-                        ObjectDownload.UrlInfo(it.id, getDownloadUrl(objPath))
+                        ObjectDownload.Meta(
+                            getDownloadUrl(
+                                objPath,
+                                minioConfig.bucket.uploadUrlConfirmExpiry
+                            ), existedMeta.confirmedAt ?: Instant.MIN
+                        ).let { urlMeta ->
+                            ObjectDownload.UrlInfo(
+                                existedMeta.id, urlMeta
+                            )
+                        }
                     }
 
                     else                 -> ObjectDownload.UrlInfo(
-                        it.id, null
+                        existedMeta.id, null
                     )
                 }
             } ?: ObjectDownload.UrlInfo(
-                it.id, null
+                meta.id, null
             )
         }
         return ObjectDownload.Response(urls)
@@ -228,7 +240,7 @@ class MinioStorageService(
                 FileStatus.CONFIRMED, getObjectName(it.origin, it.id)
             )
 
-            minioClient.removeObject(
+            minioInternalClient.removeObject(
                 RemoveObjectArgs.builder()
                     .bucket(minioConfig.bucket.name)
                     .`object`(objPath)
@@ -265,7 +277,7 @@ class MinioStorageService(
                 )
                 .build()
 
-            minioClient.copyObject(args)
+            minioInternalClient.copyObject(args)
             ObjectConfirm.ConfirmInfo(
                 meta.id, ObjectConfirm.FileConfirm.UPLOADED
             )
@@ -274,7 +286,7 @@ class MinioStorageService(
                 meta.id, ObjectConfirm.FileConfirm.NOT_FOUND
             )
         } finally {
-            minioClient.removeObject(
+            minioInternalClient.removeObject(
                 RemoveObjectArgs.builder()
                     .bucket(minioConfig.bucket.name)
                     .`object`(tmpObject)
@@ -286,36 +298,36 @@ class MinioStorageService(
     private fun getObjectName(objectName: String, uuid: UUID): String {
         return "${uuid}_${objectName}"
     }
+
     private fun getObjectName(objectName: String): String {
         return getObjectName(objectName, UUID.randomUUID())
     }
 
-    private fun getDownloadUrl(`object`: String): String {
-        return minioClient.getPresignedObjectUrl(
+    private fun getDownloadUrl(`object`: String, expiry: Duration): String {
+        return minioExternalClient.getPresignedObjectUrl(
             GetPresignedObjectUrlArgs.builder()
                 .method(Method.GET)
                 .bucket(minioConfig.bucket.name)
                 .`object`(`object`)
                 .expiry(
-                    minioConfig.bucket.nonConfirmedExpiry.toSeconds().toInt()
+                    expiry.toSeconds().toInt()
                 )
                 .build()
         )
     }
 
     private fun getUploadUrl(
-        `object`: String
+        `object`: String, urlExpiry: Duration
+
     ): String {
-        return minioClient.getPresignedObjectUrl(
+        return minioExternalClient.getPresignedObjectUrl(
             GetPresignedObjectUrlArgs.builder()
                 .method(Method.PUT)
                 .bucket(minioConfig.bucket.name)
                 .`object`(`object`)
-                .expiry(
-                    minioConfig.bucket.nonConfirmedExpiry.toSeconds().toInt()
-                )
+                .expiry(urlExpiry.toSeconds().toInt())
                 .build()
-        ).replaceFirst(minioConfig.url.internal, minioConfig.url.external)
+        )
     }
 
     private fun getObjectsListPage(page: Page?): Pageable {
@@ -324,12 +336,4 @@ class MinioStorageService(
         }
         return PageRequest.of(page.current, page.size, sort)
     }
-
-    private data class PresignedUrlInfo(
-        val id: UUID,
-        val origin: String,
-        val `object`: String,
-        val bucket: String,
-        var url: String,
-    )
 }

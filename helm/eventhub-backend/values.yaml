@@ -35,11 +35,13 @@ eventhubBackendDeploy:
       cleanupJob:
         delay: 60m
       minio:
+        # This values must be set up in ci
         bucket:
-          name: "eventhub" # This value must be set up in ci
-          nonConfirmedExpiry: 15m
-        user: "miniouser" # This value must be set up in ci
-        password: "miniopassword" # This value must be set up in ci
+          name: "eventhub"
+          uploadUrlConfirmExpiry: 15m
+          downloadUrlExpiry: 5m
+        user: "miniouser"
+        password: "miniopassword"
         url:
           internal: "internal"
           external: "external"

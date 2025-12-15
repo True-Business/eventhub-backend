@@ -40,7 +40,8 @@ app:
     minio:
       bucket:
         name: {{ .Values.eventhubBackendDeploy.appConfig.storage.minio.bucket.name }}
-        nonConfirmedExpiry: {{ .Values.eventhubBackendDeploy.appConfig.storage.minio.bucket.nonConfirmedExpiry }}
+        uploadUrlConfirmExpiry: {{ .Values.eventhubBackendDeploy.appConfig.storage.minio.bucket.uploadUrlConfirmExpiry }}
+        downloadUrlExpiry: {{ .Values.eventhubBackendDeploy.appConfig.storage.minio.bucket.downloadUrlExpiry }}
       user: {{ .Values.eventhubBackendDeploy.appConfig.storage.minio.user }}
       password: {{ .Values.eventhubBackendDeploy.appConfig.storage.minio.password }}
       url:

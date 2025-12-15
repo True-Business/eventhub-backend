@@ -33,7 +33,6 @@ object StorageUtils {
         }
     }
 
-
     fun validateMetasOwner(
         meta: List<S3ObjectMetadata>,
         ownerId: UUID,

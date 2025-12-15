@@ -23,7 +23,7 @@ class StorageController(
         return minioStorageService.genUploadUrls(request)
     }
 
-    @PostMapping("/confirm")
+    @PostMapping("/confirmed")
     fun confirmUpload(
         @RequestBody
         request: ObjectConfirm.Request
@@ -31,7 +31,7 @@ class StorageController(
         return minioStorageService.confirmUpload(request)
     }
 
-    @PostMapping("/confirm/list")
+    @PostMapping("/confirmed/list")
     fun listConfirmed(
         @RequestBody
         request: ObjectsList.Request
@@ -39,7 +39,7 @@ class StorageController(
         return minioStorageService.listObjects(request);
     }
 
-    @PostMapping("/confirm/urls")
+    @PostMapping("/confirmed/urls")
     fun getDownloadUrls(
         @RequestBody
         request: ObjectDownload.Request

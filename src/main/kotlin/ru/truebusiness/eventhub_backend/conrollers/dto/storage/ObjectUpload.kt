@@ -16,6 +16,6 @@ object ObjectUpload {
     data class UrlInfo(
         val origin: String,
         val id: UUID,
-        val url: String,
+        val url: String?,
     )
 }

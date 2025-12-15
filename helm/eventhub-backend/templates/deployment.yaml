@@ -41,8 +41,8 @@ spec:
             value: {{ .Values.eventhubBackendDeploy.appConfig.storage.minio.url.internal | quote }}
           - name: MINIO_URL_EXTERNAL
             value: {{ .Values.eventhubBackendDeploy.appConfig.storage.minio.url.external | quote }}
-          - name: MINIO_BUCKET
-            value: {{ .Values.eventhubBackendDeploy.appConfig.storage.minio.bucket | quote }}
+          - name: MINIO_BUCKET_NAME
+            value: {{ .Values.eventhubBackendDeploy.appConfig.storage.minio.bucket.name | quote }}
           imagePullPolicy: IfNotPresent
           ports:
             - name: http

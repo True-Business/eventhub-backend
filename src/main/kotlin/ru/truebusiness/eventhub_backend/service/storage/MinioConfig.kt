@@ -17,7 +17,8 @@ data class MinioConfig(
 
     data class Bucket(
         val name: String,
-        val nonConfirmedExpiry: Duration,
+        val uploadUrlConfirmExpiry: Duration,
+        val downloadUrlExpiry: Duration,
     )
 }
 
