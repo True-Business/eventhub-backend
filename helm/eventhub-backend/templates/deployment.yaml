@@ -15,6 +15,10 @@ spec:
       labels:
         {{- include "eventhub-backend.labels" . | nindent 8 }}
     spec:
+      hostAliases:
+        - ip: "192.168.100.100"
+          hostnames:
+            - "eventhub-backend.ru"
       containers:
         - name: {{ .Chart.Name }}
           {{- with .Values.eventhubBackendDeploy.container.securityContext }}
