@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import ru.truebusiness.eventhub_backend.conrollers.dto.ErrorResponseDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.UserDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.events.EventDto
 import ru.truebusiness.eventhub_backend.conrollers.dto.users.ForgotPasswordRequest
 import ru.truebusiness.eventhub_backend.conrollers.dto.users.ConfirmForgotPasswordRequest
 import ru.truebusiness.eventhub_backend.conrollers.dto.users.RegistrationResponseDto
@@ -285,4 +287,70 @@ interface RegistrationController {
         @org.springframework.web.bind.annotation.RequestBody      
         request: ConfirmForgotPasswordRequest
     ): ResponseEntity<Void>
+
+    @PostMapping("/login")
+    @Operation(
+        summary = "Проверка реквизитов пользователя",
+        responses = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Успешная проверка",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = UserDto::class)
+                )]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Неверные реквизиты",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = ErrorResponseDto::class),
+                    examples = [
+                        ExampleObject(
+                            name = "Неверные реквизиты",
+                            value = """{
+                                "code": 401,
+                                "message": "Invalid credentials"
+                            }"""
+                        )
+                    ]
+                )]
+            ),
+        ApiResponse(
+            responseCode = "404",
+            description = "Пользователь не найден",
+            content = [Content(
+                mediaType = "application/json",
+                schema = Schema(implementation = ErrorResponseDto::class),
+                examples = [
+                    ExampleObject(
+                        name = "Пользователь не найден",
+                        value = """{
+                                "code": 404,
+                                "message": "User with email: user@example.com not found"
+                            }"""
+                    )
+                ]
+            )]
+        )]
+    )
+    fun login(
+        @RequestBody(
+            description = "Данные для входа",
+            required = true,
+            content = [Content(
+                mediaType = "application/json",
+                schema = Schema(implementation = UserCredentialsRegistrationDto::class),
+                examples = [ExampleObject(
+                    name = "Пример запроса",
+                    value = """{
+                        "email": "user@example.com",
+                        "password": "secure_password123"
+                    }""",
+                )]
+            )]
+        )
+        @org.springframework.web.bind.annotation.RequestBody
+        credentials: UserCredentialsRegistrationDto): ResponseEntity<UserDto>
 }

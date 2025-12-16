@@ -5,10 +5,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import ru.truebusiness.eventhub_backend.conrollers.dto.ErrorResponseDto
-import ru.truebusiness.eventhub_backend.exceptions.users.InvalidConfirmationCode
-import ru.truebusiness.eventhub_backend.exceptions.users.OrganizationCreatorException
-import ru.truebusiness.eventhub_backend.exceptions.users.UserAlreadyExistsException
-import ru.truebusiness.eventhub_backend.exceptions.users.UserNotFoundException
+import ru.truebusiness.eventhub_backend.exceptions.users.*
 
 @RestControllerAdvice
 class UsersExceptionHandler {
@@ -45,6 +42,15 @@ class UsersExceptionHandler {
     fun handleOrganizationCreatorError(ex: OrganizationCreatorException): ErrorResponseDto {
         return ErrorResponseDto(
             code = HttpStatus.CONFLICT.value(),
+            message = ex.message
+        )
+    }
+
+    @ExceptionHandler(CredentialsException::class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    fun handleInvalidCredentialsException(ex: CredentialsException): ErrorResponseDto {
+        return ErrorResponseDto(
+            code = HttpStatus.UNAUTHORIZED.value(),
             message = ex.message
         )
     }
