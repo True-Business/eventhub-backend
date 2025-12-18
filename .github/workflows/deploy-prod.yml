@@ -13,7 +13,9 @@ jobs:
         permissions:
             contents: read
             packages: write
-        uses: ./.github/workflows/build-and-push-docker-image.yml 
+        uses: ./.github/workflows/build-and-push-docker-image.yml
+        secrets:
+          minioCrt: ${{ secrets.MINIO_PUBLIC_CERT }}
 
     deploy-to-prod:
         needs: build-docker-image-for-prod
@@ -27,6 +29,6 @@ jobs:
             userPassword: ${{ secrets.PROD_USER_PASSWORD }}
             mailPassword: ${{ secrets.MAIL_APPLICATION_PASSWORD }}
             minioUser: ${{ secrets.MINIO_USER }}
-            minioPassword: ${{ secrets.MINIO_PASSWORD }}
-            minioHostPort: ${{ secrets.MINIO_HOST_PORT }}
-            minioBucket: ${{ secrets.PROD_MINIO_BUCKET }}
+            minioPassword: ${{ secrets.MINIO_PROD_URL_INTERNAL }}
+            minioHostPort: ${{ secrets.MINIO_PROD_URL_EXTERNAL }}
+            minioBucket: ${{ secrets.MINIO_PROD_BUCKET_NAME }}
