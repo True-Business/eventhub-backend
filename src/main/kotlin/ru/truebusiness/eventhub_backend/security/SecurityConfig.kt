@@ -23,7 +23,7 @@ class SecurityConfig(
         }
 
         User.builder()
-            .username(credentials.id.toString())
+            .username(credentials.user.id.toString())
             .password(credentials.password)
             .roles("USER")
             .build()

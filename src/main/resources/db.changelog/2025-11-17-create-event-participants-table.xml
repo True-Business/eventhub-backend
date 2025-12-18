@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.30.xsd">
+
+    <changeSet id="add_event_participants_table" author="m.potapov">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="event_participants"/>
+            </not>
+        </preConditions>
+        <comment>Created the event_participants table.</comment>
+        <createTable tableName="event_participants">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="user_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="event_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="registered_at" type="TIMESTAMPTZ">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint tableName="event_participants" columnNames="user_id, event_id" />
+
+        <addForeignKeyConstraint baseTableName="event_participants"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_event_participants_users"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint baseTableName="event_participants"
+                                 baseColumnNames="event_id"
+                                 constraintName="fk_event_participants_events"
+                                 referencedTableName="events"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -2,6 +2,7 @@ package ru.truebusiness.eventhub_backend.conrollers.events
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.ExampleObject
 import io.swagger.v3.oas.annotations.media.Schema
@@ -15,11 +16,12 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import ru.truebusiness.eventhub_backend.conrollers.dto.ErrorResponseDto
-import ru.truebusiness.eventhub_backend.conrollers.dto.events.CreateEventRequestDto
-import ru.truebusiness.eventhub_backend.conrollers.dto.events.EventDto
-import ru.truebusiness.eventhub_backend.conrollers.dto.events.UpdateEventRequestDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.EventSearchFilter
+import ru.truebusiness.eventhub_backend.conrollers.dto.UserDto
+import ru.truebusiness.eventhub_backend.conrollers.dto.events.*
 
 @RestController
 @RequestMapping("/api/v1/event")
@@ -50,7 +52,7 @@ interface EventController {
                                 "updatedAt": "2023-10-05T12:34:56.789Z",
                                 "organizerId": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
                                 "organizationId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-                                "category": "TECHNOLOGY",
+                                "category": "PLACEHOLDER",
                                 "address": "ул. Ленина, д. 15, Москва",
                                 "route": "Вход со двора, подъезд 3",
                                 "description": "Ежегодная конференция разработчиков на Kotlin",
@@ -83,7 +85,7 @@ interface EventController {
                             "endDateTime": "2025-04-05T17:00:00",
                             "organizerId": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
                             "organizationId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-                            "category": "TECHNOLOGY",
+                            "category": "PLACEHOLDER",
                             "address": "ул. Ленина, д. 15, Москва",
                             "route": "Вход со двора, подъезд 3",
                             "description": "Ежегодная конференция разработчиков на Kotlin",
@@ -157,12 +159,12 @@ interface EventController {
                             value = """{
                                 "id": "550e8400-e29b-41d4-a716-446655440000",
                                 "name": "Конференция по Kotlin 2025",
-                                "startDateTime": "2025-04-05T10:00:00",
-                                "endDateTime": "2025-04-05T18:00:00",
+                                "startDateTime": "2025-04-05T10:00:00Z",
+                                "endDateTime": "2025-04-05T18:00:00Z",
                                 "updatedAt": "2023-10-06T09:15:00Z",
                                 "organizerId": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
                                 "organizationId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-                                "category": "TECHNOLOGY",
+                                "category": "PLACEHOLDER",
                                 "address": "ул. Тверская, д. 10, Москва",
                                 "route": "Метро Охотный ряд, выход 3",
                                 "description": "Обновленное описание конференции",
@@ -229,10 +231,239 @@ interface EventController {
     ): ResponseEntity<EventDto>
 
     @GetMapping("/{eventID}")
-    fun getById(
-        @PathVariable eventID: UUID,
-    ): ResponseEntity<EventDto>
+    fun getById(@PathVariable eventID: UUID): ResponseEntity<EventDto>
 
     @DeleteMapping("/{eventID}/draft")
     fun deleteDraft(@PathVariable eventID: UUID)
+
+    @PostMapping("/search")
+    fun search(@RequestBody eventSearchFilter: EventSearchFilter): ResponseEntity<List<EventDto>>
+
+    @PostMapping("/{eventID}/register")
+    @Operation(
+        summary = "Регистрация на мероприятие",
+        description = "ID пользователя определяется через аутентификационный токен.",
+        parameters = [
+            Parameter(
+                name = "eventID",
+                description = "UUID мероприятия для регистрации",
+                required = true,
+                example = "550e8400-e29b-41d4-a716-446655440000",
+                schema = Schema(
+                    type = "string",
+                    format = "uuid",
+                    example = "550e8400-e29b-41d4-a716-446655440000"
+                )
+            ),
+            Parameter(
+                name = "userID",
+                description = "UUID пользователя",
+                required = true,
+                example = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+                schema = Schema(
+                    type = "string",
+                    format = "uuid",
+                    example = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+                )
+            )
+        ],
+        responses = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Пользователь успешно зарегистрирован",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = EventParticipantDto::class),
+                    examples = [
+                        ExampleObject(
+                            name = "Данные регистрации",
+                            value = """{
+                                "id": "ca7ef39b-01da-1982-1j90-0a3190bba54c",
+                                "userId": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+                                "eventId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                                "registeredAt": "2025-04-01T23:59:59Z"
+                            }"""
+                        )
+                    ]
+                )]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Регистрация недоступна или пользователь уже зарегистрирван",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = ErrorResponseDto::class),
+                    examples = [
+                        ExampleObject(
+                            name = "Мероприятие недоступно",
+                            value = """{
+                                "code": 400,
+                                "message": "Event '550e8400-e29b-41d4-a716-446655440000' is not available"
+                            }"""
+                        ),
+                        ExampleObject(
+                            name = "Регистрация на мероприятие завершилась",
+                            value = """{
+                                "code": 400,
+                                "message": "Registration to event '550e8400-e29b-41d4-a716-446655440000' ended"
+                            }"""
+                        ),
+                        ExampleObject(
+                            name = "Нет мест для регистрации",
+                            value = """{
+                                "code": 400,
+                                "message": "Reached participants limit on event '550e8400-e29b-41d4-a716-446655440000'"
+                            }"""
+                        ),
+                        ExampleObject(
+                            name = "Пользователь уже зарегистрирван",
+                            value = """{
+                                "code": 400,
+                                "message": "User 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11' is already registered to event '550e8400-e29b-41d4-a716-446655440000'"
+                            }"""
+                        )
+                    ]
+                )]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Мероприятие или пользователь не найдены",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = ErrorResponseDto::class),
+                    examples = [
+                        ExampleObject(
+                            name = "Мероприятие не найдено",
+                            value = """{
+                                "code": 404,
+                                "message": "Event with id '550e8400-e29b-41d4-a716-446655440000' doesn't exist!"
+                            }"""
+                        ),
+                        ExampleObject(
+                            name = "Пользователь не найден",
+                            value = """{
+                                "code": 404,
+                                "message": "User with id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11' not found"
+                            }"""
+                        )
+                    ]
+                )]
+            )
+        ]
+    )
+    fun registerToEvent(@PathVariable eventID: UUID, @RequestParam userID: UUID):
+            ResponseEntity<EventParticipantDto>
+
+    @DeleteMapping("/{eventID}/register")
+    @Operation(
+        summary = "Отписка от участия в мероприятии",
+        description = "ID пользователя определяется через аутентификационный токен.",
+        parameters = [
+            Parameter(
+                name = "eventID",
+                description = "UUID мероприятия для отписки",
+                required = true,
+                example = "550e8400-e29b-41d4-a716-446655440000",
+                schema = Schema(
+                    type = "string",
+                    format = "uuid",
+                    example = "550e8400-e29b-41d4-a716-446655440000"
+                )
+            )
+        ],
+        responses = [
+            ApiResponse(
+                responseCode = "204",
+                description = "Пользователь успешно отписался",
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Мероприятие недоступно или пользователь не был зарегистрирван на это мероприятие",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = ErrorResponseDto::class),
+                    examples = [
+                        ExampleObject(
+                            name = "Мероприятие недоступно",
+                            value = """{
+                                "code": 400,
+                                "message": "Event '550e8400-e29b-41d4-a716-446655440000' is not available"
+                            }"""
+                        ),
+                        ExampleObject(
+                            name = "Пользователь не был зарегистрирван на это мероприятие",
+                            value = """{
+                                "code": 400,
+                                "message": "User 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11' is not registered to event '550e8400-e29b-41d4-a716-446655440000'"
+                            }"""
+                        )
+                    ]
+                )]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Мероприятие не найдено",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = ErrorResponseDto::class),
+                    examples = [
+                        ExampleObject(
+                            name = "Мероприятие не найдено",
+                            value = """{
+                                "code": 404,
+                                "message": "Event with id '550e8400-e29b-41d4-a716-446655440000' doesn't exist!"
+                            }"""
+                        )
+                    ]
+                )]
+            )
+        ]
+    )
+    fun unregisterFromEvent(@PathVariable eventID: UUID): ResponseEntity<Void>
+
+    @GetMapping("/{eventID}/participants")
+    @Operation(
+        summary = "Получение участников мероприятия",
+        parameters = [
+            Parameter(
+                name = "eventID",
+                description = "UUID мероприятия",
+                required = true,
+                example = "550e8400-e29b-41d4-a716-446655440000",
+                schema = Schema(
+                    type = "string",
+                    format = "uuid",
+                    example = "550e8400-e29b-41d4-a716-446655440000"
+                )
+            )
+        ],
+        responses = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Успешно",
+                content = [Content(
+                    mediaType = "application/json",
+                    array = ArraySchema(schema = Schema(implementation = UserDto::class))
+                )]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Мероприятие не найдено",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = ErrorResponseDto::class),
+                    examples = [
+                        ExampleObject(
+                            name = "Мероприятие не найдено",
+                            value = """{
+                                "code": 404,
+                                "message": "Event with id '550e8400-e29b-41d4-a716-446655440000' doesn't exist!"
+                            }"""
+                        )
+                    ]
+                )]
+            )
+        ]
+    )
+    fun getParticipants(@PathVariable eventID: UUID): ResponseEntity<List<UserDto>>
 }

@@ -4,6 +4,7 @@ import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
+import jakarta.persistence.ManyToMany
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
 import java.time.Instant
@@ -26,5 +27,11 @@ class User(
     var isConfirmed: Boolean?,
 
     @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL])
-    var credentials: UserCredentials?
+    var credentials: UserCredentials?,
+
+    @ManyToMany(mappedBy = "admins")
+    var administratedOrganizations: MutableList<Organization> = mutableListOf(),
+    
+    @ManyToMany(mappedBy = "participants")
+    var events: MutableList<Event> = mutableListOf()
 )

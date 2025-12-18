@@ -6,7 +6,7 @@ import java.util.UUID
 import ru.truebusiness.eventhub_backend.repository.entity.EventCategory
 import ru.truebusiness.eventhub_backend.repository.entity.EventStatus
 
-data class EventDto(
+class EventDto(
     @param:Schema(
         description = "ID события",
         example = "f47ac10b-58cc-4372-a567-0e02b2c3d479",
@@ -91,7 +91,7 @@ data class EventDto(
     @param:Schema(
         description = "Открытое ли событие",
         example = "true",
-    )
+    ) // почему то не проставляется в маппере
     val isOpen: Boolean,
 
     @param:Schema(

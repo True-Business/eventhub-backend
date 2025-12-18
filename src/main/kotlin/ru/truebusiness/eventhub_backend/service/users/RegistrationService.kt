@@ -9,9 +9,11 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import ru.truebusiness.eventhub_backend.conrollers.dto.users.RegistrationResponseDto
 import ru.truebusiness.eventhub_backend.exceptions.users.InvalidConfirmationCode
+import ru.truebusiness.eventhub_backend.exceptions.users.CredentialsException
 import ru.truebusiness.eventhub_backend.exceptions.users.UserAlreadyExistsException
 import ru.truebusiness.eventhub_backend.exceptions.users.UserNotFoundException
 import ru.truebusiness.eventhub_backend.logger
+import ru.truebusiness.eventhub_backend.mapper.UserMapper
 import ru.truebusiness.eventhub_backend.repository.ConfirmationCodeRepository
 import ru.truebusiness.eventhub_backend.repository.UserCredentialsRepository
 import ru.truebusiness.eventhub_backend.repository.UserRepository
@@ -19,12 +21,14 @@ import ru.truebusiness.eventhub_backend.repository.entity.ConfirmationCode
 import ru.truebusiness.eventhub_backend.repository.entity.User
 import ru.truebusiness.eventhub_backend.repository.entity.UserCredentials
 import ru.truebusiness.eventhub_backend.service.EmailService
+import ru.truebusiness.eventhub_backend.service.model.UserModel
 
 @Service
 class RegistrationService(
     private val userRepository: UserRepository,
     private val userCredentialsRepository: UserCredentialsRepository,
     private val confirmationCodeRepository: ConfirmationCodeRepository,
+    private val userMapper: UserMapper,
     private val passwordEncoder: PasswordEncoder,
     private val emailService: EmailService,
     @param:Value("\${app.registration.confirmationCodeExpiration}")
@@ -177,4 +181,47 @@ class RegistrationService(
     private fun calculateConfirmationCodeExpirationTime() = Instant.now().plus(
         confirmationCodeExpirationMinutes
     )
+
+    fun forgotPassword(email: String) {
+        val userCredentials = userCredentialsRepository.findByEmail(email)
+        if (userCredentials == null) {
+            throw UserNotFoundException.withEmail(email)
+        }
+
+        val res = createConfirmationCode(userCredentials.user.id)
+
+        emailService.sendConfirmationCode(res.first, res.second)
+    }
+    
+    @Transactional
+    fun confirmForgotPassword(code: String, password: String) {
+        val savedCode = confirmationCodeRepository.findByCode(code) ?: run {
+            throw InvalidConfirmationCode.invalid(code)
+        }
+        if (Instant.now().isAfter(savedCode.expiresAt)) {
+            throw InvalidConfirmationCode.expired(code)
+        }
+
+        log.debug("Confirmation code {} found", savedCode)
+        confirmationCodeRepository.delete(savedCode)
+
+        val userCredentials = savedCode.user.credentials
+        if (userCredentials == null) {
+            throw RuntimeException("failed to fetch user credentials")
+        }
+
+        userCredentials.password = passwordEncoder.encode(password)
+
+        userCredentialsRepository.save<UserCredentials>(userCredentials)
+    }
+
+    fun login(email: String, password: String): UserModel {
+        val userCredentials = userCredentialsRepository.findByEmail(email)
+            ?: throw UserNotFoundException.withEmail(email)
+        if (!passwordEncoder.matches(password, userCredentials.password)) {
+            throw CredentialsException.invalid()
+        }
+
+        return userMapper.userEntityToUserModel(userCredentials.user)
+    }
 }

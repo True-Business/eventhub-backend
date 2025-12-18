@@ -7,22 +7,34 @@ import org.springframework.stereotype.Service
 import ru.truebusiness.eventhub_backend.exceptions.events.EventNotDraftException
 import ru.truebusiness.eventhub_backend.exceptions.events.EventNotFoundException
 import ru.truebusiness.eventhub_backend.exceptions.organization.WrongOrganizerException
+import ru.truebusiness.eventhub_backend.conrollers.dto.EventSearchFilter
+import ru.truebusiness.eventhub_backend.exceptions.NotImplementedException
+import ru.truebusiness.eventhub_backend.exceptions.events.RegistrationException
+import ru.truebusiness.eventhub_backend.exceptions.users.UserNotFoundException
 import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.mapper.EventMapper
+import ru.truebusiness.eventhub_backend.mapper.UserMapper
+import ru.truebusiness.eventhub_backend.repository.EventParticipantRepository
 import ru.truebusiness.eventhub_backend.repository.EventRepository
+import ru.truebusiness.eventhub_backend.repository.UserRepository
 import ru.truebusiness.eventhub_backend.repository.entity.Event
+import ru.truebusiness.eventhub_backend.repository.entity.EventParticipant
 import ru.truebusiness.eventhub_backend.repository.entity.EventStatus
-import ru.truebusiness.eventhub_backend.service.model.EventModel
+import ru.truebusiness.eventhub_backend.service.model.*
+import java.time.Instant
 
 @Service
 class EventService(
     private val eventRepository: EventRepository,
+    private val eventParticipantRepository: EventParticipantRepository,
+    private val userRepository: UserRepository,
     private val eventMapper: EventMapper,
+    private val userMapper: UserMapper,
 ) {
     private val log by logger()
 
     @Transactional
-    fun create(eventModel: EventModel): EventModel {
+    fun create(eventModel: CreateEventModel): EventModel {
         log.info("Creating new event: {}", eventModel.name)
 
         val event: Event = eventMapper.eventModelToEventEntity(eventModel)
@@ -83,5 +95,79 @@ class EventService(
         eventRepository.deleteById(eventID)
 
         log.info("Event {} deleted successfully!", eventID)
+    }
+
+    fun search(eventSearchFilter: EventSearchFilter): List<EventModel> {
+        log.info("Search events")
+        log.info("isopen: {}", eventSearchFilter.isOpen)
+
+        if (eventSearchFilter.isParticipant != null) {
+            throw NotImplementedException("isParticipant not implemented", null)
+        }
+
+        val events = eventRepository.findByFilter(
+            eventSearchFilter.city, eventSearchFilter.minPrice, eventSearchFilter.maxPrice,
+            eventSearchFilter.startDateTime, eventSearchFilter.minDurationMinutes, eventSearchFilter.maxDurationMinutes,
+            eventSearchFilter.organizerId, eventSearchFilter.isOpen, eventSearchFilter.status?.toString()
+        )
+
+        return eventMapper.eventsToEventModels(events)
+    }
+
+    @Transactional
+    fun registerToEvent(eventId: UUID, userId: UUID): EventParticipantModel {
+        val event = get(eventId)
+        if (!userRepository.existsById(userId)) {
+            throw UserNotFoundException.withId(userId)
+        }
+        if (eventParticipantRepository.existsByUserIdAndEventId(userId, eventId)) {
+            throw RegistrationException.alreadyRegistered(userId, eventId)
+        }
+
+        if (event.status != EventStatusModel.PLANNED) {
+            throw RegistrationException.eventIsUnavailable(eventId)
+        }
+
+        event.registerEndDateTime?.let {
+            if (it < Instant.now()) {
+                throw RegistrationException.registrationEnded(eventId)
+            }
+        }
+
+        val numParticipants = eventParticipantRepository.countByEventId(eventId)
+        event.peopleLimit?.let {
+            if (it <= numParticipants) {
+                throw RegistrationException.participantsLimitReached(eventId)
+            }
+        }
+
+        val eventParticipant = eventParticipantRepository.save(
+            EventParticipant(userId = userId, eventId = eventId)
+        )
+        log.info("User $userId registered to event $eventId")
+        return eventMapper.eventParticipantToEventParticipantModel(eventParticipant)
+    }
+
+    @Transactional
+    fun unregisterFromEvent(eventId: UUID) {
+        val event = get(eventId)
+        if (event.status != EventStatusModel.PLANNED) {
+            throw RegistrationException.eventIsUnavailable(eventId)
+        }
+
+        val userId = SecurityContextHolder.getContext().authentication.principal as UUID
+        if (!eventParticipantRepository.existsByUserIdAndEventId(userId, eventId)) {
+            throw RegistrationException.isNotRegistered(userId, eventId)
+        }
+
+        eventParticipantRepository.deleteByUserIdAndEventId(userId, eventId)
+        log.info("User $userId unsubscribed from event $eventId")
+    }
+
+    fun getEventParticipants(eventId: UUID): List<UserModel> {
+        val participants = eventRepository.findById(eventId)
+            .orElseThrow{EventNotFoundException.byId(eventId)}.participants
+        val userModels = userMapper.userEntitiesToUserModels(participants)
+        return userModels
     }
 }
