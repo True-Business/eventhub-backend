@@ -22,10 +22,12 @@ on:
                 required: true
             minioPassword:
                 required: true
-            minioBucket:
+            minioBucketName:
                 required: true
-            minioHostPort:
+            minioURLInternal:
                 required: true
+            minioURLExternal:
+              required: true
 
 jobs:
     deploy:
@@ -74,7 +76,8 @@ jobs:
                     --set postgresql.auth.password="${{ secrets.userPassword }}" \
                     --set eventhubBackendDeploy.appConfig.mail.password="${{ secrets.mailPassword }}" \
                     --set eventhubBackendDeploy.ingress.pathDefinition.prefix="${{ inputs.ingress-path }}" \
-                    --set eventhubBackendDeploy.appConfig.minio.user="${{ secrets.minioUser }}" \
-                    --set eventhubBackendDeploy.appConfig.minio.password="${{ secrets.minioPassword }}" \
-                    --set eventhubBackendDeploy.appConfig.minio.hostPort="${{ secrets.minioHostPort }}" \
-                    --set eventhubBackendDeploy.appConfig.minio.bucket="${{ secrets.minioBucket }}"                   
+                    --set eventhubBackendDeploy.appConfig.storage.minio.user="${{ secrets.minioUser }}" \
+                    --set eventhubBackendDeploy.appConfig.storage.minio.password="${{ secrets.minioPassword }}" \
+                    --set eventhubBackendDeploy.appConfig.storage.minio.url.internal="${{ secrets.minioURLInternal }}" \
+                    --set eventhubBackendDeploy.appConfig.storage.minio.url.external="${{ secrets.minioURLExternal }}" \
+                    --set eventhubBackendDeploy.appConfig.storage.minio.bucket.name="${{ secrets.minioBucketName }}"

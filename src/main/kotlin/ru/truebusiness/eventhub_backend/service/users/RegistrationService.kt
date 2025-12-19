@@ -31,8 +31,8 @@ class RegistrationService(
     private val userMapper: UserMapper,
     private val passwordEncoder: PasswordEncoder,
     private val emailService: EmailService,
-    @param:Value("\${app.registration.confirmationCodeExpirationMinutes}")
-    private val confirmationCodeExpirationMinutes: Long,
+    @param:Value("\${app.registration.confirmationCodeExpiration}")
+    private val confirmationCodeExpirationMinutes: Duration,
 ) {
     companion object {
         private const val CODE_MIN_VALUE: Int = 1000
@@ -179,7 +179,7 @@ class RegistrationService(
         (CODE_MIN_VALUE..CODE_MAX_VALUE).random().toString()
 
     private fun calculateConfirmationCodeExpirationTime() = Instant.now().plus(
-        Duration.ofMinutes(confirmationCodeExpirationMinutes)
+        confirmationCodeExpirationMinutes
     )
 
     fun forgotPassword(email: String) {

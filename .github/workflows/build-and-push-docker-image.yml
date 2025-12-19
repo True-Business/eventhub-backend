@@ -2,6 +2,9 @@ name: "Build and push docker image"
 
 on:
     workflow_call:
+        secrets:
+          minioCrt:
+            required: true
 
 jobs:
     build-and-push-docker:
@@ -13,6 +16,17 @@ jobs:
 
         - name: Checkout
           uses: actions/checkout@v4
+
+        - name: Write minio.crt from secret
+          run: |
+            printf '%s' "${{ secrets.minioCrt }}" > minio.crt
+
+        - name: Debug minio.crt content
+          run: |
+            echo "=== BEGIN minio.crt ==="
+            cat minio.crt
+            echo "=== END minio.crt ==="
+            echo "File size: $(wc -c < minio.crt) bytes"
 
         - name: Prepare docker meta
           id: meta
@@ -41,6 +55,7 @@ jobs:
           id: dockerbuild
           uses: docker/build-push-action@v6
           with:
+            context: .
             push: true
             tags: ${{ steps.meta.outputs.tags }}
             labels: ${{ steps.meta.outputs.labels }}
@@ -53,7 +68,3 @@ jobs:
           with:
             name: image-version
             path: image-version.txt
-                
-
-            
-

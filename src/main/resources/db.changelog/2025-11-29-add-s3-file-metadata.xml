@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="create-object-meta-table" author="Denis Zhdanov">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="object_meta"/>
+            </not>
+        </preConditions>
+        <createTable tableName="object_meta">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="origin" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="bucket" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="owner_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="owner_type" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expiry" type="TIMESTAMPTZ"/>
+            <column name="confirmed_at" type="TIMESTAMPTZ"/>
+        </createTable>
+        <addUniqueConstraint
+                tableName="object_meta"
+                columnNames="owner_id, owner_type, origin"
+                constraintName="uk_object_meta_origin_bucket_owner"/>
+    </changeSet>
+
+    <changeSet id="add-uk-object-meta-owner-origin" author="Denis Zhdanov">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="object_meta"/>
+                <not>
+                    <uniqueConstraintExists
+                            tableName="object_meta"
+                            constraintName="uk_object_meta_origin_bucket_owner"/>
+                </not>
+            </and>
+        </preConditions>
+
+        <addUniqueConstraint
+                tableName="object_meta"
+                columnNames="owner_id, owner_type, origin"
+                constraintName="uk_object_meta_origin_bucket_owner"/>
+    </changeSet>
+
+</databaseChangeLog>

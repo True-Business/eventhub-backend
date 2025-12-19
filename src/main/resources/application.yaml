@@ -39,7 +39,20 @@ app:
     cleanupJob:
       cron: 0 0 * * * *
       zone: Europe/Moscow
-    confirmationCodeExpirationMinutes: 5
+    confirmationCodeExpiration: 5m
+  storage:
+    cleanupJob:
+      delay: 60m
+    minio:
+      bucket:
+        name: eventhub
+        uploadUrlConfirmExpiry: 15m
+        downloadUrlExpiry: 5m
+      user: miniouser
+      password: miniopassword
+      url:
+        internal: "http://localhost:9000"
+        external: "http://localhost:9000"
 
 management:
   endpoint:

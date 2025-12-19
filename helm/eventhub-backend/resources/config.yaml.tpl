@@ -34,6 +34,19 @@ app:
       cron: {{ .Values.eventhubBackendDeploy.appConfig.registration.cleanupJob.cron }}
       zone: {{ .Values.eventhubBackendDeploy.appConfig.registration.cleanupJob.zone }}
     confirmationCodeExpirationMinutes: {{ .Values.eventhubBackendDeploy.appConfig.registration.confirmationCodeExpirationMinutes }}
+  storage:
+    cleanupJob:
+      delay: {{ .Values.eventhubBackendDeploy.appConfig.storage.cleanupJob.delay }}
+    minio:
+      bucket:
+        name: {{ .Values.eventhubBackendDeploy.appConfig.storage.minio.bucket.name }}
+        uploadUrlConfirmExpiry: {{ .Values.eventhubBackendDeploy.appConfig.storage.minio.bucket.uploadUrlConfirmExpiry }}
+        downloadUrlExpiry: {{ .Values.eventhubBackendDeploy.appConfig.storage.minio.bucket.downloadUrlExpiry }}
+      user: {{ .Values.eventhubBackendDeploy.appConfig.storage.minio.user }}
+      password: {{ .Values.eventhubBackendDeploy.appConfig.storage.minio.password }}
+      url:
+        internal: {{ .Values.eventhubBackendDeploy.appConfig.storage.minio.url.internal }}
+        external: {{ .Values.eventhubBackendDeploy.appConfig.storage.minio.url.external }}
 
 springdoc:
   swagger-ui:
