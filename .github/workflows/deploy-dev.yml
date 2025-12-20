@@ -27,5 +27,3 @@ jobs:
             minioURLInternal: ${{ secrets.MINIO_DEV_URL_INTERNAL }}
             minioURLExternal: ${{ secrets.MINIO_DEV_URL_EXTERNAL }}
             minioBucketName: ${{ secrets.MINIO_DEV_BUCKET_NAME }}
-            
-    
