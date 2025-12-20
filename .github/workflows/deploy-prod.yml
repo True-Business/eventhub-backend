@@ -29,6 +29,7 @@ jobs:
             userPassword: ${{ secrets.PROD_USER_PASSWORD }}
             mailPassword: ${{ secrets.MAIL_APPLICATION_PASSWORD }}
             minioUser: ${{ secrets.MINIO_USER }}
-            minioPassword: ${{ secrets.MINIO_PROD_URL_INTERNAL }}
-            minioHostPort: ${{ secrets.MINIO_PROD_URL_EXTERNAL }}
-            minioBucket: ${{ secrets.MINIO_PROD_BUCKET_NAME }}
+            minioPassword: ${{ secrets.MINIO_PASSWORD }}
+            minioURLInternal: ${{ secrets.MINIO_PROD_URL_INTERNAL }}
+            minioURLExternal: ${{ secrets.MINIO_PROD_URL_INTERNAL }}
+            minioBucketName: ${{ secrets.MINIO_PROD_URL_EXTERNAL }}
