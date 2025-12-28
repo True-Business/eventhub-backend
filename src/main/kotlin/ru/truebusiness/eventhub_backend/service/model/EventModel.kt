@@ -22,4 +22,5 @@ class EventModel(
     var isWithRegister: Boolean,
     var peopleLimit: Int?,
     var registerEndDateTime: Instant?,
+    var isUserParticipant: Boolean?,
 )

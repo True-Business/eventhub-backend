@@ -101,6 +101,7 @@ class EventService(
         log.info("Search events")
         log.info("isopen: {}", eventSearchFilter.isOpen)
 
+        val userId = SecurityContextHolder.getContext().authentication.principal as UUID
         if (eventSearchFilter.isParticipant != null) {
             throw NotImplementedException("isParticipant not implemented", null)
         }
@@ -111,7 +112,15 @@ class EventService(
             eventSearchFilter.organizerId, eventSearchFilter.isOpen, eventSearchFilter.status?.toString()
         )
 
-        return eventMapper.eventsToEventModels(events)
+        val eventModels: List<EventModel> = emptyList()
+        for (event in events) {
+            val eventModel = eventMapper.eventToEventModel(event)
+            eventModel.isUserParticipant = event.participants.stream()
+                .anyMatch { user -> user.id == userId }
+            eventModels.addLast(eventModel)
+        }
+
+        return eventModels
     }
 
     @Transactional

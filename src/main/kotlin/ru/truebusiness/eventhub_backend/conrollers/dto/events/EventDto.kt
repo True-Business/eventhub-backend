@@ -125,4 +125,10 @@ class EventDto(
         example = "2025-03-25T23:59:59Z",
     )
     val registerEndDateTime: Instant?,
+
+    @param:Schema(
+        description = "Участвует ли пользователь, сделавший запрос (используется для поиска мероприятий)",
+        example = "true",
+    )
+    val isUserParticipant: Boolean?,
 )
