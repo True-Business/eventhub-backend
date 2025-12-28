@@ -112,7 +112,7 @@ class EventService(
             eventSearchFilter.organizerId, eventSearchFilter.isOpen, eventSearchFilter.status?.toString()
         )
 
-        val eventModels: List<EventModel> = emptyList()
+        val eventModels = mutableListOf<EventModel>()
         for (event in events) {
             val eventModel = eventMapper.eventToEventModel(event)
             eventModel.isUserParticipant = event.participants.stream()
