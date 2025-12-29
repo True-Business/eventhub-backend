@@ -17,6 +17,7 @@ jobs:
         with:
             target-namespace: ${{ vars.DEV_NAMESPACE }}
             ingress-path: "/dev"
+            replicas: 1
         secrets:
             kubeconfig: ${{ secrets.KUBECONFIG }}
             postgresPassword: ${{ secrets.DEV_POSTGRES_PASSWORD }}

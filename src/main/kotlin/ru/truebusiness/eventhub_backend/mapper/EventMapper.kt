@@ -33,6 +33,7 @@ interface EventMapper {
 
     @Mapping(source = "open", target = "isOpen")
     @Mapping(source = "withRegister", target = "isWithRegister")
+    @Mapping(source = "userParticipant", target = "isUserParticipant")
     fun eventModelToEventDTO(eventModel: EventModel): EventDto
 
     fun eventToEventModel(event: Event): EventModel

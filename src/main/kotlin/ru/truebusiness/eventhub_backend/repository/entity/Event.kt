@@ -1,6 +1,5 @@
 package ru.truebusiness.eventhub_backend.repository.entity
 
-import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -73,6 +72,7 @@ class Event(
 
     @Column(name = "register_end_datetime")
     var registerEndDateTime: Instant?,
+) {
 
     @ManyToMany
     @JoinTable(
@@ -81,4 +81,4 @@ class Event(
         inverseJoinColumns = [JoinColumn(name = "user_id", referencedColumnName = "id")]
     )
     var participants: MutableList<User> = mutableListOf()
-)
+}

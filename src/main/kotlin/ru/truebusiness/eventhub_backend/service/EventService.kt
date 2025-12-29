@@ -35,7 +35,7 @@ class EventService(
 
     @Transactional
     fun create(eventModel: CreateEventModel): EventModel {
-        log.info("Creating new event: {}", eventModel.name)
+        log.info("Creating new event: {}", eventModel.toString())
 
         val event: Event = eventMapper.eventModelToEventEntity(eventModel)
         val newEvent = eventRepository.save(event)
@@ -73,7 +73,12 @@ class EventService(
             EventNotFoundException.byId(eventID)
         }
 
-        return eventMapper.eventToEventModel(event)
+        val userId = SecurityContextHolder.getContext().authentication.principal as UUID
+        val eventModel = eventMapper.eventToEventModel(event)
+        eventModel.isUserParticipant = event.participants.stream()
+            .anyMatch { user -> user.id == userId }
+
+        return eventModel
     }
 
     fun deleteDraft(eventID: UUID) {
@@ -101,6 +106,7 @@ class EventService(
         log.info("Search events")
         log.info("isopen: {}", eventSearchFilter.isOpen)
 
+        val userId = SecurityContextHolder.getContext().authentication.principal as UUID
         if (eventSearchFilter.isParticipant != null) {
             throw NotImplementedException("isParticipant not implemented", null)
         }
@@ -111,7 +117,15 @@ class EventService(
             eventSearchFilter.organizerId, eventSearchFilter.isOpen, eventSearchFilter.status?.toString()
         )
 
-        return eventMapper.eventsToEventModels(events)
+        val eventModels = mutableListOf<EventModel>()
+        for (event in events) {
+            val eventModel = eventMapper.eventToEventModel(event)
+            eventModel.isUserParticipant = event.participants.stream()
+                .anyMatch { user -> user.id == userId }
+            eventModels.addLast(eventModel)
+        }
+
+        return eventModels
     }
 
     @Transactional
