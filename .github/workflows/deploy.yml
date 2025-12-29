@@ -9,6 +9,9 @@ on:
             ingress-path:
                 required: true
                 type: string
+            replicas:
+                required: true
+                type: number
         secrets:
             kubeconfig:
                 required: true
@@ -80,4 +83,5 @@ jobs:
                     --set eventhubBackendDeploy.appConfig.storage.minio.password="${{ secrets.minioPassword }}" \
                     --set eventhubBackendDeploy.appConfig.storage.minio.url.internal="${{ secrets.minioURLInternal }}" \
                     --set eventhubBackendDeploy.appConfig.storage.minio.url.external="${{ secrets.minioURLExternal }}" \
-                    --set eventhubBackendDeploy.appConfig.storage.minio.bucket.name="${{ secrets.minioBucketName }}"
+                    --set eventhubBackendDeploy.appConfig.storage.minio.bucket.name="${{ secrets.minioBucketName }}" \
+                    --set eventhubBackendDeploy.replicas=${{ inputs.replicas }}

@@ -23,6 +23,7 @@ jobs:
         with:
             target-namespace: ${{ vars.PROD_NAMESPACE }}
             ingress-path: "/prod"
+            replicas: 0
         secrets:
             kubeconfig: ${{ secrets.KUBECONFIG }}
             postgresPassword: ${{ secrets.PROD_POSTGRES_PASSWORD }}
