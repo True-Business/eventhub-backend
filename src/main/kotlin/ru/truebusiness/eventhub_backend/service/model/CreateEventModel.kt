@@ -3,7 +3,7 @@ package ru.truebusiness.eventhub_backend.service.model;
 import java.time.Instant
 import java.util.UUID
 
-class CreateEventModel(
+data class CreateEventModel(
     var name: String,
     var startDateTime: Instant,
     var endDateTime: Instant?,

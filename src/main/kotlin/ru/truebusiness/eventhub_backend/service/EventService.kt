@@ -35,7 +35,7 @@ class EventService(
 
     @Transactional
     fun create(eventModel: CreateEventModel): EventModel {
-        log.info("Creating new event: {}", eventModel.name)
+        log.info("Creating new event: {}", eventModel.toString())
 
         val event: Event = eventMapper.eventModelToEventEntity(eventModel)
         val newEvent = eventRepository.save(event)
