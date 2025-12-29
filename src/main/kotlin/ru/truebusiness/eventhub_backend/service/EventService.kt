@@ -73,7 +73,12 @@ class EventService(
             EventNotFoundException.byId(eventID)
         }
 
-        return eventMapper.eventToEventModel(event)
+        val userId = SecurityContextHolder.getContext().authentication.principal as UUID
+        val eventModel = eventMapper.eventToEventModel(event)
+        eventModel.isUserParticipant = event.participants.stream()
+            .anyMatch { user -> user.id == userId }
+
+        return eventModel
     }
 
     fun deleteDraft(eventID: UUID) {
