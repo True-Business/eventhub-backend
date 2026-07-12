@@ -2,6 +2,7 @@ package ru.truebusiness.eventhub_backend.mapper
 
 import org.mapstruct.BeanMapping
 import org.mapstruct.Mapper
+import org.mapstruct.Mapping
 import org.mapstruct.MappingTarget
 import org.mapstruct.NullValuePropertyMappingStrategy
 import ru.truebusiness.eventhub_backend.conrollers.dto.FindUsersRequestDto
@@ -16,10 +17,12 @@ import java.util.UUID
 @Mapper(componentModel = "spring")
 interface UserMapper {
 
+    @Mapping(source = "confirmed", target = "isConfirmed")
     fun userEntityToUserModel(user: User): UserModel
 
     fun userEntitiesToUserModels(user: List<User>): List<UserModel>
 
+    @Mapping(source = "confirmed", target = "isConfirmed")
     fun userModelToUserDto(userModel: UserModel): UserDto
 
     fun userModelsToUserDtos(userModels: List<UserModel>): List<UserDto>

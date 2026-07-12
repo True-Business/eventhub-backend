@@ -124,7 +124,7 @@ class EventService(
             val eventModel = eventMapper.eventToEventModel(event)
             eventModel.isUserParticipant = event.participants.stream()
                 .anyMatch { user -> user.id == userId }
-            eventModels.addLast(eventModel)
+            eventModels.add(eventModel)
         }
 
         return eventModels
