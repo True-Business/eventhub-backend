@@ -1,17 +1,19 @@
 package ru.truebusiness.eventhub_backend.jobs.registration
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.transaction.Transactional
 import java.time.Instant
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
-import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.repository.ConfirmationCodeRepository
 
 @Component
 class RegistrationJobs(
     private val confirmationCodeRepository: ConfirmationCodeRepository,
 ) {
-    private val log by logger()
+    companion object {
+        private val log = KotlinLogging.logger {}
+    }
 
     @Scheduled(
         cron = "\${app.registration.cleanupJob.cron}",

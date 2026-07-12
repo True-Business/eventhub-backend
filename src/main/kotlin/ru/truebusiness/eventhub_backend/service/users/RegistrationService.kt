@@ -1,5 +1,6 @@
 package ru.truebusiness.eventhub_backend.service.users
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.transaction.Transactional
 import java.time.Duration
 import java.time.Instant
@@ -12,7 +13,6 @@ import ru.truebusiness.eventhub_backend.exceptions.users.InvalidConfirmationCode
 import ru.truebusiness.eventhub_backend.exceptions.users.CredentialsException
 import ru.truebusiness.eventhub_backend.exceptions.users.UserAlreadyExistsException
 import ru.truebusiness.eventhub_backend.exceptions.users.UserNotFoundException
-import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.mapper.UserMapper
 import ru.truebusiness.eventhub_backend.repository.ConfirmationCodeRepository
 import ru.truebusiness.eventhub_backend.repository.UserCredentialsRepository
@@ -35,11 +35,10 @@ class RegistrationService(
     private val confirmationCodeExpirationMinutes: Duration,
 ) {
     companion object {
+        private val log = KotlinLogging.logger {}
         private const val CODE_MIN_VALUE: Int = 1000
         private const val CODE_MAX_VALUE: Int = 9999
     }
-
-    private val log by logger()
 
     /**
      * Метод предвариетльно регистрирует пользователя: создаётся запись о пользователе в бд, но с не подтверждённым
