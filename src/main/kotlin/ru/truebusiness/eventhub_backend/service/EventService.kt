@@ -1,5 +1,6 @@
 package ru.truebusiness.eventhub_backend.service
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.transaction.Transactional
 import java.util.UUID
 import org.springframework.security.core.context.SecurityContextHolder
@@ -11,7 +12,6 @@ import ru.truebusiness.eventhub_backend.conrollers.dto.EventSearchFilter
 import ru.truebusiness.eventhub_backend.exceptions.NotImplementedException
 import ru.truebusiness.eventhub_backend.exceptions.events.RegistrationException
 import ru.truebusiness.eventhub_backend.exceptions.users.UserNotFoundException
-import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.mapper.EventMapper
 import ru.truebusiness.eventhub_backend.mapper.UserMapper
 import ru.truebusiness.eventhub_backend.repository.EventParticipantRepository
@@ -31,7 +31,9 @@ class EventService(
     private val eventMapper: EventMapper,
     private val userMapper: UserMapper,
 ) {
-    private val log by logger()
+    companion object {
+        private val log = KotlinLogging.logger {}
+    }
 
     @Transactional
     fun create(eventModel: CreateEventModel): EventModel {

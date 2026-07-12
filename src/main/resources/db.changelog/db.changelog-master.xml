@@ -13,4 +13,6 @@
     <include file="/db.changelog/2025-11-29-add-s3-file-metadata.xml"/>
     <include file="/db.changelog/2025-12-07-create-organization-admin-table.xml"/>
     <include file="/db.changelog/2025-12-6-create-posts-table.xml"/>
+    <include file="/db.changelog/2026-05-09-create-recommender-system-tables.xml"/>
+    <include file="/db.changelog/2026-05-10-add-user-recommendations-table.xml"/>
 </databaseChangeLog>

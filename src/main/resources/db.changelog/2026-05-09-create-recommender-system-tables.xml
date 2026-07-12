@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.17.xsd">
+
+    <!-- ========================================================= -->
+    <!-- USER INTEREST VECTORS                                     -->
+    <!-- ========================================================= -->
+
+    <changeSet id="create-user-interest-vectors" author="e.vartazaryan">
+        <createTable tableName="user_interest_vectors">
+
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="user_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="category" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="embedding" type="JSONB">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="created_at" type="TIMESTAMP WITH TIME ZONE" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="updated_at" type="TIMESTAMP WITH TIME ZONE" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="user_interest_vectors"
+                baseColumnNames="user_id"
+                referencedTableName="users"
+                referencedColumnNames="id"
+                constraintName="fk_user_interest_vectors_user"
+                onDelete="CASCADE"/>
+
+        <createIndex tableName="user_interest_vectors" indexName="idx_user_interest_vectors_user_id">
+            <column name="user_id"/>
+        </createIndex>
+
+        <createIndex tableName="user_interest_vectors" indexName="idx_user_interest_vectors_category">
+            <column name="category"/>
+        </createIndex>
+    </changeSet>
+
+    <!-- ========================================================= -->
+    <!-- EVENT EMBEDDINGS                                          -->
+    <!-- ========================================================= -->
+
+    <changeSet id="create-event-embeddings" author="e.vartazaryan">
+        <createTable tableName="event_embeddings">
+
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="event_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="embedding" type="JSONB">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="model_version" type="VARCHAR(50)"/>
+
+            <column name="created_at" type="TIMESTAMP WITH TIME ZONE" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="event_embeddings"
+                baseColumnNames="event_id"
+                referencedTableName="events"
+                referencedColumnNames="id"
+                constraintName="fk_event_embeddings_event"
+                onDelete="CASCADE"/>
+
+        <createIndex tableName="event_embeddings" indexName="idx_event_embeddings_event_id" unique="true">
+            <column name="event_id"/>
+        </createIndex>
+    </changeSet>
+
+    <!-- ========================================================= -->
+    <!-- EVENT INTERACTIONS                                        -->
+    <!-- ========================================================= -->
+
+    <changeSet id="create-event-interactions" author="e.vartazaryan">
+        <createTable tableName="event_interactions">
+
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="user_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="event_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="interaction_type" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="interaction_strength" type="NUMERIC(5,4)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="watch_duration_ms" type="BIGINT"/>
+
+            <column name="metadata" type="JSONB"/>
+
+            <column name="created_at" type="TIMESTAMP WITH TIME ZONE" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="event_interactions"
+                baseColumnNames="user_id"
+                referencedTableName="users"
+                referencedColumnNames="id"
+                constraintName="fk_event_interactions_user"
+                onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint
+                baseTableName="event_interactions"
+                baseColumnNames="event_id"
+                referencedTableName="events"
+                referencedColumnNames="id"
+                constraintName="fk_event_interactions_event"
+                onDelete="CASCADE"/>
+
+        <createIndex tableName="event_interactions" indexName="idx_event_interactions_user_id">
+            <column name="user_id"/>
+        </createIndex>
+
+        <createIndex tableName="event_interactions" indexName="idx_event_interactions_event_id">
+            <column name="event_id"/>
+        </createIndex>
+
+        <createIndex tableName="event_interactions" indexName="idx_event_interactions_created_at">
+            <column name="created_at"/>
+        </createIndex>
+
+        <createIndex tableName="event_interactions" indexName="idx_event_interactions_type">
+            <column name="interaction_type"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

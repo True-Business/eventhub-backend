@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.17.xsd">
+
+    <!-- ========================================================= -->
+    <!-- USER RECOMMENDATIONS                                      -->
+    <!-- ========================================================= -->
+
+    <changeSet id="create-user-recommendations" author="e.vartazaryan">
+
+        <createTable tableName="user_recommendations">
+
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="user_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="event_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="score" type="NUMERIC(8,6)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="source_category" type="VARCHAR(100)"/>
+
+            <column name="rank_position" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="generated_at" type="TIMESTAMP WITH TIME ZONE" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="expires_at" type="TIMESTAMP WITH TIME ZONE"/>
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="user_recommendations"
+                baseColumnNames="user_id"
+                referencedTableName="users"
+                referencedColumnNames="id"
+                constraintName="fk_user_recommendations_user"
+                onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint
+                baseTableName="user_recommendations"
+                baseColumnNames="event_id"
+                referencedTableName="events"
+                referencedColumnNames="id"
+                constraintName="fk_user_recommendations_event"
+                onDelete="CASCADE"/>
+
+        <createIndex tableName="user_recommendations" indexName="idx_user_recommendations_user_id">
+            <column name="user_id"/>
+        </createIndex>
+
+        <createIndex tableName="user_recommendations" indexName="idx_user_recommendations_event_id">
+            <column name="event_id"/>
+        </createIndex>
+
+        <createIndex tableName="user_recommendations" indexName="idx_user_recommendations_score">
+            <column name="score"/>
+        </createIndex>
+
+        <createIndex tableName="user_recommendations" indexName="idx_user_recommendations_generated_at">
+            <column name="generated_at"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,5 +1,6 @@
 package ru.truebusiness.eventhub_backend.service
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.transaction.Transactional
 import org.springframework.data.jpa.domain.Specification
 import java.util.UUID
@@ -7,7 +8,6 @@ import org.springframework.stereotype.Service
 import ru.truebusiness.eventhub_backend.conrollers.dto.organizations.OrganizationDto
 import ru.truebusiness.eventhub_backend.exceptions.organization.OrganizationAlreadyExistsException
 import ru.truebusiness.eventhub_backend.exceptions.organization.OrganizationNotFoundException
-import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.mapper.OrganizationMapper
 import ru.truebusiness.eventhub_backend.repository.OrganizationRepository
 import ru.truebusiness.eventhub_backend.repository.OrganizationSpecs
@@ -23,7 +23,9 @@ class OrganizationService(
     private val userRepository: UserRepository,
     private val organizationMapper: OrganizationMapper,
 ) {
-    private val log by logger()
+    companion object {
+        private val log = KotlinLogging.logger {}
+    }
 
     @Transactional
     fun create(organizationModel: OrganizationModel): OrganizationDto {

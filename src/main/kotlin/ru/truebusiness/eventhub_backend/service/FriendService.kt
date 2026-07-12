@@ -1,5 +1,6 @@
 package ru.truebusiness.eventhub_backend.service
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import ru.truebusiness.eventhub_backend.conrollers.dto.friends.FriendRequestStatus
@@ -9,7 +10,6 @@ import ru.truebusiness.eventhub_backend.exceptions.friends.FriendRequestWrongSta
 import ru.truebusiness.eventhub_backend.exceptions.friends.FriendRequestException
 import ru.truebusiness.eventhub_backend.exceptions.friends.SelfFriendRequestException
 import ru.truebusiness.eventhub_backend.exceptions.users.UserNotFoundException
-import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.mapper.FriendMapper
 import ru.truebusiness.eventhub_backend.mapper.UserMapper
 import ru.truebusiness.eventhub_backend.repository.*
@@ -26,7 +26,9 @@ class FriendService (
     private val userMapper: UserMapper,
     private val friendMapper: FriendMapper,
 ) {
-    private val log by logger()
+    companion object {
+        private val log = KotlinLogging.logger {}
+    }
 
     @Transactional
     fun createFriendRequest(createFriendRequestModel: CreateFriendRequestModel): FriendRequestModel {

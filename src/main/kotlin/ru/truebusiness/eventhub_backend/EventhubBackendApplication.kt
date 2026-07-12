@@ -12,10 +12,6 @@ import org.springframework.scheduling.annotation.EnableScheduling
 @SpringBootApplication
 class EventhubBackendApplication
 
-fun <T : Any> T.logger(): Lazy<Logger> = lazy {
-	LoggerFactory.getLogger(this::class.java)
-}
-
 fun main(args: Array<String>) {
 	runApplication<EventhubBackendApplication>(*args)
 }

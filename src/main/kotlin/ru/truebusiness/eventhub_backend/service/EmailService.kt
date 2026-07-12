@@ -1,10 +1,10 @@
 package ru.truebusiness.eventhub_backend.service
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.stereotype.Service
-import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.service.model.EventModel
 
 @Service
@@ -13,10 +13,12 @@ class EmailService(
     private val emailLogin: String,
     private val mailSender: JavaMailSender,
 ) {
-    private val log by logger()
+    companion object {
+        private val log = KotlinLogging.logger {}
+    }
 
     fun sendConfirmationCode(code: String, to: String) {
-        log.info("Sending confirmation code: {} on email: {}", code, to)
+        log.info { "${"Sending confirmation code: {} on email: {}"} $code $to" }
 
         val subject = "Confirm your registration to EventHub"
         val text = """

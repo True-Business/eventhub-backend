@@ -1,5 +1,6 @@
 package ru.truebusiness.eventhub_backend.service.storage
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.minio.CopyObjectArgs
 import io.minio.CopySource
 import io.minio.GetPresignedObjectUrlArgs
@@ -11,7 +12,6 @@ import jakarta.transaction.Transactional
 import java.time.Duration
 import java.time.Instant
 import java.util.UUID
-import kotlin.getValue
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -21,7 +21,6 @@ import ru.truebusiness.eventhub_backend.conrollers.dto.storage.ObjectConfirm
 import ru.truebusiness.eventhub_backend.conrollers.dto.storage.ObjectDownload
 import ru.truebusiness.eventhub_backend.conrollers.dto.storage.ObjectUpload
 import ru.truebusiness.eventhub_backend.conrollers.dto.storage.ObjectsList
-import ru.truebusiness.eventhub_backend.logger
 import ru.truebusiness.eventhub_backend.mapper.ObjectMetadataMapper
 import ru.truebusiness.eventhub_backend.repository.storage.FileStatus
 import ru.truebusiness.eventhub_backend.repository.storage.S3ObjectMetadata
@@ -38,7 +37,9 @@ class MinioStorageService(
     private val s3ObjectMetadataRepository: S3objectMetadataRepository,
     private val objectMetadataMapper: ObjectMetadataMapper,
 ) {
-    private val log by logger()
+    companion object {
+        private val log = KotlinLogging.logger {}
+    }
 
     /**
      * Первый этап загрузки файлов. клиент шлет названия файлов(origin) и
