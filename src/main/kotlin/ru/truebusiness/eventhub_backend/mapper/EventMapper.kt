@@ -16,19 +16,33 @@ import ru.truebusiness.eventhub_backend.service.model.EventParticipantModel
 @Mapper(componentModel = "spring")
 interface EventMapper {
 
+    @Mapping(source = "open", target = "isOpen")
+    @Mapping(source = "withRegister", target = "isWithRegister")
     fun eventDtoToEventModel(eventRequestDto: CreateEventRequestDto): EventModel
 
     @Mapping(target = "updatedAt", expression = "java(java.time.Instant.now())")
+    @Mapping(source = "open", target = "isOpen")
+    @Mapping(source = "withRegister", target = "isWithRegister")
     fun eventDtoToCreateEventModel(createEventRequestDto: CreateEventRequestDto): CreateEventModel
 
+    @Mapping(source = "open", target = "isOpen")
+    @Mapping(source = "withRegister", target = "isWithRegister")
     fun eventModelToEventEntity(eventModel: EventModel): Event
 
     @Mapping(target = "id", expression = "java(java.util.UUID.randomUUID())")
+    @Mapping(source = "open", target = "isOpen")
+    @Mapping(source = "withRegister", target = "isWithRegister")
     fun eventModelToEventEntity(createEventModel: CreateEventModel): Event
 
+    @Mapping(source = "eventRequestDto.eventCategory", target = "category")
+    @Mapping(source = "eventRequestDto.eventStatus", target = "status")
+    @Mapping(source = "eventRequestDto.open", target = "isOpen")
+    @Mapping(source = "eventRequestDto.withRegister", target = "isWithRegister")
     fun eventDtoToEventModel(eventID: UUID, eventRequestDto: UpdateEventRequestDto): EventModel
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(source = "open", target = "open")
+    @Mapping(source = "withRegister", target = "withRegister")
     fun eventModelToEventEntity(eventModel: EventModel, @MappingTarget event: Event)
 
     @Mapping(source = "open", target = "isOpen")

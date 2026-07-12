@@ -16,6 +16,7 @@ class EventControllerImpl(
     private val eventService: EventService, private val eventMapper: EventMapper,
     private val userMapper: UserMapper,
 ) : EventController {
+
     override fun create(
         createEventRequestDto: CreateEventRequestDto,
     ): ResponseEntity<EventDto> {
