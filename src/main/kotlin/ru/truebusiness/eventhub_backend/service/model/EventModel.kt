@@ -25,4 +25,6 @@ class EventModel(
     var isUserParticipant: Boolean?,
     var isOwner: Boolean?,
     var participantsCount: Int = 0,
+    var posterUrl: String? = null,
+    var imageUrls: List<String> = emptyList(),
 )

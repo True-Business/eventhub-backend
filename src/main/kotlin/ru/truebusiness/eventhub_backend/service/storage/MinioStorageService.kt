@@ -29,6 +29,14 @@ import ru.truebusiness.eventhub_backend.repository.storage.S3objectMetadataRepos
 private val initialFileStatus = FileStatus.PENDING
 private val sort = Sort.by("confirmedAt").descending()
 private val defaultPage = PageRequest.of(0, 20, sort)
+
+data class ConfirmedObjectDownloadUrl(
+    val id: UUID,
+    val origin: String,
+    val downloadUrl: String,
+    val uploaded: Instant,
+)
+
 @Service
 class MinioStorageService(
     private val minioExternalClient: MinioClient,
@@ -189,6 +197,45 @@ class MinioStorageService(
             )
         }
         return ObjectDownload.Response(urls)
+    }
+
+    fun genConfirmedDownloadUrls(
+        ownerId: UUID,
+        ownerType: String,
+        posterOnly: Boolean = false,
+    ): List<ConfirmedObjectDownloadUrl> {
+        val metas = s3ObjectMetadataRepository.findAllByOwnerIdAndOwnerTypeAndStatusOrderByConfirmedAtAsc(
+            ownerId, ownerType, FileStatus.CONFIRMED
+        )
+        val selectedMetas = if (posterOnly) {
+            listOfNotNull(metas.firstOrNull { it.origin.isPosterOrigin() } ?: metas.firstOrNull())
+        } else {
+            metas
+        }
+
+        return selectedMetas.map { meta ->
+            val objPath = StorageUtils.getFilePath(
+                meta.status,
+                getObjectName(meta.origin, meta.id)
+            )
+            ConfirmedObjectDownloadUrl(
+                id = meta.id,
+                origin = meta.origin,
+                downloadUrl = getDownloadUrl(
+                    objPath,
+                    minioConfig.bucket.uploadUrlConfirmExpiry
+                ),
+                uploaded = meta.confirmedAt ?: Instant.MIN,
+            )
+        }
+    }
+
+    private fun String.isPosterOrigin(): Boolean {
+        val normalized = trim().lowercase()
+        return normalized == "poster" ||
+                normalized.startsWith("poster.") ||
+                normalized.startsWith("poster_") ||
+                normalized.startsWith("poster-")
     }
 
     /**

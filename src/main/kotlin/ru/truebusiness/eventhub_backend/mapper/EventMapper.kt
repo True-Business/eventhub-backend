@@ -20,6 +20,8 @@ interface EventMapper {
     @Mapping(source = "withRegister", target = "isWithRegister")
     @Mapping(target = "participantsCount", ignore = true)
     @Mapping(target = "owner", ignore = true)
+    @Mapping(target = "posterUrl", ignore = true)
+    @Mapping(target = "imageUrls", expression = "java(java.util.Collections.emptyList())")
     fun eventDtoToEventModel(eventRequestDto: CreateEventRequestDto): EventModel
 
     @Mapping(target = "updatedAt", expression = "java(java.time.Instant.now())")
@@ -42,6 +44,8 @@ interface EventMapper {
     @Mapping(source = "eventRequestDto.withRegister", target = "isWithRegister")
     @Mapping(target = "participantsCount", ignore = true)
     @Mapping(target = "owner", ignore = true)
+    @Mapping(target = "posterUrl", ignore = true)
+    @Mapping(target = "imageUrls", expression = "java(java.util.Collections.emptyList())")
     fun eventDtoToEventModel(eventID: UUID, eventRequestDto: UpdateEventRequestDto): EventModel
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
@@ -57,6 +61,8 @@ interface EventMapper {
 
     @Mapping(target = "participantsCount", expression = "java(event.getParticipants().size())")
     @Mapping(target = "owner", ignore = true)
+    @Mapping(target = "posterUrl", ignore = true)
+    @Mapping(target = "imageUrls", expression = "java(java.util.Collections.emptyList())")
     fun eventToEventModel(event: Event): EventModel
     fun eventsToEventModels(events: List<Event>): List<EventModel>
     fun eventModelsToEventDTOs(response: List<EventModel>): List<EventDto>

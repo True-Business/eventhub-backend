@@ -143,4 +143,17 @@ class EventDto(
         example = "42",
     )
     val participantsCount: Int,
+
+    @param:Schema(
+        description = "Presigned URL постера мероприятия",
+        example = "https://minio.example.com/eventhub/confirmed/poster.jpg?X-Amz-Signature=...",
+        nullable = true,
+    )
+    val posterUrl: String?,
+
+    @param:Schema(
+        description = "Presigned URL всех картинок мероприятия",
+        example = "[\"https://minio.example.com/eventhub/confirmed/poster.jpg?X-Amz-Signature=...\"]",
+    )
+    val imageUrls: List<String>,
 )

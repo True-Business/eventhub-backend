@@ -21,6 +21,8 @@ import ru.truebusiness.eventhub_backend.repository.entity.Event
 import ru.truebusiness.eventhub_backend.repository.entity.EventParticipant
 import ru.truebusiness.eventhub_backend.repository.entity.EventStatus
 import ru.truebusiness.eventhub_backend.service.model.*
+import ru.truebusiness.eventhub_backend.service.storage.ConfirmedObjectDownloadUrl
+import ru.truebusiness.eventhub_backend.service.storage.MinioStorageService
 import java.time.Instant
 
 @Service
@@ -30,9 +32,11 @@ class EventService(
     private val userRepository: UserRepository,
     private val eventMapper: EventMapper,
     private val userMapper: UserMapper,
+    private val minioStorageService: MinioStorageService,
 ) {
     companion object {
         private val log = KotlinLogging.logger {}
+        private const val EVENT_IMAGES_OWNER_TYPE = "EVENT"
     }
 
     @Transactional
@@ -57,7 +61,7 @@ class EventService(
         createdEventModel.participantsCount = 1
 
         log.info { "${"New event created {}"} ${newEvent.id}" }
-        return createdEventModel
+        return enrichWithImages(createdEventModel)
     }
 
     @Transactional
@@ -79,7 +83,7 @@ class EventService(
         val updatedEvent = eventRepository.save(event)
 
         log.info { "${"Updated event: {}"} ${eventModel.id}" }
-        return eventMapper.eventToEventModel(updatedEvent)
+        return enrichWithImages(eventMapper.eventToEventModel(updatedEvent))
     }
 
     fun get(eventID: UUID): EventModel {
@@ -95,7 +99,7 @@ class EventService(
         eventModel.isOwner = event.organizerId == userId
         eventModel.participantsCount = eventParticipantRepository.countByEventId(eventID)
 
-        return eventModel
+        return enrichWithImages(eventModel)
     }
 
     fun deleteDraft(eventID: UUID) {
@@ -160,7 +164,7 @@ class EventService(
             eventModel.isUserParticipant = eventParticipantRepository.existsByUserIdAndEventId(userId, event.id)
             eventModel.isOwner = event.organizerId == userId
             eventModel.participantsCount = eventParticipantRepository.countByEventId(event.id)
-            eventModels.add(eventModel)
+            eventModels.add(enrichWithPoster(eventModel))
         }
 
         return eventModels
@@ -227,5 +231,47 @@ class EventService(
             .map { it.userId }
         val participants = userRepository.findAllById(participantIds)
         return userMapper.userEntitiesToUserModels(participants)
+    }
+
+    private fun enrichWithImages(eventModel: EventModel): EventModel {
+        val imageObjects = minioStorageService.genConfirmedDownloadUrls(
+            eventModel.id,
+            EVENT_IMAGES_OWNER_TYPE
+        )
+        val posterObject = imageObjects.firstOrNull { it.origin.isPosterOrigin() }
+            ?: imageObjects.firstOrNull()
+        val orderedImageUrls = imageObjects
+            .sortedWith(
+                compareByDescending<ConfirmedObjectDownloadUrl> {
+                    it.id == posterObject?.id
+                }.thenBy { it.uploaded }
+            )
+            .map { it.downloadUrl }
+
+        eventModel.posterUrl = posterObject?.downloadUrl
+        eventModel.imageUrls = orderedImageUrls
+
+        return eventModel
+    }
+
+    private fun enrichWithPoster(eventModel: EventModel): EventModel {
+        val posterObject = minioStorageService.genConfirmedDownloadUrls(
+            eventModel.id,
+            EVENT_IMAGES_OWNER_TYPE,
+            posterOnly = true
+        ).firstOrNull()
+
+        eventModel.posterUrl = posterObject?.downloadUrl
+        eventModel.imageUrls = emptyList()
+
+        return eventModel
+    }
+
+    private fun String.isPosterOrigin(): Boolean {
+        val normalized = trim().lowercase()
+        return normalized == "poster" ||
+                normalized.startsWith("poster.") ||
+                normalized.startsWith("poster_") ||
+                normalized.startsWith("poster-")
     }
 }

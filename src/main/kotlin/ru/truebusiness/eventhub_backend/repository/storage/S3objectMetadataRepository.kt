@@ -17,4 +17,8 @@ interface S3objectMetadataRepository : JpaRepository<S3ObjectMetadata, UUID> {
     fun findAllByOwnerIdAndOwnerType(
         ownerId: UUID, ownerType: String, pageable: Pageable
     ): List<S3ObjectMetadata>
+
+    fun findAllByOwnerIdAndOwnerTypeAndStatusOrderByConfirmedAtAsc(
+        ownerId: UUID, ownerType: String, status: FileStatus
+    ): List<S3ObjectMetadata>
 }
