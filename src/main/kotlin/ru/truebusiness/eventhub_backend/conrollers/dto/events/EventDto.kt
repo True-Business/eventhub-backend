@@ -131,4 +131,16 @@ class EventDto(
         example = "true",
     )
     val isUserParticipant: Boolean?,
+
+    @param:Schema(
+        description = "Является ли пользователь, сделавший запрос, владельцем мероприятия",
+        example = "true",
+    )
+    val isOwner: Boolean?,
+
+    @param:Schema(
+        description = "Количество зарегистрированных участников мероприятия",
+        example = "42",
+    )
+    val participantsCount: Int,
 )

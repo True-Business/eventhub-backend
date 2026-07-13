@@ -233,6 +233,9 @@ interface EventController {
     @GetMapping("/{eventID}")
     fun getById(@PathVariable eventID: UUID): ResponseEntity<EventDto>
 
+    @DeleteMapping("/{eventID}")
+    fun delete(@PathVariable eventID: UUID): ResponseEntity<Void>
+
     @DeleteMapping("/{eventID}/draft")
     fun deleteDraft(@PathVariable eventID: UUID)
 

@@ -23,4 +23,6 @@ class EventModel(
     var peopleLimit: Int?,
     var registerEndDateTime: Instant?,
     var isUserParticipant: Boolean?,
+    var isOwner: Boolean?,
+    var participantsCount: Int = 0,
 )

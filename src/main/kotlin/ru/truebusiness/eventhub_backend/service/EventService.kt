@@ -37,18 +37,32 @@ class EventService(
 
     @Transactional
     fun create(eventModel: CreateEventModel): EventModel {
-        log.info("Creating new event: {}", eventModel.toString())
+        log.info { "${"Creating new event: {}"} $eventModel" }
 
         val event: Event = eventMapper.eventModelToEventEntity(eventModel)
         val newEvent = eventRepository.save(event)
+        val organizerId = newEvent.organizerId
 
-        log.info("New event created {}", newEvent.id)
-        return eventMapper.eventToEventModel(newEvent)
+        if (!userRepository.existsById(organizerId)) {
+            throw UserNotFoundException.withId(organizerId)
+        }
+
+        if (!eventParticipantRepository.existsByUserIdAndEventId(organizerId, newEvent.id)) {
+            eventParticipantRepository.save(EventParticipant(userId = organizerId, eventId = newEvent.id))
+        }
+
+        val createdEventModel = eventMapper.eventToEventModel(newEvent)
+        createdEventModel.isUserParticipant = true
+        createdEventModel.isOwner = true
+        createdEventModel.participantsCount = 1
+
+        log.info { "${"New event created {}"} ${newEvent.id}" }
+        return createdEventModel
     }
 
     @Transactional
     fun update(eventModel: EventModel): EventModel {
-        log.info("Updating event: {}", eventModel.id)
+        log.info { "${"Updating event: {}"} ${eventModel.id}" }
 
         val event: Event = eventRepository.findById(eventModel.id).orElseThrow {
             EventNotFoundException.byId(eventModel.id)
@@ -64,12 +78,12 @@ class EventService(
         eventMapper.eventModelToEventEntity(eventModel, event)
         val updatedEvent = eventRepository.save(event)
 
-        log.info("Updated event: {}", eventModel.id)
+        log.info { "${"Updated event: {}"} ${eventModel.id}" }
         return eventMapper.eventToEventModel(updatedEvent)
     }
 
     fun get(eventID: UUID): EventModel {
-        log.info("Get event: {}", eventID)
+        log.info { "${"Get event: {}"} $eventID" }
 
         val event: Event = eventRepository.findById(eventID).orElseThrow {
             EventNotFoundException.byId(eventID)
@@ -77,14 +91,15 @@ class EventService(
 
         val userId = SecurityContextHolder.getContext().authentication.principal as UUID
         val eventModel = eventMapper.eventToEventModel(event)
-        eventModel.isUserParticipant = event.participants.stream()
-            .anyMatch { user -> user.id == userId }
+        eventModel.isUserParticipant = eventParticipantRepository.existsByUserIdAndEventId(userId, eventID)
+        eventModel.isOwner = event.organizerId == userId
+        eventModel.participantsCount = eventParticipantRepository.countByEventId(eventID)
 
         return eventModel
     }
 
     fun deleteDraft(eventID: UUID) {
-        log.info("Deleting draft event: {}", eventID)
+        log.info { "${"Deleting draft event: {}"} $eventID" }
 
         val userID = SecurityContextHolder.getContext().authentication.principal as UUID
         val event = eventRepository.findById(eventID)
@@ -101,12 +116,30 @@ class EventService(
 
         eventRepository.deleteById(eventID)
 
-        log.info("Event {} deleted successfully!", eventID)
+        log.info { "${"Event {} deleted successfully!"} $eventID" }
+    }
+
+    @Transactional
+    fun delete(eventID: UUID) {
+        log.info { "Deleting event: $eventID" }
+
+        val userID = SecurityContextHolder.getContext().authentication.principal as UUID
+        val event = eventRepository.findById(eventID)
+            .orElseThrow { EventNotFoundException.byId(eventID) }
+
+        if (event.organizerId != userID) {
+            throw WrongOrganizerException.organizerIDDoesNotMatchUserID(
+                eventID, userID
+            )
+        }
+
+        eventRepository.deleteById(eventID)
+        log.info { "Event $eventID deleted successfully!" }
     }
 
     fun search(eventSearchFilter: EventSearchFilter): List<EventModel> {
-        log.info("Search events")
-        log.info("isopen: {}", eventSearchFilter.isOpen)
+        log.info { "Search events" }
+        log.info { "${"isopen: {}"} ${eventSearchFilter.isOpen}" }
 
         val userId = SecurityContextHolder.getContext().authentication.principal as UUID
         if (eventSearchFilter.isParticipant != null) {
@@ -121,9 +154,12 @@ class EventService(
 
         val eventModels = mutableListOf<EventModel>()
         for (event in events) {
+            // TODO: возможно выгоднее сделать поиск всех людей и потом рабоать с этим списком, чтобы не делать 2
+            //  запроса к БД. Хотя если участников будет много, то наверное текущее решение выгоднее
             val eventModel = eventMapper.eventToEventModel(event)
-            eventModel.isUserParticipant = event.participants.stream()
-                .anyMatch { user -> user.id == userId }
+            eventModel.isUserParticipant = eventParticipantRepository.existsByUserIdAndEventId(userId, event.id)
+            eventModel.isOwner = event.organizerId == userId
+            eventModel.participantsCount = eventParticipantRepository.countByEventId(event.id)
             eventModels.add(eventModel)
         }
 
@@ -132,7 +168,9 @@ class EventService(
 
     @Transactional
     fun registerToEvent(eventId: UUID, userId: UUID): EventParticipantModel {
-        val event = get(eventId)
+        val event = eventRepository.findById(eventId).orElseThrow {
+            EventNotFoundException.byId(eventId)
+        }
         if (!userRepository.existsById(userId)) {
             throw UserNotFoundException.withId(userId)
         }
@@ -140,7 +178,7 @@ class EventService(
             throw RegistrationException.alreadyRegistered(userId, eventId)
         }
 
-        if (event.status != EventStatusModel.PLANNED) {
+        if (event.status != EventStatus.PLANNED) {
             throw RegistrationException.eventIsUnavailable(eventId)
         }
 
@@ -160,7 +198,7 @@ class EventService(
         val eventParticipant = eventParticipantRepository.save(
             EventParticipant(userId = userId, eventId = eventId)
         )
-        log.info("User $userId registered to event $eventId")
+        log.info { "User $userId registered to event $eventId" }
         return eventMapper.eventParticipantToEventParticipantModel(eventParticipant)
     }
 
@@ -177,13 +215,17 @@ class EventService(
         }
 
         eventParticipantRepository.deleteByUserIdAndEventId(userId, eventId)
-        log.info("User $userId unsubscribed from event $eventId")
+        log.info { "User $userId unsubscribed from event $eventId" }
     }
 
     fun getEventParticipants(eventId: UUID): List<UserModel> {
-        val participants = eventRepository.findById(eventId)
-            .orElseThrow{EventNotFoundException.byId(eventId)}.participants
-        val userModels = userMapper.userEntitiesToUserModels(participants)
-        return userModels
+        if (!eventRepository.existsById(eventId)) {
+            throw EventNotFoundException.byId(eventId)
+        }
+
+        val participantIds = eventParticipantRepository.findByEventId(eventId)
+            .map { it.userId }
+        val participants = userRepository.findAllById(participantIds)
+        return userMapper.userEntitiesToUserModels(participants)
     }
 }

@@ -44,6 +44,11 @@ class EventControllerImpl(
         return ResponseEntity.ok(eventMapper.eventModelToEventDTO(response))
     }
 
+    override fun delete(eventID: UUID): ResponseEntity<Void> {
+        eventService.delete(eventID)
+        return ResponseEntity.noContent().build()
+    }
+
     override fun deleteDraft(eventID: UUID) {
         eventService.deleteDraft(eventID)
     }
