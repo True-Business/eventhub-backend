@@ -201,14 +201,14 @@ class MinioStorageService(
 
     fun genConfirmedDownloadUrls(
         ownerId: UUID,
-        ownerType: String,
+        ownerType: ObjectOwnerType,
         posterOnly: Boolean = false,
     ): List<ConfirmedObjectDownloadUrl> {
         val metas = s3ObjectMetadataRepository.findAllByOwnerIdAndOwnerTypeAndStatusOrderByConfirmedAtAsc(
-            ownerId, ownerType, FileStatus.CONFIRMED
+            ownerId, ownerType.value, FileStatus.CONFIRMED
         )
         val selectedMetas = if (posterOnly) {
-            listOfNotNull(metas.firstOrNull { it.origin.isPosterOrigin() } ?: metas.firstOrNull())
+            listOfNotNull(metas.firstOrNull { StorageUtils.isPosterOrigin(it.origin) } ?: metas.firstOrNull())
         } else {
             metas
         }
@@ -228,14 +228,6 @@ class MinioStorageService(
                 uploaded = meta.confirmedAt ?: Instant.MIN,
             )
         }
-    }
-
-    private fun String.isPosterOrigin(): Boolean {
-        val normalized = trim().lowercase()
-        return normalized == "poster" ||
-                normalized.startsWith("poster.") ||
-                normalized.startsWith("poster_") ||
-                normalized.startsWith("poster-")
     }
 
     /**

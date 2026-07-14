@@ -33,6 +33,14 @@ object StorageUtils {
         }
     }
 
+    fun isPosterOrigin(origin: String): Boolean {
+        val normalized = origin.trim().lowercase()
+        return normalized == "poster" ||
+                normalized.startsWith("poster.") ||
+                normalized.startsWith("poster_") ||
+                normalized.startsWith("poster-")
+    }
+
     fun validateMetasOwner(
         meta: List<S3ObjectMetadata>,
         ownerId: UUID,

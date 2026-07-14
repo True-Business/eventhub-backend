@@ -14,6 +14,15 @@ object UserSpecs {
             } else null
         }
 
+    fun withShortId(shortId: String?): Specification<User> =
+        Specification { root, query, criteriaBuilder ->
+            if (!shortId.isNullOrBlank()) {
+                val cleanShortId = shortId.removePrefix("@").lowercase()
+                criteriaBuilder.like(
+                    criteriaBuilder.lower(root.get("shortId")), "%$cleanShortId%")
+            } else null
+        }
+
     fun isFriendOf(userFriendId: UUID?): Specification<User> =
         Specification { root, query, criteriaBuilder ->
             if (userFriendId != null) {
@@ -39,7 +48,7 @@ object UserSpecs {
                 subquery.where(friendshipCondition)
 
                 criteriaBuilder.exists(subquery)
-            } else criteriaBuilder.disjunction()
+            } else null
         }
 
     fun hasFriendRequestTo(userIdRequestTo: UUID?): Specification<User> =

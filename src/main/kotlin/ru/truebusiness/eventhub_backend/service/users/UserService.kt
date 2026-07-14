@@ -68,6 +68,7 @@ class UserService(
 
     fun findUsers(filter: UserFiltersModel): List<UserModel> {
         val spec = UserSpecs.withUsername(filter.username)
+            .and(UserSpecs.withShortId(filter.shortId))
             .and(UserSpecs.isFriendOf(filter.userIdFriend))
             .and(UserSpecs.hasFriendRequestTo(filter.userIdRequestTo))
             .and(UserSpecs.hasFriendRequestFrom(filter.userIdRequestFrom))

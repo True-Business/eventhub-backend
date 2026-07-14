@@ -4,6 +4,7 @@ import java.util.UUID
 
 data class FindUsersRequestDto(
     val username: String?,
+    val shortId: String?,
     val userIdFriend: UUID?,
     val userIdRequestTo: UUID?,
     val userIdRequestFrom: UUID?,

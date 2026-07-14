@@ -23,6 +23,8 @@ import ru.truebusiness.eventhub_backend.repository.entity.EventStatus
 import ru.truebusiness.eventhub_backend.service.model.*
 import ru.truebusiness.eventhub_backend.service.storage.ConfirmedObjectDownloadUrl
 import ru.truebusiness.eventhub_backend.service.storage.MinioStorageService
+import ru.truebusiness.eventhub_backend.service.storage.ObjectOwnerType
+import ru.truebusiness.eventhub_backend.service.storage.StorageUtils
 import java.time.Instant
 
 @Service
@@ -36,7 +38,6 @@ class EventService(
 ) {
     companion object {
         private val log = KotlinLogging.logger {}
-        private const val EVENT_IMAGES_OWNER_TYPE = "EVENT"
     }
 
     @Transactional
@@ -236,9 +237,9 @@ class EventService(
     private fun enrichWithImages(eventModel: EventModel): EventModel {
         val imageObjects = minioStorageService.genConfirmedDownloadUrls(
             eventModel.id,
-            EVENT_IMAGES_OWNER_TYPE
+            ObjectOwnerType.EVENT
         )
-        val posterObject = imageObjects.firstOrNull { it.origin.isPosterOrigin() }
+        val posterObject = imageObjects.firstOrNull { StorageUtils.isPosterOrigin(it.origin) }
             ?: imageObjects.firstOrNull()
         val orderedImageUrls = imageObjects
             .sortedWith(
@@ -257,7 +258,7 @@ class EventService(
     private fun enrichWithPoster(eventModel: EventModel): EventModel {
         val posterObject = minioStorageService.genConfirmedDownloadUrls(
             eventModel.id,
-            EVENT_IMAGES_OWNER_TYPE,
+            ObjectOwnerType.EVENT,
             posterOnly = true
         ).firstOrNull()
 
@@ -265,13 +266,5 @@ class EventService(
         eventModel.imageUrls = emptyList()
 
         return eventModel
-    }
-
-    private fun String.isPosterOrigin(): Boolean {
-        val normalized = trim().lowercase()
-        return normalized == "poster" ||
-                normalized.startsWith("poster.") ||
-                normalized.startsWith("poster_") ||
-                normalized.startsWith("poster-")
     }
 }
